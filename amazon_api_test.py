@@ -16,7 +16,7 @@ import sys
 import subprocess
 from tempfile import gettempdir
 
-
+reddit_text="We are going to make hella money with this. oh ya, boiii."
 session = Session(profile_name="default")
 polly = session.client("polly")
 
