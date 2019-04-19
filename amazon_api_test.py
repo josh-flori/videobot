@@ -16,7 +16,7 @@ import sys
 import subprocess
 from tempfile import gettempdir
 
-reddit_text="We are going to make hella money with this. oh ya, boiii."
+reddit_text="I‘m the child but my dad waited till I‘m grown up to tell me that my mom gave me a lot of sleeping pills when I was a little child, so she could leave me alone at home to maintain her relationship with her lover while my dad was working in another country.. that cleared up many things"
 session = Session(profile_name="default")
 polly = session.client("polly")
 

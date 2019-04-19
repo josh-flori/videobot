@@ -20,10 +20,10 @@ d.text((200,200), user, font=fnt, fill=(42, 175, 247))
 # add points
 d.text((200+len(user)*27,210), "21k points", font=fnt1, fill=(170, 170, 170))
 # add time
-d.text((200+len(user)*27+174,210), "* "+arbitrary_time, font=fnt1, fill=(170, 170, 170))
+d.text((200+len(user)*27+174,210), '\u00B7 2 days ago', font=fnt1, fill=(170, 170, 170))
 
 # add comments, using different text (bigger)
-d.text((200,290), "I work at an Italian place right now ", font=fnt2, fill=(240, 240, 240))
+d.text((200,260), "I work at an Italian place right now ", font=fnt2, fill=(240, 240, 240))
 img.save('pil_text_font.png')
 
 # TODO... loop through comment chunks and save as image files. store log of how many characters each image contains which will be used to sync up to the audio data
