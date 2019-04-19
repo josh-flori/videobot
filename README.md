@@ -3,7 +3,7 @@
 The purpose of this project is to create videos automatically.
 
 # OUTLINE:
-1) Initalize script to take reddit url as argument input and return top n comments (we can debate whether to exclude comments under certain threshold length and also whether we should return subcomments. But let's start by not returning subcomments)
+1) Initalize script to take reddit url as argument input and return top n comments (we can debate whether to exclude comments under certain threshold length and also whether we should return subcomments. But let's start by not returning subcomments. Clean bad characters etc...)
 2) Send text to amazon's api and process returned mp3.
 3) Figure out how to create base image template in python.
 4) Figure out how to get text to base image.
