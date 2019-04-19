@@ -1,4 +1,4 @@
-# /users/josh.flori/desktop/test/bin/python3 /users/josh.flori/documents/josh-flori/video-creator/test.py --url="https://www.reddit.com/r/dataisbeautiful/comments/beq4up/how_reliable_is_that_article_you_just_read_media"
+# /users/josh.flori/desktop/test/bin/python3 /users/josh.flori/documents/josh-flori/video-creator/reddit_test.py --url="https://www.reddit.com/r/videos/comments/begf1k/thoughts_on_the_new_butterfinger/"
 
 #####################
 # IMPORT SOME STUFF #
@@ -22,7 +22,7 @@ from nltk.tokenize import SpaceTokenizer
 import operator
 import sys
 import argparse
-
+import re
 
 
 
@@ -107,40 +107,13 @@ def get_raw_comments(some_submission):
     
     
         
+####################
+#  CLEAN COMMENTS  #
+####################
+def clean_comments(comment_list):
+    cleaned_comment_list=[re.sub(r'[^A-Za-z0-9.!?()]', ' ', comment) for comment in comment_list]
+    return cleaned_comment_list
     
-    
-    
-#######################################################
-#  GET THE SET OF ALL COMMENTS FOR ALL GIVEN AUTHORS  #
-#######################################################
-
-
-# """ returns dictionary of form: author: [[top level comment(s) + all lower level comments from same author, regardless of whether they correspond to top level comments],[top level permalinks],[length of top comment per author, length of top comment+lower level comments per author]]
-#    comments are automatically returned by 'best' desc """
-
-def get_comment_dict(top_level_authors, top_level_bodies, top_level_permalinks, lower_level_authors, lower_level_bodies):
-    comment_dict={}
-    for author in top_level_authors:
-        # for each author we return an index of their comments, top level and lower level. they may have multiple top level
-        top=[top_level_bodies[i] for i in range(0,len(top_level_bodies)) if top_level_authors[i] == author][0] # arbitrarily just return the first comment. they may have several, but this is rare and i don't want to deal with the complexity of it and will just assume the top rated comment (the first one to appear in the list) is going to be the one we are looking for and the others are not important.
-        link=[top_level_permalinks[i] for i in range(0,len(top_level_bodies)) if top_level_authors[i] == author]
-        lower_level_bodies_if_any=[lower_level_bodies[i] for i in range(0,len(lower_level_bodies))  if lower_level_authors[i] == author]
-        # append all lower level bodies into the top level body, with visual separation. We will paste the entire output into a google sheet cell
-        top_plus_lower=top
-        if len(lower_level_bodies_if_any)>0:         
-            for body in lower_level_bodies_if_any:
-                top_plus_lower=top_plus_lower+"\n\n------------------------------\n\n"+str(body)
-        else:
-            top_plus_lower=top
-        # the primary determinate of whether a comment will be good is the length of the top level comment. so we log that information and will use when outputing useable comments for the content team.
-        char_length_of_first_comment=len(top)
-      #  print(top+"\n\n"+word_tokenize(top)[0]+"\n"+str(len(word_tokenize(top)))+"\n\n\n---------------------\n\n\n")
-        word_length_of_first_comment=len(SpaceTokenizer().tokenize(top))
-        # but the length of subcomments also matters, and will be of second priority (do they really tho?)
-        length_of_all_comments=len(word_tokenize(top_plus_lower.replace("------------------------------","")))
-        comment_dict[str(author)]=[[top_plus_lower],link,[char_length_of_first_comment,word_length_of_first_comment,length_of_all_comments]]
-    return comment_dict
-
 
 
 
@@ -163,23 +136,15 @@ some_submission = get_submission(reddit_id,reddit)
 
 top_level_authors, top_level_bodies, top_level_permalinks, lower_level_authors, lower_level_bodies=get_raw_comments(some_submission)
 
-print(top_level_bodies)
-#
-# if len(top_level_bodies)==0:
-#     print("\n\nEither the function or the api failed to return any data for this submission. Look into it. Shutting down now.\n\n")
-#     sys.exit()
-#
-#
-# # returns dictionary of author, of form: [[top level comment(s) + all lower level comments from same author, regardless of whether they correspond to top level comments],[top level permalinks],[length of top comment per author, length of top comment+lower level comments per author]]. The lower level comments may not necessarily be children of the parent. they may come from completely unique replies to another redditors comment. subcomments are sorted by level. so all 2nd levels come first. then all third levels, and so on for all levels. for both of these reasons, there will not necessarily be a logical order to them.
-# comment_dict = get_comment_dict(top_level_authors, top_level_bodies, top_level_permalinks, lower_level_authors, lower_level_bodies)
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
+
+cleaned_comment_list = clean_comments(top_level_bodies)
+print(cleaned_comment_list)
+
+
+
+
+
+
+
+
+
