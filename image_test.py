@@ -26,7 +26,7 @@ def split_seq(iterable, size):
 ######################
 # SET SOME THINGS UP #
 ######################
-chunked = list(split_seq(TweetTokenizer().tokenize(comment),5))
+chunked = list(split_seq(TweetTokenizer().tokenize(comment),7))
 # create image
 img = Image.new('RGB', (1920,1080), color = (26, 26, 26))
 # set font
@@ -43,7 +43,6 @@ updoots = updoots
 ####################
 # INITIALIZE IMAGE #
 ####################
-img = Image.new('RGB', (1920,1080), color = (26, 26, 26))
 d = ImageDraw.Draw(img)
 # add user
 d.text((100,200), user, font=fnt, fill=(42, 175, 247))
@@ -51,15 +50,34 @@ d.text((100,200), user, font=fnt, fill=(42, 175, 247))
 d.text((100+len(user)*27,210), "21k points", font=fnt1, fill=(170, 170, 170))
 # add time
 d.text((100+len(user)*27+174,210), '\u00B7 2 days ago', font=fnt1, fill=(170, 170, 170))
-t="1111111111111111111111111111111111111111111111111111111111111111111"
-d.text((100,260), t, font=fnt2, fill=(240, 240, 240))
-img.save('/users/josh.flori/desktop/test.png')
+
+
+# measures how many characters have accumulated on that line
+fill=0
+# determines if write to same line
+same_line=True
+# control movement parameters
+x_adjust=0
+vertical=0
 
 for i in range(len(chunked)):
+    # this starts at 0, will increment with each new line, controls the vertical dimension of where the line is typed, adjusts as "same_line" variable adjusts
+    chunk_length=len("".join(chunked[i]))
+    fill+=chunk_length
+    print(fill)
+    if fill >= 67:
+        same_line=False
+        # reset to chunk length
+        fill=chunk_length
+        # bump to next line
+        vertical+=1
+        x_adjust=0
+    else:
+        same_line=True
     # add comments, using different text (bigger)
-    d.text((200,(i*60)+260), " ".join(chunked[i]), font=fnt2, fill=(240, 240, 240))
+    d.text(((25*x_adjust)+200,(vertical*60)+260), " ".join(chunked[i]), font=fnt2, fill=(240, 240, 240))
     img.save('/users/josh.flori/desktop/pil_text_font'+str(i)+'.png')
-        
+    x_adjust+=chunk_length    
 
 
 
