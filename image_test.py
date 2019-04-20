@@ -52,6 +52,7 @@ for i in range(len(comment)):
         dump="".join(temp)
         chunked.append(dump)
         is_eos.append(False)
+        chunk_len.append(0)
     # test to see if the sentence has ended before the end of the line
     elif all([any([comment[i] == "." or comment[i] == "!" or comment[i] == "?"]),comment[i+1]==" "]):
         # join letters together into single string
@@ -72,6 +73,7 @@ for i in range(len(comment)):
         is_eos.append(True)
         chunk_len.append(len(dump))        
         
+assert(len(chunked)==len(is_eos)==len(chunk_len))
 # get them together for easier processing
 parameters=list(zip(chunked,is_eos,chunk_len))
         
