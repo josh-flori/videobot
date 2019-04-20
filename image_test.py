@@ -11,6 +11,7 @@ from PIL import Image, ImageDraw, ImageFont
 from nltk.tokenize import TweetTokenizer
 import numpy as np
 import itertools
+import wave
 
 comment= """That she can't have a relationship with her grandfather because he's a pedophile and I would never trust him. The rest of my family maintains a relationship with him and leans on me hard to open up communication because "family comes first." They are absolutely right, my family does come first, which is why my daughter won't ever have to have a relationship with him."""
 # user
@@ -143,13 +144,47 @@ for i in range(len(parameters)):
 # seconds=
 from moviepy.editor import *
 
-imgs = ['/users/josh.flori/desktop/pil_text_font0.png', '/users/josh.flori/desktop/pil_text_font1.png']
-
-clips = [ImageClip(imgs[i]).set_duration(parameters[i][3]/10.352) for i in range(len(img))]
+clips = [ImageClip(image_paths[i]).set_duration(parameters[i][3]/24) for i in range(len(image_paths))]
 
 concat_clip = concatenate_videoclips(clips, method="compose")
-concat_clip.write_videofile("test.mp4", fps=24)
+concat_clip.write_videofile("/users/josh.flori/desktop/testt.mp4", fps=1,audio="/users/josh.flori/desktop/speech.mp3")
 
+
+
+
+
+# got to convert to wav
+import subprocess
+
+subprocess.call(['ffmpeg', '-i', '/users/josh.flori/desktop/speech.mp3',
+               '/users/josh.flori/desktop/speech.wav'])
+
+
+
+
+
+sound1 = AudioSegment.from_wav("/users/josh.flori/downloads/speech.wav")
+sound2 = AudioSegment.from_wav("/users/josh.flori/downloads/speech1.wav")
+
+import wave
+import numpy as np
+# load two files you'd like to mix
+fnames =["/users/josh.flori/downloads/speech.wav", "/users/josh.flori/downloads/speech1.wav"]
+wavs = [wave.open(fn) for fn in fnames]
+frames = [w.readframes(w.getnframes()) for w in wavs]
+# here's efficient numpy conversion of the raw byte buffers
+# '<i2' is a little-endian two-byte integer.
+samples = [np.frombuffer(f, dtype='<i2') for f in frames]
+samples = [samp.astype(np.float64) for samp in samples]
+# mix as much as possible
+n = min(map(len, samples))
+mix = samples[0][:n] + samples[1][:n]
+# Save the result
+mix_wav = wave.open("bbbbbbbb.wav", 'w')
+mix_wav.setparams(wavs[0].getparams())
+# before saving, we want to convert back to '<i2' bytes:
+mix_wav.writeframes(mix.astype('<i2').tobytes())
+mix_wav.close()
 
 
 

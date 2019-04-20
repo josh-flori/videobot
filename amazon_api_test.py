@@ -16,13 +16,13 @@ import sys
 import subprocess
 from tempfile import gettempdir
 
-reddit_text="I‘m the child but my dad waited till I‘m grown up to tell me that my mom gave me a lot of sleeping pills when I was a little child, so she could leave me alone at home to maintain her relationship with her lover while my dad was working in another country.. that cleared up many things"
+comment= """bla bla bla bla bla bla bla relationship with her grandfather because he's a pedophile and I would never trust him. The rest of my family maintains a relationship with him and leans on me hard to open up communication because "family comes first." They are absolutely right, my family does come first, which is why my daughter won't ever have to have a relationship with him."""
 session = Session(profile_name="default")
 polly = session.client("polly")
 
 try:
     # Request speech synthesis
-    response = polly.synthesize_speech(Text=reddit_text, OutputFormat="mp3",
+    response = polly.synthesize_speech(Text=comment, OutputFormat="mp3",
                                     VoiceId="Matthew")
 except (BotoCoreError, ClientError) as error:
     # The service returned an error, exit gracefully
@@ -37,7 +37,7 @@ if "AudioStream" in response:
     # ensure the close method of the stream object will be called automatically
     # at the end of the with statement's scope.
     with closing(response["AudioStream"]) as stream:
-        output = '/users/josh.flori/desktop/speech.mp3'
+        output = '/users/josh.flori/desktop/speech1.mp3'
         try:
             # Open a file for writing the output as a binary stream
             with open(output, "wb") as file:
