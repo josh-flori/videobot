@@ -82,6 +82,6 @@ def get_chunks(comment):
     
     exceeds_limit=num_lines>13    
     
-    return paratemers,num_lines,exceeds_limit    
+    return parameters,num_lines,exceeds_limit    
         
 

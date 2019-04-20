@@ -14,9 +14,11 @@ get_audio.get_audio(cleaned_comment_list[0],'/users/josh.flori/desktop/demo/','s
 # get chunk information
 parameters,num_lines,exceeds_limit = get_chunks.get_chunks(cleaned_comment_list[0])
 
+
+
 # get frames
-... = create_frames.create_frames(parameters,num_lines,exceeds_limit,users[0],age_list[0],age_type_list[0])
+create_frames.create_frames(parameters,num_lines,exceeds_limit,users[0],age_list[0],age_type_list[0],updoots[0])
 
 
 
-print(cleaned_comment_list,"\n",users,"\n",age_list,"\n",age_type_list,"\n",updoots)
+# print(cleaned_comment_list,"\n",users,"\n",age_list,"\n",age_type_list,"\n",updoots)

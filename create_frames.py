@@ -7,7 +7,7 @@ import wave
 
 # parameters[i][0]==chunk_text (list), parameters[i][1]==is_eos (list), parameters[i][2]==indent (list), parameters[i][3]==chunk_len (list)
 
-def create_frames(parameters,num_lines,exceeds_limit,user,age,age_type):
+def create_frames(parameters,num_lines,exceeds_limit,user,age,age_type,updoots):
 
     ####################
     # INITIALIZE IMAGE #
@@ -19,17 +19,15 @@ def create_frames(parameters,num_lines,exceeds_limit,user,age,age_type):
 
     d = ImageDraw.Draw(img)
     # add user
-    d.text((100,500-(num_lines*30)), user, font=fnt, fill=(42, 175, 247))
+    d.text((100,500-(num_lines*30)), user, font=fnt1, fill=(42, 175, 247))
     # add points
-    d.text((100+len(user)*27,510-(num_lines*30)), "21k points", font=fnt1, fill=(170, 170, 170))
+    d.text((100+len(user)*27,510-(num_lines*30)), str(updoots)+" points", font=fnt1, fill=(170, 170, 170))
     # add time
-    d.text((100+len(user)*27+174,510-(num_lines*30)), '\u00B7 2 days ago', font=fnt1, fill=(170, 170, 170))
-
-
+    d.text((100+len(user)*27+174,510-(num_lines*30)), '\u00B7 '+str(age)+' '+age_type+' ago', font=fnt1, fill=(170, 170, 170))
 
 
     #################
-    # CREATE IMAGES #
+    # CREATE FRAMES #
     #################
     line=0
     x_adjust=0
@@ -42,13 +40,12 @@ def create_frames(parameters,num_lines,exceeds_limit,user,age,age_type):
             else:
                 x_adjust=0
         d.text(((20.4*x_adjust)+100,560-(num_lines*30)+(line*60)), parameters[i][0], font=fnt2, fill=(240, 240, 240))
-        img.save('/users/josh.flori/desktop/pil_text_font'+str(i)+'.png')
-        image_paths.append('/users/josh.flori/desktop/pil_text_font'+str(i)+'.png')
+        img.save('/users/josh.flori/desktop/demo/'+str(i)+'.png')
+        image_paths.append('/users/josh.flori/desktop/demo/'+str(i)+'.png')
         if parameters[i][1]!=True:
             line+=1    
             
             
-    return ...
 
 
 
