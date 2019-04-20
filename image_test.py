@@ -153,38 +153,43 @@ concat_clip.write_videofile("/users/josh.flori/desktop/testt.mp4", fps=1,audio="
 
 
 
-# got to convert to wav
-import subprocess
 
-subprocess.call(['ffmpeg', '-i', '/users/josh.flori/desktop/speech.mp3',
-               '/users/josh.flori/desktop/speech.wav'])
+from os import path
+from pydub import AudioSegment
+
+# files                                                                         
+src = "/users/josh.flori/desktop/speech.mp3"
+dst = "/users/josh.flori/desktop/test.wav"
+
+# convert wav to mp3                                                            
+sound = AudioSegment.from_mp3(src)
+sound.export(dst, format="wav")
+# FileNotFoundError: [Errno 2] No such file or directory: 'ffprobe': 'ffprobe'
 
 
 
 
+
+from pydub import AudioSegment
+from pydub.playback import play
 
 sound1 = AudioSegment.from_wav("/users/josh.flori/downloads/speech.wav")
-sound2 = AudioSegment.from_wav("/users/josh.flori/downloads/speech1.wav")
+sound2 = AudioSegment.from_wav("/users/josh.flori/desktop/untitled_Master.wav")
 
-import wave
-import numpy as np
-# load two files you'd like to mix
-fnames =["/users/josh.flori/downloads/speech.wav", "/users/josh.flori/downloads/speech1.wav"]
-wavs = [wave.open(fn) for fn in fnames]
-frames = [w.readframes(w.getnframes()) for w in wavs]
-# here's efficient numpy conversion of the raw byte buffers
-# '<i2' is a little-endian two-byte integer.
-samples = [np.frombuffer(f, dtype='<i2') for f in frames]
-samples = [samp.astype(np.float64) for samp in samples]
-# mix as much as possible
-n = min(map(len, samples))
-mix = samples[0][:n] + samples[1][:n]
-# Save the result
-mix_wav = wave.open("bbbbbbbb.wav", 'w')
-mix_wav.setparams(wavs[0].getparams())
-# before saving, we want to convert back to '<i2' bytes:
-mix_wav.writeframes(mix.astype('<i2').tobytes())
-mix_wav.close()
+
+# mix sound2 with sound1, starting at 70% into sound1)
+tmpsound = sound1.overlay(sound2, position=0)
+
+#play(tmpsound)
+tmpsound.export("/users/josh.flori/desktop/final_output.wav", format="wav") 
+
+
+
+
+
+
+
+
 
 
 
