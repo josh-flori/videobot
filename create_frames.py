@@ -13,13 +13,10 @@ import numpy as np
 import itertools
 import wave
 
-comment= """That she can't have a relationship with her grandfather because he's a pedophile and I would never trust him. The rest of my family maintains a relationship with him and leans on me hard to open up communication because "family comes first." They are absolutely right, my family does come first, which is why my daughter won't ever have to have a relationship with him."""
-# user
-user="bla"
-# age
-age = "3 months ago"
-# updoots
-updoots = updoots
+
+
+
+def create_frames(user,comment,age,updoots):
 
 ######################
 # SET SOME THINGS UP #
