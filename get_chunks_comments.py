@@ -28,6 +28,8 @@ def get_chunks(comment,path_to_audio,audio_padding_length):
     indent=[]
     # used for setting movie duration for that frame
     chunk_len=[]
+    # words... used for whe multiple sentence son same line...
+    incrementing_chunk=0
     # loop through each letter
     for i in range(len(comment)):
         # append that letter to temporary holding list
@@ -51,6 +53,7 @@ def get_chunks(comment,path_to_audio,audio_padding_length):
                 count=0
                 is_eos.append(False)
                 indent.append(0)
+                incrementing_chunk=0
                 chunk_len.append(len(dump))
         # true when sentence has ended before the end of the line
         elif all([any([comment[i] == "." or comment[i] == "!" or comment[i] == "?"]),comment[i+1]==" "]):
@@ -62,9 +65,11 @@ def get_chunks(comment,path_to_audio,audio_padding_length):
             temp=[]
             # this will be used to govern the x_adjust parameter in the image thing
             is_eos.append(True)
+            incrementing_chunk+=font.getsize(dump)[0]
             # this will be used to govern the x_adjust parameter in the image thing        
-            indent.append(font.getsize(dump)[0])
+            indent.append(incrementing_chunk)
             chunk_len.append(len(dump))
+            
            # get_text_metrics("verdana", 14, ".")
         # true when sentence has ended before the end of the line but when sentence ends with a quote
         elif all([any([comment[i-1]==".",comment[i-1]=="?",comment[i-1]=="!"]),comment[i]=='"' and comment[i+1]==" "]):
@@ -73,7 +78,9 @@ def get_chunks(comment,path_to_audio,audio_padding_length):
             temp=[]
             is_eos.append(True)
             
-            indent.append(font.getsize(dump)[0])
+            incrementing_chunk+=font.getsize(dump)[0]
+            # this will be used to govern the x_adjust parameter in the image thing        
+            indent.append(incrementing_chunk)
             
             chunk_len.append(len(dump))
     

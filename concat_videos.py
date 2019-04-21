@@ -1,10 +1,19 @@
 from moviepy.editor import VideoFileClip, concatenate_videoclips
 from pydub import AudioSegment
+import os
+import glob
 
 def concat_videos():
-    clip1 = VideoFileClip("/users/josh.flori/desktop/demo/slide_title.mp4")
-    clip2 = VideoFileClip("/users/josh.flori/desktop/demo/first_video.mp4")
-    final_clip = concatenate_videoclips([clip1,clip2])
+    clips =[VideoFileClip("/users/josh.flori/desktop/demo/slide_title.mp4")]
+    
+    files = glob.glob('/users/josh.flori/desktop/demo/*')
+    for f in files:
+        if '.mp4' in f and 'slide_title' not in f:
+            clips.append(VideoFileClip(f))
+    
+
+    
+    final_clip = concatenate_videoclips(clips)
     final_clip.write_videofile("/users/josh.flori/desktop/demo/concat.mp4")
     
     video = VideoFileClip("/users/josh.flori/desktop/demo/concat.mp4")

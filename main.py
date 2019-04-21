@@ -12,6 +12,9 @@ from videobot import initialize_folder
 from videobot import concat_videos
 
 
+thread='https://www.reddit.com/r/AskReddit/comments/a0a4cd/whats_the_most_amazing_thing_about_the_universe/'
+
+
 #######################
 # CLEAR OLD FILES OUT #
 #######################
@@ -28,7 +31,7 @@ initialize_folder.initialize_folder()
 ######################
 
 # get comment data
-cleaned_comment_list,users,age_list,age_type_list,updoots,thread_title,op = get_comments.get_comments("https://www.reddit.com/r/AskReddit/comments/b9q1zj/what_sounds_like_fiction_but_is_actually_a_real/")
+cleaned_comment_list,users,age_list,age_type_list,updoots,thread_title,op = get_comments.get_comments(thread)
 
 # get TITLE audio
 get_audio.get_audio(thread_title,'/users/josh.flori/desktop/demo/','thread_title.mp3','thread_title.wav')
@@ -47,24 +50,27 @@ create_title_slide.create_title_slide(parameters,num_lines,'/users/josh.flori/de
 # CREATE COMMENT VIDEOS #
 #########################
 
-for i in range(len(users))[0:2]:
+for i in range(len(users))[0:30]:
+    
+    print(len(cleaned_comment_list[i]))
     
     # get COMMENT audio
-    get_audio.get_audio(cleaned_comment_list[0],'/users/josh.flori/desktop/demo/','single_comment'+str(i)+'.mp3','single_comment'+str(i)+'.wav')
+    if not len(cleaned_comment_list[i]) >1500:
+        get_audio.get_audio(cleaned_comment_list[i],'/users/josh.flori/desktop/demo/','single_comment'+str(i)+'.mp3','single_comment'+str(i)+'.wav')
 
 
-    # get COMMENT chunk information
-    parameters,num_lines,exceeds_limit = get_chunks_comments.get_chunks(cleaned_comment_list[0],'/users/josh.flori/desktop/demo/single_comment'+str(i)+'.mp3',.5)
+        # get COMMENT chunk information
+        parameters,num_lines,exceeds_limit = get_chunks_comments.get_chunks(cleaned_comment_list[i],'/users/josh.flori/desktop/demo/single_comment'+str(i)+'.mp3',.5)
+        print(exceeds_limit)
 
+        # if the text is not too long...
+        if not exceeds_limit:
 
-    # if the text is not too long...
-    if not exceeds_limit:
+            # get COMMENT frames
+            image_paths = create_frames.create_frames(parameters,num_lines,exceeds_limit,users[i],age_list[i],age_type_list[i],updoots[i],i)
 
-        # get COMMENT frames
-        image_paths = create_frames.create_frames(parameters,num_lines,exceeds_limit,users[i],age_list[i],age_type_list[i],updoots[i],i)
-
-        # create COMMENT video
-        create_video.create_video(image_paths,parameters,'/users/josh.flori/desktop/demo/single_comment'+str(i)+'.mp3')
+            # create COMMENT video
+            create_video.create_video(image_paths,parameters,'/users/josh.flori/desktop/demo/single_comment'+str(i)+'.mp3',i)
 
 
 

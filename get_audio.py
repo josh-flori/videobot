@@ -66,13 +66,7 @@ def get_audio(comment,path,fname_mp3,fname_wav):
     
         
         
-    # convert to wav
-    def convert_to_wav(src,dst):
-        sound = AudioSegment.from_mp3(src)
-        sound.export(dst, format="wav")
-        
-    convert_to_wav(path+fname_mp3,path+fname_wav)    
-        
+
         
 
 
