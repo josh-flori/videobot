@@ -8,16 +8,23 @@ from videobot import create_joined_audio
 from videobot import create_video
 from videobot import create_title_slide
 from videobot import get_chunks_title
+from videobot import initialize_folder
 import os
 import glob
 
 
-files = glob.glob('/users/josh.flori/desktop/demo/*')
-for f in files:
-    if 'template.jpg' not in f and  'music.wav' not in f:
-        os.remove(f)
+
+#######################
+# CLEAR OLD FILES OUT #
+#######################
+initialize_folder.initialize_folder()
 
 
+
+
+######################
+# CREATE TITLE VIDEO #
+######################
 # get comment data
 cleaned_comment_list,users,age_list,age_type_list,updoots,thread_title = get_comments.get_comments("https://www.reddit.com/r/AskReddit/comments/b9q1zj/what_sounds_like_fiction_but_is_actually_a_real/")
 

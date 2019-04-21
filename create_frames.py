@@ -21,11 +21,11 @@ def create_frames(parameters,num_lines,exceeds_limit,user,age,age_type,updoots):
 
     d = ImageDraw.Draw(img)
     # add user
-    d.text((100,500-(num_lines*28)), user, font=fnt1, fill=(42, 175, 247))
+    d.text((100,500-(num_lines*28.5)), user, font=fnt1, fill=(42, 175, 247))
     # add points
-    d.text((100+font.getsize(user)[0]*3.3,510-(num_lines*30)), str(randint(1,9))+"."+str(randint(0,9))+"k points", font=fnt1, fill=(170, 170, 170))
+    d.text((100+font.getsize(user)[0]*3,510-(num_lines*30)), str(randint(1,9))+"."+str(randint(0,9))+"k points", font=fnt1, fill=(170, 170, 170))
     # add time
-    d.text((100+font.getsize(user)[0]*3.3+174,510-(num_lines*30)), '\u00B7 '+str(age)+' '+age_type+' ago', font=fnt1, fill=(170, 170, 170))
+    d.text((100+font.getsize(user)[0]*3+174,510-(num_lines*30)), ' \u00B7 '+str(age)+' '+age_type+' ago', font=fnt1, fill=(170, 170, 170))
 
 
     #################
