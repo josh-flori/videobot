@@ -93,12 +93,13 @@ def get_comments(url):
     reddit_id = url.split("/")[6]
 
     some_submission = get_submission(reddit_id,reddit)
+    
     comments,users,age_list,age_type_list,updoots=get_comment_data(some_submission)
 
 
     cleaned_comment_list = clean_comments(comments)
     
-    return cleaned_comment_list,users,age_list,age_type_list,updoots,some_submission.title
+    return cleaned_comment_list,users,age_list,age_type_list,updoots,some_submission.title,some_submission.author
 
 
 

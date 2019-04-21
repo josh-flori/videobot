@@ -90,16 +90,16 @@ def get_chunks(comment,path_to_audio,audio_padding_length):
 
             # checks to see whether this chunk contains the end of a sentence or comma. in that case, the audio will slow when reading that chunk which means the timing of that frame should be slowed down from what it otherwise would be
             slow_events=0
-            slow_events+=chunked[i].count('! ')*10
-            slow_events+=chunked[i].count('? ')*10
-            slow_events+=chunked[i].count('. ')*10
-            slow_events+=chunked[i].count('." ')*10
-            slow_events+=chunked[i].count(".' ")*10
-            slow_events+=chunked[i].count('?" ')*10
-            slow_events+=chunked[i].count("?' ")*10
-            slow_events+=chunked[i].count('!" ')*10
-            slow_events+=chunked[i].count("!' ")*10
-            slow_events+=chunked[i].count(", ")*6
+            slow_events+=chunked[i].count('! ')*9
+            slow_events+=chunked[i].count('? ')*9
+            slow_events+=chunked[i].count('. ')*9
+            slow_events+=chunked[i].count('." ')*9
+            slow_events+=chunked[i].count(".' ")*9
+            slow_events+=chunked[i].count('?" ')*9
+            slow_events+=chunked[i].count("?' ")*9
+            slow_events+=chunked[i].count('!" ')*9
+            slow_events+=chunked[i].count("!' ")*9
+            slow_events+=chunked[i].count(", ")*8
 
             timing_temp.append(slow_events+chunk_len[i])
         # this gets the proportion that each chunk is out of the total. we will multiply that by the total number of seconds in the audio (excluding the padding at the end) to get the number of seconds each frame should extend for. 

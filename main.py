@@ -28,7 +28,7 @@ initialize_folder.initialize_folder()
 ######################
 
 # get comment data
-cleaned_comment_list,users,age_list,age_type_list,updoots,thread_title = get_comments.get_comments("https://www.reddit.com/r/AskReddit/comments/b9q1zj/what_sounds_like_fiction_but_is_actually_a_real/")
+cleaned_comment_list,users,age_list,age_type_list,updoots,thread_title,op = get_comments.get_comments("https://www.reddit.com/r/AskReddit/comments/b9q1zj/what_sounds_like_fiction_but_is_actually_a_real/")
 
 # get TITLE audio
 get_audio.get_audio(thread_title,'/users/josh.flori/desktop/demo/','thread_title.mp3','thread_title.wav')
@@ -36,7 +36,7 @@ get_audio.get_audio(thread_title,'/users/josh.flori/desktop/demo/','thread_title
 parameters,num_lines = get_chunks_title.get_chunks(thread_title,'/users/josh.flori/desktop/demo/thread_title.mp3',.5)
 
 # create TITLE slide (video)
-create_title_slide.create_title_slide(parameters,num_lines,'/users/josh.flori/desktop/demo/thread_title.mp3',thread_title)
+create_title_slide.create_title_slide(parameters,num_lines,'/users/josh.flori/desktop/demo/thread_title.mp3',thread_title,op,age_list[0],age_type_list[0])
 
 
 

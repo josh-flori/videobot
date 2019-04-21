@@ -26,6 +26,6 @@ def concat_videos():
     joined = AudioSegment.from_wav("/users/josh.flori/desktop/demo/joined_audio.wav")
     joined.export("/users/josh.flori/desktop/demo/joined_audio.mp3", format="mp3")
 
-    #
-    # final_clip=VideoFileClip("/users/josh.flori/desktop/demo/concat.mp4")
-    # final_clip.write_videofile("/users/josh.flori/desktop/demo/concat.mp4",audio="/users/josh.flori/desktop/demo/joined_audio.mp3")
+    
+    final_clip=VideoFileClip("/users/josh.flori/desktop/demo/concat.mp4")
+    final_clip.write_videofile("/users/josh.flori/desktop/demo/finished.mp4",audio="/users/josh.flori/desktop/demo/joined_audio.mp3")
