@@ -9,9 +9,7 @@ from videobot import create_video
 from videobot import create_title_slide
 from videobot import get_chunks_title
 from videobot import initialize_folder
-import os
-import glob
-
+from videobot import concat_videos
 
 
 #######################
@@ -75,4 +73,4 @@ if not exceeds_limit:
 # CONCAT VIDEOS #
 #################
 
-concat_videos()
+concat_videos.concat_videos()

@@ -53,6 +53,17 @@ def get_audio(comment,path,fname_mp3,fname_wav):
         # The response didn't contain audio data, exit gracefully
         print("Could not stream audio")
         sys.exit(-1)
+    
+    
+    
+    # pad with 1 second of silence to create breathing room in the video
+    combined = AudioSegment.empty()
+    combined += AudioSegment.from_mp3(path+fname_mp3)
+    combined += AudioSegment.from_mp3('/users/josh.flori/desktop/demo/padding.mp3')
+
+    combined.export(path+fname_mp3, format="mp3")
+    
+    
         
         
     # convert to wav

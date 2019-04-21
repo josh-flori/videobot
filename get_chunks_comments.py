@@ -11,7 +11,7 @@ import wave
    in sequence. The entirety of the comment text does NOT all show up on screen
    at the same time. This helps maintain viewer attention."""
 
-def get_chunks(comment):
+def get_chunks(comment,path_to_audio):
 
     font = ImageFont.truetype('/users/josh.flori/downloads/verdana.ttf' , 12)
     
@@ -75,6 +75,41 @@ def get_chunks(comment):
             indent.append(font.getsize(dump)[0])
             
             chunk_len.append(len(dump))
+    
+    
+    # now you will need to figure out how long the timing should be for each clip.....
+    def get_timing(chunked,chunk_len):
+        # when creating the video, this will be passed into the set_timing argument of the video maker, or whatever it's called. tells how long it should be.
+        timing_temp=[]
+        # figure out how long all of the chunks are. each chunk will be divided by this to get the proportion.
+        print(np.sum(chunk_len),"<<<<<<")
+        total_chunk_length=np.sum(chunk_len)
+        for i in range(chunked):
+            # as a baseline, figure out how long that chunk_len is out of all chunk lens
+
+            # checks to see whether this chunk contains the end of a sentence or comma. in that case, the audio will slow when reading that chunk which means the timing of that frame should be slowed down from what it otherwise would be
+            slow_events=0
+            slow_events+=chunked[i].count('! ')
+            slow_events+=chunked[i].count('? ')
+            slow_events+=chunked[i].count('. ')
+            slow_events+=chunked[i].count('." ')
+            slow_events+=chunked[i].count(".' ")
+            slow_events+=chunked[i].count('?" ')
+            slow_events+=chunked[i].count("?' ")
+            slow_events+=chunked[i].count('!" ')
+            slow_events+=chunked[i].count("!' ")
+            slow_events+=chunked[i].count(", ")
+            print(slow_events)
+            # arbitrarily guess a slow event to be worth 10 characters space....
+            timing_temp.append(slow_events*10+chunk_len[i])
+        # this gets the proportion that each chunk is out of the total. we will multiply that by the total number of seconds in the audio (excluding the padding at the end) to get the number of seconds each frame should extend for. 
+        timing=list(np.divide(timing_temp/np.sum(timing_temp))
+            
+            
+                
+                path_to_audio
+                
+    
             
     # make sure everything was looped over correctly...
     assert(len(chunked)==len(is_eos)==len(indent)==len(chunk_len))
