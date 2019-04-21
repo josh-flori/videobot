@@ -12,7 +12,7 @@ from videobot import initialize_folder
 from videobot import concat_videos
 
 
-thread='https://www.reddit.com/r/AskReddit/comments/a0a4cd/whats_the_most_amazing_thing_about_the_universe/'
+thread='https://www.reddit.com/r/AskReddit/comments/a9xya4/what_are_some_psychology_experiments_with/'
 
 
 #######################
@@ -50,7 +50,7 @@ create_title_slide.create_title_slide(parameters,num_lines,'/users/josh.flori/de
 # CREATE COMMENT VIDEOS #
 #########################
 
-for i in range(len(users))[0:30]:
+for i in range(len(users))[0:50]:
     
     print(len(cleaned_comment_list[i]))
     
