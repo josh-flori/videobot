@@ -8,50 +8,25 @@ from PIL import Image, ImageDraw, ImageFont
 import numpy as np
 import itertools
 import wave
+from random import randint
 
 
-# parameters[i][0]==chunk_text (list), parameters[i][1]==is_eos (list), parameters[i][2]==indent (list), parameters[i][3]==chunk_len (list)
 
-def create_frames(parameters,num_lines,exceeds_limit,user,age,age_type,updoots):
-
-    ####################
-    # INITIALIZE IMAGE #
-    ####################
-    img = Image.new('RGB', (1920,1080), color = (26, 26, 26))
-    # set font
-    fnt1 = ImageFont.truetype('/Library/Fonts/Verdana.ttf', 30)
-    fnt2 = ImageFont.truetype('/Library/Fonts/Verdana.ttf', 40)
-
-    d = ImageDraw.Draw(img)
-    # add user
-    d.text((100,500-(num_lines*30)), user, font=fnt1, fill=(42, 175, 247))
-    # add points
-    d.text((100+len(user)*27,510-(num_lines*30)), str(updoots)+" points", font=fnt1, fill=(170, 170, 170))
-    # add time
-    d.text((100+len(user)*27+174,510-(num_lines*30)), '\u00B7 '+str(age)+' '+age_type+' ago', font=fnt1, fill=(170, 170, 170))
-
-
-    #################
-    # CREATE FRAMES #
-    #################
-    line=0
-    x_adjust=0
-    image_paths=[]
-    for i in range(len(parameters)):
-        # so the point of x_adjust is when a sentence ends mid-line, we want to indent the next chunk on the same line. this is true when the previous chunk was a sentence that ended mid-line
-        if i!=0:
-            if parameters[i-1][1]==True:
-                x_adjust=parameters[i-1][2]
-            else:
-                x_adjust=0
-        d.text(((2.5*x_adjust)+100,560-(num_lines*30)+(line*60)), parameters[i][0], font=fnt2, fill=(240, 240, 240))
-        img.save('/users/josh.flori/desktop/demo/'+str(i)+'.png')
-        image_paths.append('/users/josh.flori/desktop/demo/'+str(i)+'.png')
-        if parameters[i][1]!=True:
-            line+=1   
-            
-    return image_paths 
-            
+def create_title_slide(title_speech,title_text):
+title_text="BLA BLA BLA"
+img=Image.open('/users/josh.flori/desktop/demo/template.jpg')
+#  
+fnt1 = ImageFont.truetype('/Library/Fonts/Verdana.ttf', 70)
+fnt2 = ImageFont.truetype('/Library/Fonts/Verdana.ttf', 50)
+#   
+d = ImageDraw.Draw(img)
+# add user
+d.text((303,500), title_text, font=fnt1, fill=(230,230,230))
+# add points
+d.text((127,517), str(randint(1,30))+"."+str(randint(0,9))+"k", font=fnt2, fill=(170, 170, 170))
+#
+#
+img.save('/users/josh.flori/desktop/demo/slide_title.png')
             
 
 
