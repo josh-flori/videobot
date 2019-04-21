@@ -3,6 +3,12 @@ from nltk.tokenize import TweetTokenizer
 import numpy as np
 import itertools
 import wave
+import tkinter as Tkinter
+import tkinter as Tkinter 
+from tkinter import font as tkFont
+
+
+
 
 
 """The purpose of this file is to take each comment paragraph and split
@@ -31,28 +37,28 @@ def get_chunks(comment):
         temp.append(comment[i])
         # increase count of letters
         count+=1
-        # test if end of line has been reached
-        if count >67:
-            # wait until end of current word
-            if comment[i]==" ":
-                dump="".join(temp)
-                chunked.append(dump)
-                temp=[]
-                count=0
-                is_eos.append(False)
-                indent.append(0) 
-                chunk_len.append(len(dump))
         # true when reached the end of the comment and no other condition was met
-        elif i == len(comment)-1:
-            dump="".join(temp)
+        if i == len(comment)-1:
+            dump="".join(temp).lstrip()
             chunked.append(dump)
             is_eos.append(False)
             indent.append(0)
             chunk_len.append(len(dump))
+        # test if end of line has been reached
+        elif count >67:
+            # wait until end of current word
+            if comment[i]==" ":
+                dump="".join(temp).lstrip()
+                chunked.append(dump)
+                temp=[]
+                count=0
+                is_eos.append(False)
+                indent.append(0)
+                chunk_len.append(len(dump))
         # true when sentence has ended before the end of the line
         elif all([any([comment[i] == "." or comment[i] == "!" or comment[i] == "?"]),comment[i+1]==" "]):
             # join letters together into single string
-            dump="".join(temp)
+            dump="".join(temp).lstrip()
             # append to chunked
             chunked.append(dump)
             # reset temporary holding list
@@ -60,15 +66,27 @@ def get_chunks(comment):
             # this will be used to govern the x_adjust parameter in the image thing
             is_eos.append(True)
             # this will be used to govern the x_adjust parameter in the image thing
-            indent.append(len(dump))
+            
+            Tkinter.Frame().destroy()
+            txt = tkFont.Font(family="Verdana", size=40)
+            width = txt.measure(dump)
+            
+            indent.append(width)
             chunk_len.append(len(dump))
+           # get_text_metrics("verdana", 14, ".")
         # true when sentence has ended before the end of the line but when sentence ends with a quote
         elif all([any([comment[i-1]==".",comment[i-1]=="?",comment[i-1]=="!"]),comment[i]=='"' and comment[i+1]==" "]):
-            dump="".join(temp)
+            dump="".join(temp).lstrip()
             chunked.append(dump)
             temp=[]
             is_eos.append(True)
-            indent.append(len(dump))     
+            
+            Tkinter.Frame().destroy()
+            txt = tkFont.Font(family="Verdana", size=40)
+            width = txt.measure(dump)
+            
+            indent.append(width)
+            
             chunk_len.append(len(dump))
             
     # make sure everything was looped over correctly...
@@ -82,6 +100,22 @@ def get_chunks(comment):
     
     exceeds_limit=num_lines>13    
     
+    
+    print(parameters)
     return parameters,num_lines,exceeds_limit    
         
+
+
+
+
+
+
+import wx
+dc = wx.ScreenDC()
+#yourFont =  wx.Font(10, wx.DEFAULT, wx.NORMAL, wx.NORMAL, True)
+#dc.SetFont(yourFont) 
+w,h = dc.GetTextExtent('X') 
+
+
+
 
