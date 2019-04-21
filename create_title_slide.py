@@ -41,11 +41,11 @@ def create_title_slide(parameters,num_lines,title_speech,title_text):
         
     
         # subtract -.2 to make the next clip show up before this one is over cuz better user experience    
-    clips = [ImageClip(image_paths[i]).set_duration(parameters[i][2]-.1) if i < len(image_paths)-1 else ImageClip(image_paths[i]).set_duration(parameters[i][2]+.5) for i in range(len(image_paths))] # <-- give the last frame a little time to breath before jumping into the next 
+    clips = [ImageClip(image_paths[i]).set_duration(parameters[i][2]-.32) if i < len(image_paths)-1 else ImageClip(image_paths[i]).set_duration(parameters[i][2]+.5) for i in range(len(image_paths))] # <-- give the last frame a little time to breath before jumping into the next 
 
     
     concat_clip = concatenate_videoclips(clips, method="compose")
-    concat_clip.write_videofile("/users/josh.flori/desktop/demo/slide_title.mp4", fps=1,audio=title_speech)
+    concat_clip.write_videofile("/users/josh.flori/desktop/demo/slide_title.mp4", fps=3,audio=title_speech)
     
 
 

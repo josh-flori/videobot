@@ -34,7 +34,7 @@ cleaned_comment_list,users,age_list,age_type_list,updoots,thread_title = get_com
 get_audio.get_audio(thread_title,'/users/josh.flori/desktop/demo/','thread_title.mp3','thread_title.wav')
 
 parameters,num_lines = get_chunks_title.get_chunks(thread_title,'/users/josh.flori/desktop/demo/thread_title.mp3',.5)
-print("\n",parameters,"\n")
+
 # create TITLE slide (video)
 create_title_slide.create_title_slide(parameters,num_lines,'/users/josh.flori/desktop/demo/thread_title.mp3',thread_title)
 
@@ -50,8 +50,6 @@ create_title_slide.create_title_slide(parameters,num_lines,'/users/josh.flori/de
 # get COMMENT audio
 get_audio.get_audio(cleaned_comment_list[0],'/users/josh.flori/desktop/demo/','single_comment.mp3','single_comment.wav')
 
-# join COMMENT audio with music
-create_joined_audio.join_audio_and_convert()
 
 # get COMMENT chunk information
 parameters,num_lines,exceeds_limit = get_chunks_comments.get_chunks(cleaned_comment_list[0],'/users/josh.flori/desktop/demo/single_comment.mp3',.5)

@@ -83,7 +83,7 @@ def get_chunks(comment,path_to_audio,audio_padding_length):
         # when creating the video, this will be passed into the set_timing argument of the video maker, or whatever it's called. tells how long it should be.
         timing_temp=[]
         # figure out how long all of the chunks are. each chunk will be divided by this to get the proportion.
-        print(np.sum(chunk_len),"<<<<<<")
+
         total_chunk_length=np.sum(chunk_len)
         for i in range(len(chunked)):
             # as a baseline, figure out how long that chunk_len is out of all chunk lens
@@ -128,7 +128,6 @@ def get_chunks(comment,path_to_audio,audio_padding_length):
     exceeds_limit=num_lines>13    
     
     
-    print(parameters)
     return parameters,num_lines,exceeds_limit    
         
 
