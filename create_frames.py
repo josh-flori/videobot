@@ -7,7 +7,7 @@ from random import randint
 
 # parameters[i][0]==chunk_text (list), parameters[i][1]==is_eos (list), parameters[i][2]==indent (list), parameters[i][3]==chunk_len (list)
 
-def create_frames(parameters,num_lines,exceeds_limit,user,age,age_type,updoots):
+def create_frames(parameters,num_lines,exceeds_limit,user,age,age_type,updoots,comment_num):
     
     font = ImageFont.truetype('/users/josh.flori/downloads/verdana.ttf' , 12)
     
@@ -42,8 +42,8 @@ def create_frames(parameters,num_lines,exceeds_limit,user,age,age_type,updoots):
             else:
                 x_adjust=0
         d.text(((3.43*x_adjust)+100,560-(num_lines*30)+(line*60)), parameters[i][0], font=fnt2, fill=(240, 240, 240))
-        img.save('/users/josh.flori/desktop/demo/'+str(i)+'.png')
-        image_paths.append('/users/josh.flori/desktop/demo/'+str(i)+'.png')
+        img.save('/users/josh.flori/desktop/demo/'+str(comment_num)+str(i)+'.png')
+        image_paths.append('/users/josh.flori/desktop/demo/'+str(comment_num)+str(i)+'.png')
         if parameters[i][1]!=True:
             line+=1   
             

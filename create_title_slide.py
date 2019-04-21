@@ -27,9 +27,9 @@ def create_title_slide(parameters,num_lines,title_speech,title_text,op,age,age_t
     # add points
     d.text((46,515), str(randint(1,30))+"."+str(randint(0,9))+"k", font=fnt2, fill=(170, 170, 170))
     # add user
-    d.text((220,470-(num_lines*32)), str(op), font=fnt3, fill=(42, 175, 247))
+    d.text((220,475-(num_lines*32)), str(op), font=fnt3, fill=(42, 175, 247))
     # add time
-    d.text((220+font.getsize(str(op))[0],475-(num_lines*32)), ' \u00B7 '+str(age)+' '+age_type+' ago', font=fnt4, fill=(170, 170, 170))
+    d.text((220+font.getsize(str(op))[0],480-(num_lines*32)), ' \u00B7 '+str(age)+' '+age_type+' ago', font=fnt4, fill=(170, 170, 170))
 
     img.save('/users/josh.flori/desktop/demo/slide_title.png')
             
@@ -41,7 +41,7 @@ def create_title_slide(parameters,num_lines,title_speech,title_text,op,age,age_t
     image_paths=[]
     line=0
     for i in range(len(parameters)):
-        d.text((224,526-(num_lines*32)+(line*77)), parameters[i][0], font=fnt1, fill=(230, 230, 230))
+        d.text((224,526-(num_lines*35)+(line*83)), parameters[i][0], font=fnt1, fill=(230, 230, 230))
         img.save('/users/josh.flori/desktop/demo/title'+str(i)+'.png')
         image_paths.append('/users/josh.flori/desktop/demo/title'+str(i)+'.png')
         line+=1
