@@ -17,7 +17,10 @@ import glob
 #######################
 # CLEAR OLD FILES OUT #
 #######################
+
 initialize_folder.initialize_folder()
+
+
 
 
 
@@ -25,6 +28,7 @@ initialize_folder.initialize_folder()
 ######################
 # CREATE TITLE VIDEO #
 ######################
+
 # get comment data
 cleaned_comment_list,users,age_list,age_type_list,updoots,thread_title = get_comments.get_comments("https://www.reddit.com/r/AskReddit/comments/b9q1zj/what_sounds_like_fiction_but_is_actually_a_real/")
 
@@ -39,6 +43,11 @@ create_title_slide.create_title_slide(parameters,num_lines,'/users/josh.flori/de
 
 
 
+
+
+#########################
+# CREATE COMMENT VIDEOS #
+#########################
 
 # get COMMENT audio
 get_audio.get_audio(cleaned_comment_list[0],'/users/josh.flori/desktop/demo/','single_comment.mp3','single_comment.wav')
@@ -60,3 +69,10 @@ if not exceeds_limit:
     create_video.create_video(image_paths,parameters)
 
 
+
+
+#################
+# CONCAT VIDEOS #
+#################
+
+concat_videos()
