@@ -42,7 +42,7 @@ def get_comments(url):
         # loop through all comment entities
         for top_level_comment in some_submission.comments:
             # skip if error
-            if isinstance(top_level_comment, MoreComments):
+            if isinstance(top_level_comment, MoreComments) or top_level_comment.author is None:
                 continue
             
             # figure out age
@@ -93,7 +93,6 @@ def get_comments(url):
     reddit_id = url.split("/")[6]
 
     some_submission = get_submission(reddit_id,reddit)
-
     comments,users,age_list,age_type_list,updoots=get_comment_data(some_submission)
 
 

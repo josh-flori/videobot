@@ -108,14 +108,3 @@ def get_chunks(comment):
 
 
 
-
-
-import wx
-dc = wx.ScreenDC()
-#yourFont =  wx.Font(10, wx.DEFAULT, wx.NORMAL, wx.NORMAL, True)
-#dc.SetFont(yourFont) 
-w,h = dc.GetTextExtent('X') 
-
-
-
-
