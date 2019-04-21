@@ -34,16 +34,16 @@ def create_title_slide(parameters,num_lines,title_speech,title_text):
     image_paths=[]
     line=0
     for i in range(len(parameters)):
-        d.text((224,520-(num_lines*31)+(line*70)), parameters[i][0], font=fnt1, fill=(230, 230, 230))
+        d.text((224,524-(num_lines*32)+(line*74)), parameters[i][0], font=fnt1, fill=(230, 230, 230))
         img.save('/users/josh.flori/desktop/demo/title'+str(i)+'.png')
         image_paths.append('/users/josh.flori/desktop/demo/title'+str(i)+'.png')
         line+=1
         
         
-    clips = [ImageClip(image_paths[i]).set_duration(parameters[i][3]/20) for i in range(len(image_paths))]
-
+    clips = [ImageClip(image_paths[i]).set_duration(parameters[i][1]/23) for i in range(len(image_paths))]
+    print("\n",[parameters[i][1]/23 for i in range(len(image_paths))],"\n")
     concat_clip = concatenate_videoclips(clips, method="compose")
-    concat_clip.write_videofile("/users/josh.flori/desktop/demo/first_video.mp4", fps=1,audio=title_speech)
+    concat_clip.write_videofile("/users/josh.flori/desktop/demo/slide_title.mp4", fps=1,audio=title_speech)
     
 
 

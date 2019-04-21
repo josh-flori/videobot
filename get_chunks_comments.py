@@ -3,12 +3,6 @@ from nltk.tokenize import TweetTokenizer
 import numpy as np
 import itertools
 import wave
-import tkinter as Tkinter
-import tkinter as Tkinter 
-from tkinter import font as tkFont
-
-
-
 
 
 """The purpose of this file is to take each comment paragraph and split
@@ -18,6 +12,8 @@ from tkinter import font as tkFont
    at the same time. This helps maintain viewer attention."""
 
 def get_chunks(comment):
+
+    font = ImageFont.truetype('/users/josh.flori/downloads/verdana.ttf' , 12)
     
     # counts the number of characters in that line so far
     count = 0
@@ -65,13 +61,8 @@ def get_chunks(comment):
             temp=[]
             # this will be used to govern the x_adjust parameter in the image thing
             is_eos.append(True)
-            # this will be used to govern the x_adjust parameter in the image thing
-            
-            Tkinter.Frame().destroy()
-            txt = tkFont.Font(family="Verdana", size=40)
-            width = txt.measure(dump)
-            
-            indent.append(width)
+            # this will be used to govern the x_adjust parameter in the image thing        
+            indent.append(font.getsize(dump)[0])
             chunk_len.append(len(dump))
            # get_text_metrics("verdana", 14, ".")
         # true when sentence has ended before the end of the line but when sentence ends with a quote
@@ -81,11 +72,7 @@ def get_chunks(comment):
             temp=[]
             is_eos.append(True)
             
-            Tkinter.Frame().destroy()
-            txt = tkFont.Font(family="Verdana", size=40)
-            width = txt.measure(dump)
-            
-            indent.append(width)
+            indent.append(font.getsize(dump)[0])
             
             chunk_len.append(len(dump))
             
