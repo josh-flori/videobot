@@ -75,7 +75,7 @@ def get_comments(url):
     
         assert len(comments)==len(users)==len(age_list)==len(age_type_list)==len(updoots)
     
-        return comments,users,age_list,age_type,updoots
+        return comments,users,age_list,age_type_list,updoots
         
 
     

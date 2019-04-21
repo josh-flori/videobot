@@ -21,13 +21,13 @@ for f in files:
 # get comment data
 cleaned_comment_list,users,age_list,age_type_list,updoots,thread_title = get_comments.get_comments("https://www.reddit.com/r/AskReddit/comments/b9q1zj/what_sounds_like_fiction_but_is_actually_a_real/")
 
-# # get TITLE audio
-# get_audio.get_audio(thread_title,'/users/josh.flori/desktop/demo/','thread_title.mp3','thread_title.wav')
-#
-# parameters,num_lines = get_chunks_title.get_chunks(thread_title)
-# print("\n",parameters,"\n")
-# # create TITLE slide (video)
-# create_title_slide.create_title_slide(parameters,num_lines,'/users/josh.flori/desktop/demo/thread_title.mp3',thread_title)
+# get TITLE audio
+get_audio.get_audio(thread_title,'/users/josh.flori/desktop/demo/','thread_title.mp3','thread_title.wav')
+
+parameters,num_lines = get_chunks_title.get_chunks(thread_title)
+print("\n",parameters,"\n")
+# create TITLE slide (video)
+create_title_slide.create_title_slide(parameters,num_lines,'/users/josh.flori/desktop/demo/thread_title.mp3',thread_title)
 
 
 
@@ -40,7 +40,6 @@ get_audio.get_audio(cleaned_comment_list[0],'/users/josh.flori/desktop/demo/','s
 create_joined_audio.join_audio_and_convert()
 
 # get COMMENT chunk information
-print(cleaned_comment_list[0])
 parameters,num_lines,exceeds_limit = get_chunks_comments.get_chunks(cleaned_comment_list[0])
 
 
@@ -48,7 +47,6 @@ parameters,num_lines,exceeds_limit = get_chunks_comments.get_chunks(cleaned_comm
 if not exceeds_limit:
 
     # get COMMENT frames
-    print(age_type_list[0])
     image_paths = create_frames.create_frames(parameters,num_lines,exceeds_limit,users[0],age_list[0],age_type_list[0],updoots[0])
 
     # create COMMENT video
