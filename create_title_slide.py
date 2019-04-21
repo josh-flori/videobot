@@ -39,8 +39,9 @@ def create_title_slide(parameters,num_lines,title_speech,title_text):
         image_paths.append('/users/josh.flori/desktop/demo/title'+str(i)+'.png')
         line+=1
         
-        
-    clips = [ImageClip(image_paths[i]).set_duration(parameters[i][1]/23) if i < len(image_paths)-1 else ImageClip(image_paths[i]).set_duration(parameters[i][1]/23+.5) for i in range(len(image_paths))] # <-- give the last frame a little time to breath before jumping into the next 
+    
+        # subtract -.2 to make the next clip show up before this one is over cuz better user experience    
+    clips = [ImageClip(image_paths[i]).set_duration(parameters[i][2]-.1) if i < len(image_paths)-1 else ImageClip(image_paths[i]).set_duration(parameters[i][2]+.5) for i in range(len(image_paths))] # <-- give the last frame a little time to breath before jumping into the next 
 
     
     concat_clip = concatenate_videoclips(clips, method="compose")

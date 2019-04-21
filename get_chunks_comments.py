@@ -3,6 +3,7 @@ from nltk.tokenize import TweetTokenizer
 import numpy as np
 import itertools
 import wave
+from mutagen.mp3 import MP3
 
 
 """The purpose of this file is to take each comment paragraph and split
@@ -11,7 +12,7 @@ import wave
    in sequence. The entirety of the comment text does NOT all show up on screen
    at the same time. This helps maintain viewer attention."""
 
-def get_chunks(comment,path_to_audio):
+def get_chunks(comment,path_to_audio,audio_padding_length):
 
     font = ImageFont.truetype('/users/josh.flori/downloads/verdana.ttf' , 12)
     
@@ -84,7 +85,7 @@ def get_chunks(comment,path_to_audio):
         # figure out how long all of the chunks are. each chunk will be divided by this to get the proportion.
         print(np.sum(chunk_len),"<<<<<<")
         total_chunk_length=np.sum(chunk_len)
-        for i in range(chunked):
+        for i in range(len(chunked)):
             # as a baseline, figure out how long that chunk_len is out of all chunk lens
 
             # checks to see whether this chunk contains the end of a sentence or comma. in that case, the audio will slow when reading that chunk which means the timing of that frame should be slowed down from what it otherwise would be
@@ -100,22 +101,27 @@ def get_chunks(comment,path_to_audio):
             slow_events+=chunked[i].count("!' ")
             slow_events+=chunked[i].count(", ")
             print(slow_events)
-            # arbitrarily guess a slow event to be worth 10 characters space....
-            timing_temp.append(slow_events*10+chunk_len[i])
+            # arbitrarily guess a slow event to be worth 4 characters space....
+            timing_temp.append(slow_events*4+chunk_len[i])
         # this gets the proportion that each chunk is out of the total. we will multiply that by the total number of seconds in the audio (excluding the padding at the end) to get the number of seconds each frame should extend for. 
-        timing=list(np.divide(timing_temp/np.sum(timing_temp))
-            
-            
+        timing=list(np.divide(timing_temp,np.sum(timing_temp)))
+
+
+        audio = MP3(path_to_audio)
+        audio_duration = audio.info.length-audio_padding_length
+        timing=np.multiply(timing,audio_duration)    
+        
+        return timing
                 
-                path_to_audio
+    timing=get_timing(chunked,chunk_len)            
                 
     
             
     # make sure everything was looped over correctly...
-    assert(len(chunked)==len(is_eos)==len(indent)==len(chunk_len))
+    assert(len(chunked)==len(is_eos)==len(indent)==len(chunk_len)==len(timing))
     
     # get them together for easier processing when creating the frames
-    parameters=list(zip(chunked,is_eos,indent,chunk_len))
+    parameters=list(zip(chunked,is_eos,indent,chunk_len,timing))
         
     # we now need to determine how many lines there are. We can't fit more than x lines on an image. Two things must occur. we must check if lines exceed limit, if so, remove comment and don't include it in the video. also return number of lines, which will be used to adjust the y_adjust in the image
     num_lines=int(len(is_eos)-is_eos.count(True))
