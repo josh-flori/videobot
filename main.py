@@ -12,7 +12,7 @@ from videobot import initialize_folder
 from videobot import concat_videos
 
 
-thread='https://www.reddit.com/r/AskReddit/comments/a9xya4/what_are_some_psychology_experiments_with/'
+thread='https://www.reddit.com/r/AskReddit/comments/aumhwo/which_conspiracy_theory_is_so_believable_that_it/'
 
 
 #######################

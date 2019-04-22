@@ -5,10 +5,10 @@ import glob
 
 def concat_videos():
     clips =[VideoFileClip("/users/josh.flori/desktop/demo/slide_title.mp4")]
-    
-    files = glob.glob('/users/josh.flori/desktop/demo/*')
-    for f in files:
-        if '.mp4' in f and 'slide_title' not in f:
+        
+    files=sorted(glob.glob('/users/josh.flori/desktop/demo/*.mp4'), key=os.path.getmtime)
+    for f in files:            
+        if 'slide_title' not in f:
             clips.append(VideoFileClip(f))
     
 
