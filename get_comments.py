@@ -23,7 +23,7 @@ def get_comments(url):
     def get_submission(submission_id,reddit):
         return reddit.submission(id=submission_id)
 
-
+   
 
     ######################
     #  GET COMMENT DATA  #
@@ -93,7 +93,7 @@ def get_comments(url):
     reddit_id = url.split("/")[6]
 
     some_submission = get_submission(reddit_id,reddit)
-    
+    print(some_submission.url)
     comments,users,age_list,age_type_list,updoots=get_comment_data(some_submission)
 
 

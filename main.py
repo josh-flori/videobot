@@ -12,8 +12,10 @@ from videobot import initialize_folder
 from videobot import concat_videos
 
 
-thread='https://www.reddit.com/r/AskReddit/comments/aumhwo/which_conspiracy_theory_is_so_believable_that_it/'
-
+thread='https://www.reddit.com/r/AskReddit/comments/ary01m/multilinguals_whats_your_they_didnt_realise_i/'
+# https://www.reddit.com/r/AskReddit/comments/ary01m/multilinguals_whats_your_they_didnt_realise_i/
+# https://www.reddit.com/r/AskReddit/comments/bb0s2g/besides_eating_cereal_with_water_what_is_the_most/
+# https://www.reddit.com/r/AskReddit/comments/auypw7/what_is_the_craziest_encounter_of_rich_kid/
 
 #######################
 # CLEAR OLD FILES OUT #
