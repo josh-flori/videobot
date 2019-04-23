@@ -5,8 +5,6 @@
 # known problem 5: blank text, ignore those
 import re
 from spellchecker import SpellChecker
-
-
 # replace these characters: '»' '|'
 
 
@@ -17,101 +15,138 @@ def process_image_text(text):
     #for text in text_list:
 #
     # remove leading single characters
-    def remove_leading_single_characters(text):
-        acceptable_first_characters = ['i','a','b','k','u','v']
-        if text[1]==" " and text[0].lower() not in acceptable_first_characters:
-            text=text[2:]
-        return text
-    #    
-    # 
-    def remove_at_character(text):
-        # determine starting point, if copied from twitter or something there will usually be an '@'
-        if '\n' in text:
-            split_text=text.split('\n')
-            # assumed @ will never be in this range unless it's a twitter handle or what have you, and assumes @ will always be on the last bad line
-            if len(split_text)<4:
-                loop=1
+def remove_leading_single_characters(text):
+    acceptable_first_characters = ['i', 'a', 'b', 'k', 'u', 'v']
+    if text[1] == " " and text[0].lower() not in acceptable_first_characters:
+        text = text[2:]
+    return text
+
+
+#
+#
+def remove_at_character(text):
+    # determine starting point, if copied from twitter or something there will usually be an '@'
+    if '\n' in text:
+        split_text = text.split('\n')
+        # assumed @ will never be in this range unless it's a twitter handle or what have you, and assumes @ will always be on the last bad line
+        if len(split_text) < 4:
+            loop = 1
+        else:
+            loop = 4
+        for i in range(loop):
+            if '@' in split_text[i]:
+                text = '\n'.join(split_text[i + 1:])
+    return text
+
+
+#
+#
+def remove_time_frame(text):
+    # assume (timeframe) "ago" indicates from some other post, remove per same logic as above
+    if '\n' in text:
+        split_text = text.split('\n')
+        for i in range(4):
+            if 'days ago' in split_text[i] or 'months ago' in split_text[i] or 'hours ago' in split_text[
+                i] or 'day ago' in split_text[i] or 'years ago' in split_text[i]:
+                text = '\n'.join(split_text[i + 1:])
+    return text
+
+
+#
+#
+def remove_trailing_newline_and_shit(text):
+    # remove trailing \n and random characters...
+    if '\n' in text:
+        split_text = text.split('\n')
+        i = 0
+        for chunk in reversed(split_text):
+            if len(chunk.replace('\n', '')) < 3:
+                i += 1
             else:
-                loop=4
-            for i in range(loop):
-                if '@' in split_text[i]:
-                    text='\n'.join(split_text[i+1:])
-        return text
-    #      
-    #       
-    def remove_time_frame(text):
-        # assume (timeframe) "ago" indicates from some other post, remove per same logic as above
-        if '\n' in text:
-            split_text=text.split('\n')
-            for i in range(4):
-                if 'days ago' in split_text[i] or 'months ago' in split_text[i] or 'hours ago' in split_text[i] or 'day ago' in split_text[i] or 'years ago' in split_text[i]:
-                    text='\n'.join(split_text[i+1:])
-        return text
-    #
-    #
-    def remove_trailing_newline_and_shit(text):
-        # remove trailing \n and random characters...
-        if '\n' in text:
-            split_text=text.split('\n')
-            i=0
-            for chunk in reversed(split_text):
-                if len(chunk.replace('\n','')) < 3:
-                   i+=1
-                else:
-                    break 
-                    text='\n'.join(split_text[0:-i])
-        return text
-    #
-    def throw_out_bad_text_captures(text):
-        # if \n is large proportion of entire text, throw it out
+                if i>0:
+                    text = '\n'.join(split_text[0:-i])
+                break
+    return text
+
+
+#
+def throw_out_bad_text_captures(text):
+    # if \n is large proportion of entire text, throw it out
     #       print(text)
     #        print(len(text))
-        t=text.replace('\n','')
-        t=t.replace(' ','')
-        if len(t) <20 and len(t)/len(text)<.3:
-            text="thrown_out_completely_bad"
-        return text
-          #  
+    t = text.replace('\n', '')
+    t = t.replace(' ', '')
+    if len(t) < 20 and len(t) / len(text) < .3:
+        text = "thrown_out_completely_bad"
+    return text
     #
-    def clean_out_huge_leading_garbage(text):
-        # same as above, but a little different....
-        if '\n' in text:
-            split_text=text.split('\n')
-            i=0
-            for chunk in split_text:
-                if len(chunk.replace('\n','')) < 4:
-                   i+=1
-                else:
-                    break 
-                    text='\n'.join(split_text[i+1:])
-        return text
-        #
-    def clean_out_bad_middle_chunks(text):
-        acceptable_characters = ['i','k','a']
-        new=[]
-        if '\n\n' in text:
-            split_text=text.split('\n\n')
-            i=0 
-            for chunk in split_text:
-                if len(chunk) >2 or chunk in acceptable_characters:
-                    new.append(chunk)
-        if new !=[]:
-            text=' '.join(new)
-        return text
-        
-    def throw_out_completely_bad(text):
-        if '\n' not in text and '.' not in text and '?' not in text and '!' not in text:
-            text="thrown_out_completely_bad"
-        return text
-        #
-    text=remove_leading_single_characters(text)
-    text=remove_at_character(text)
-    text=remove_time_frame(text)
-    text=remove_trailing_newline_and_shit(text)
-    text=throw_out_bad_text_captures(text)
-    text=clean_out_huge_leading_garbage(text)
-    text=clean_out_bad_middle_chunks(text)
-    text=throw_out_completely_bad(text)
+    #
+
+
+def clean_out_huge_leading_garbage(text):
+    # same as above, but a little different....
+    if '\n' in text:
+        split_text = text.split('\n')
+        i = 0
+        for chunk in split_text:
+            if len(chunk.replace('\n', '')) < 4:
+                i += 1
+            else:
+                break
+                text = '\n'.join(split_text[i + 1:])
+    return text
+    #
+
+
+def clean_out_bad_middle_chunks(text):
+    acceptable_characters = ['i', 'k', 'a']
+    new = []
+    if '\n\n' in text:
+        split_text = text.split('\n\n')
+        i = 0
+        for chunk in split_text:
+            if len(chunk) > 2 or chunk in acceptable_characters:
+                new.append(chunk)
+    if new != []:
+        text = '\n'.join(new)
+    return text
+
+
+
+def remove_mixed_characters(text):
+    # remove shit like 'dg4!(sd4'....
+    if '\n' in text:
+        bad=0
+        split_text = text.split('\n')
+        for chunk in reversed(split_text):
+            print(chunk)
+            count=0
+            for word in chunk.split(' '):
+                #print(word)
+                if [sum(c.isdigit() for c in word) > 0, sum(c.isalpha() for c in word) >0, sum(not c.isdigit() and not c.isalpha() for c in word) > 0].count(True) > 1:
+                    count+=1
+            #print(count)
+            #print(len(chunk.split(' ')))
+            if count>=len(chunk.split(' '))-1:
+                bad+=1
+            else:
+                print(bad)
+                if bad >0:
+                    text='\n'.join(split_text[0:len(split_text)-1])
+                break
+    return text
+
+text=text_list[5]
+text=remove_leading_single_characters(text)
+text=remove_at_character(text)
+text=remove_time_frame(text)
+text=remove_trailing_newline_and_shit(text)
+text=throw_out_bad_text_captures(text)
+text=clean_out_huge_leading_garbage(text)
+text=clean_out_bad_middle_chunks(text)
+text=throw_out_completely_bad(text)
+text=remove_mixed_characters(text)
+text
     #
     return text
 
