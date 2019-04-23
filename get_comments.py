@@ -83,7 +83,7 @@ def get_comments(url):
     #  CLEAN COMMENTS  #
     ####################
     def clean_comments(comments):
-        cleaned_comment_list=[re.sub(r'[^A-Za-z0-9,’.!?()"\':)(]', ' ', comment).replace('x200B,'') for comment in comments]
+        cleaned_comment_list=[re.sub(r'[^A-Za-z0-9,’.!?()"\':)(]', ' ', comment).replace('x200B','') for comment in comments]
         return cleaned_comment_list
 
 

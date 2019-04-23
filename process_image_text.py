@@ -6,60 +6,123 @@
 import re
 from spellchecker import SpellChecker
 
-def process_image_text(text_list):
-    spell = SpellChecker()
-    
-    
-    
-for text in text_list:
 
-
-text=text_list[6]
-# remove leading single characters
-acceptable_first_characters = ['i','a','b','k','u','v']
-if text[1]==" " and text[0].lower() not in acceptable_first_characters:
-    text=text[2:]
+# replace these characters: '»' '|'
 
 
 
 
 
-# determine starting point, if copied from twitter or something there will usually be an '@'
-split_text=text.split('\n')
-# assumed @ will never be in this range unless it's a twitter handle or what have you, and assumes @ will always be on the last bad line
-for i in range(4):
-    if '@' in split_text[i]:
-        text=''.join(split_text[i+1:])
-
-# assume (timeframe) "ago" indicates from some other post, remove per same logic as above
-split_text=text.split('\n')
-for i in range(4):
-    if 'days ago' in split_text[i] or 'months ago' in split_text[i] or 'hours ago' in split_text[i] or 'day ago' in split_text[i] or 'years ago' in split_text[i]:
-        text=''.join(split_text[i+1:])
-
-
-
-
-
-# find those words that may be misspelled
-# misspelled = spell.unknown(['autismbecause'])
+def process_image_text(text):    
+    #for text in text_list:
 #
-# for word in misspelled:
-#     # Get the one `most likely` answer
-#     print(spell.correction(word))
-#     # Get a list of `likely` options
-#     print(spell.candidates(word))
-#
+    # remove leading single characters
+    def remove_leading_single_characters(text):
+        acceptable_first_characters = ['i','a','b','k','u','v']
+        if text[1]==" " and text[0].lower() not in acceptable_first_characters:
+            text=text[2:]
+        return text
+    #    
+    # 
+    def remove_at_character(text):
+        # determine starting point, if copied from twitter or something there will usually be an '@'
+        if '\n' in text:
+            split_text=text.split('\n')
+            # assumed @ will never be in this range unless it's a twitter handle or what have you, and assumes @ will always be on the last bad line
+            if len(split_text)<4:
+                loop=1
+            else:
+                loop=4
+            for i in range(loop):
+                if '@' in split_text[i]:
+                    text='\n'.join(split_text[i+1:])
+        return text
+    #      
+    #       
+    def remove_time_frame(text):
+        # assume (timeframe) "ago" indicates from some other post, remove per same logic as above
+        if '\n' in text:
+            split_text=text.split('\n')
+            for i in range(4):
+                if 'days ago' in split_text[i] or 'months ago' in split_text[i] or 'hours ago' in split_text[i] or 'day ago' in split_text[i] or 'years ago' in split_text[i]:
+                    text='\n'.join(split_text[i+1:])
+        return text
+    #
+    #
+    def remove_trailing_newline_and_shit(text):
+        # remove trailing \n and random characters...
+        if '\n' in text:
+            split_text=text.split('\n')
+            i=0
+            for chunk in reversed(split_text):
+                if len(chunk.replace('\n','')) < 3:
+                   i+=1
+                else:
+                    break 
+                    text='\n'.join(split_text[0:-i])
+        return text
+    #
+    def throw_out_bad_text_captures(text):
+        # if \n is large proportion of entire text, throw it out
+    #       print(text)
+    #        print(len(text))
+        t=text.replace('\n','')
+        t=t.replace(' ','')
+        if len(t) <20 and len(t)/len(text)<.3:
+            text="thrown_out_completely_bad"
+        return text
+          #  
+    #
+    def clean_out_huge_leading_garbage(text):
+        # same as above, but a little different....
+        if '\n' in text:
+            split_text=text.split('\n')
+            i=0
+            for chunk in split_text:
+                if len(chunk.replace('\n','')) < 4:
+                   i+=1
+                else:
+                    break 
+                    text='\n'.join(split_text[i+1:])
+        return text
+        #
+    def clean_out_bad_middle_chunks(text):
+        acceptable_characters = ['i','k','a']
+        new=[]
+        if '\n\n' in text:
+            split_text=text.split('\n\n')
+            i=0 
+            for chunk in split_text:
+                if len(chunk) >2 or chunk in acceptable_characters:
+                    new.append(chunk)
+        if new !=[]:
+            text=' '.join(new)
+        return text
+        
+    def throw_out_completely_bad(text):
+        if '\n' not in text and '.' not in text and '?' not in text and '!' not in text:
+            text="thrown_out_completely_bad"
+        return text
+        #
+    text=remove_leading_single_characters(text)
+    text=remove_at_character(text)
+    text=remove_time_frame(text)
+    text=remove_trailing_newline_and_shit(text)
+    text=throw_out_bad_text_captures(text)
+    text=clean_out_huge_leading_garbage(text)
+    text=clean_out_bad_middle_chunks(text)
+    text=throw_out_completely_bad(text)
+    #
+    return text
 
 
-
-
-
+process_image_text(text_list[2])
 
 
 
 # debugging the @ removal......
 # for text in text_list:
+#
 #     # determine starting point, if copied from twitter or something there will usually be an '@'
 #     split_text=text.split('\n')
 #     # assumed @ will never be in this range unless it's a twitter handle or what have you, and assumes @ will always be on the last bad line
