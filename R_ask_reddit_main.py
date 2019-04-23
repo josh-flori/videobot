@@ -21,7 +21,7 @@ thread='https://www.reddit.com/r/AskReddit/comments/ary01m/multilinguals_whats_y
 # CLEAR OLD FILES OUT #
 #######################
 
-initialize_folder.initialize_folder()
+initialize_folder.initialize_folder('demo')
 
 
 
