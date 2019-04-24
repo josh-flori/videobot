@@ -3,7 +3,7 @@ import requests
 import cv2
 import pytesseract
 
-def get_image_data(subreddit):
+def get_image_data(subreddit,limit):
 
     ############################
     # DEFINE REDDIT CONNECTION #
@@ -17,7 +17,7 @@ def get_image_data(subreddit):
     ##################
     #  DO THE STUFF  #
     ##################
-    submissions = reddit.subreddit("memes").top("day",limit=5)
+    submissions = reddit.subreddit("memes").top("day",limit=limit)
 
     i=0
     text_list=[]

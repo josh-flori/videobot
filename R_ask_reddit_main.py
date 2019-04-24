@@ -12,7 +12,7 @@ from videobot import initialize_folder
 from videobot import concat_videos
 
 
-thread='https://www.reddit.com/r/AskReddit/comments/auypw7/what_is_the_craziest_encounter_of_rich_kid/'
+thread='https://www.reddit.com/r/AskReddit/comments/bekeb1/what_mindblowing_but_simple_facts_would_satisfy_a/'
 # https://www.reddit.com/r/AskReddit/comments/ary01m/multilinguals_whats_your_they_didnt_realise_i/
 # https://www.reddit.com/r/AskReddit/comments/bb0s2g/besides_eating_cereal_with_water_what_is_the_most/
 # https://www.reddit.com/r/AskReddit/comments/auypw7/what_is_the_craziest_encounter_of_rich_kid/
@@ -57,7 +57,7 @@ for i in range(len(users))[0:50]:
     print(len(cleaned_comment_list[i]))
     
     # get COMMENT audio
-    if not len(cleaned_comment_list[i]) >1500:
+    if not len(cleaned_comment_list[i]) >1500 and 'https' in cleaned_comment_list[i]:
         get_audio.get_audio(cleaned_comment_list[i],'/users/josh.flori/desktop/demo/','single_comment'+str(i)+'.mp3','single_comment'+str(i)+'.wav')
 
 
