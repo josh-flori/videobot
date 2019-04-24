@@ -22,7 +22,7 @@ def get_image_data(subreddit,limit):
     i=0
     text_list=[]
     # for tesseract
-    config = ('-l eng --oem 2 --psm 12')
+    config = ('-l eng --oem 2 --psm 2')
     # loop through posts
     for submission in submissions:
         url = submission.url

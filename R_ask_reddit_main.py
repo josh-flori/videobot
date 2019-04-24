@@ -57,7 +57,9 @@ for i in range(len(users))[0:50]:
     print(len(cleaned_comment_list[i]))
     
     # get COMMENT audio
-    if not len(cleaned_comment_list[i]) >1500 and 'https' in cleaned_comment_list[i]:
+    if not len(cleaned_comment_list[i]) >1500 and 'https' not in cleaned_comment_list[i]:    
+        
+        
         get_audio.get_audio(cleaned_comment_list[i],'/users/josh.flori/desktop/demo/','single_comment'+str(i)+'.mp3','single_comment'+str(i)+'.wav')
 
 

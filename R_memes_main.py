@@ -13,8 +13,8 @@ from videobot import process_image_text
 
 
 
-
-text_list=get_image_data.get_image_data('memes',15)
+from videobot import get_image_data
+text_list=get_image_data.get_image_data('memes',5)
 
 text=text_list[0]
 
