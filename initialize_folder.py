@@ -5,14 +5,21 @@ from distutils.dir_util import copy_tree
 
 
 
-def initialize_folder(folder):    
+def initialize_folder(folder,which):    
     
-    if not os.path.exists(folder):
-        copy_tree('/users/josh.flori/desktop/init', folder)
+    if which=='first':
     
-    files = glob.glob(folder+'/*')
+        if not os.path.exists(folder):
+            copy_tree('/users/josh.flori/desktop/init', folder)
     
-    for f in files:
-        if 'template.jpg' not in f and  'music.wav' not in f and 'padding' not in f:
-            os.remove(f)
-
+        files = glob.glob(folder+'/*')
+    
+        for f in files:
+            if 'template.jpg' not in f and  'music.wav' not in f and 'padding' not in f:
+                os.remove(f)
+    
+    else:
+        files = glob.glob(folder+'/*')
+        for f in files:
+            if 'finished.mp4' not in f:
+                os.remove(f)

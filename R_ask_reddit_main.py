@@ -45,7 +45,7 @@ for i in range(len(threads)):
     
     directory='/users/josh.flori/desktop/demo'+str(column)
     
-    initialize_folder.initialize_folder(directory)
+    initialize_folder.initialize_folder(directory,'first')
 
 
 
@@ -73,12 +73,12 @@ for i in range(len(threads)):
     # CREATE COMMENT VIDEOS #
     #########################
 
-    for i in range(len(users))[0:50]:
+    for i in range(len(users))[0:5]:
     
         print(len(cleaned_comment_list[i]))
     
         # get COMMENT audio
-        if not len(cleaned_comment_list[i]) >1500 and 'https' not in cleaned_comment_list[i]:    
+        if not len(cleaned_comment_list[i]) >1500 and 'http' not in cleaned_comment_list[i]:    
         
         
             get_audio.get_audio(cleaned_comment_list[i],'/single_comment'+str(i)+'.mp3','/single_comment'+str(i)+'.wav',directory)
@@ -95,7 +95,7 @@ for i in range(len(threads)):
                 image_paths = create_frames.create_frames(parameters,num_lines,exceeds_limit,users[i],age_list[i],age_type_list[i],updoots[i],i,directory)
 
                 # create COMMENT video
-                create_video.create_video(image_paths,parameters,'single_comment'+str(i)+'.mp3',i,directory)
+                create_video.create_video(image_paths,parameters,'/single_comment'+str(i)+'.mp3',i,directory)
 
 
 
@@ -104,4 +104,5 @@ for i in range(len(threads)):
     # CONCAT VIDEOS #
     #################
 
-    concat_videos.concat_videos()
+    concat_videos.concat_videos(directory)
+    initialize_folder.initialize_folder(directory,'second')
