@@ -3,7 +3,7 @@ from oauth2client import file
 from oauth2client.service_account import ServiceAccountCredentials
 
 
-def write_to_sheet(total_list, column,service,_id):
+def write_to_sheet(total_list, column,service,_id,sheet,row):
 
     # Write data to sheet
     def write_values_main(_id, rng, data):
@@ -21,8 +21,8 @@ def write_to_sheet(total_list, column,service,_id):
     }
 
     request = service.spreadsheets().values().update(spreadsheetId=_id,
-                                                     range='Sheet1!' + column + '2',
-                                                     valueInputOption='RAW',
+                                                     range=sheet + column + str(row),
+                                                     valueInputOption='USER_ENTERED',
                                                      body=value_range_body)
     response = request.execute()
 

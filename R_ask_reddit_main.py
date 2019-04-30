@@ -30,7 +30,7 @@ creds = ServiceAccountCredentials.from_json_keyfile_name(
     '/users/josh.flori/drive_backup/drive_backup/python_scripts/client_secret.json', scope)
 service = build('sheets', 'v4', http=creds.authorize(Http()))                
 _id='1sIS1r-vtHNVRll_NR3vMr8Pbdt91B34vRrvAe20Ym9g'
-threads = service.spreadsheets().values().get(spreadsheetId=_id, range='Sheet1!A2:A').execute().get(
+threads = service.spreadsheets().values().get(spreadsheetId=_id, range='AskReddit!A2:A').execute().get(
     'values', [])
 
 

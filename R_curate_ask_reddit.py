@@ -27,6 +27,6 @@ for thread in threads:
     # get comment data
     total_list = get_comments_from_reddit.get_comments(thread[0])
 
-    write_to_sheets.write_to_sheet(total_list,column,service,_id)
+    write_to_sheets.write_to_sheet(total_list,column,service,_id,'AskReddit',2)
     
     i+=1
