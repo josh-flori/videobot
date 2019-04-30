@@ -12,7 +12,7 @@ from mutagen.mp3 import MP3
    in sequence. The entirety of the comment text does NOT all show up on screen
    at the same time. This helps maintain viewer attention."""
 
-def get_chunks(comment,path_to_audio,audio_padding_length):
+def get_chunks(comment,audio_file,audio_padding_length,directory):
 
     font = ImageFont.truetype('/users/josh.flori/downloads/verdana.ttf' , 12)
     
@@ -113,7 +113,7 @@ def get_chunks(comment,path_to_audio,audio_padding_length):
         timing=list(np.divide(timing_temp,np.sum(timing_temp)))
 
 
-        audio = MP3(path_to_audio)
+        audio = MP3(directory+audio_file)
         audio_duration = audio.info.length-audio_padding_length
         timing=np.multiply(timing,audio_duration)    
         

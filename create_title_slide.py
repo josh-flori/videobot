@@ -12,11 +12,11 @@ from random import randint
 
 
 
-def create_title_slide(parameters,num_lines,title_speech,title_text,op,age,age_type):
+def create_title_slide(parameters,num_lines,title_speech,title_text,op,age,age_type,directory):
     
     font = ImageFont.truetype('/users/josh.flori/downloads/verdana.ttf' , 35)
-
-    img=Image.open('/users/josh.flori/desktop/demo/template.jpg')
+    
+    img=Image.open(directory+'/template.jpg')
 
     fnt1 = ImageFont.truetype('/Library/Fonts/Verdana.ttf', 70)
     fnt2 = ImageFont.truetype('/Library/Fonts/Verdana.ttf', 50)
@@ -31,9 +31,9 @@ def create_title_slide(parameters,num_lines,title_speech,title_text,op,age,age_t
     # add time
     d.text((220+font.getsize(str(op))[0],480-(num_lines*32)), ' \u00B7 '+str(age)+' '+age_type+' ago', font=fnt4, fill=(170, 170, 170))
 
-    img.save('/users/josh.flori/desktop/demo/slide_title.png')
+    img.save(directory+'/slide_title.png')
             
-            
+        
     #################
     # CREATE FRAMES #
     #################
@@ -42,8 +42,8 @@ def create_title_slide(parameters,num_lines,title_speech,title_text,op,age,age_t
     line=0
     for i in range(len(parameters)):
         d.text((224,526-(num_lines*35)+(line*83)), parameters[i][0], font=fnt1, fill=(230, 230, 230))
-        img.save('/users/josh.flori/desktop/demo/title'+str(i)+'.png')
-        image_paths.append('/users/josh.flori/desktop/demo/title'+str(i)+'.png')
+        img.save(directory+'/title'+str(i)+'.png')
+        image_paths.append(directory+'/title'+str(i)+'.png')
         line+=1
         
     
@@ -52,7 +52,9 @@ def create_title_slide(parameters,num_lines,title_speech,title_text,op,age,age_t
 
     
     concat_clip = concatenate_videoclips(clips, method="compose")
-    concat_clip.write_videofile("/users/josh.flori/desktop/demo/slide_title.mp4", fps=10,audio=title_speech)
+    concat_clip.write_videofile(directory+"/slide_title.mp4", fps=10,audio=directory+title_speech)
+    
+    
     
 
 

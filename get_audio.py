@@ -17,7 +17,7 @@ from os import path
 from pydub import AudioSegment
 
 
-def get_audio(comment,path,fname_mp3,fname_wav):
+def get_audio(comment,fname_mp3,fname_wav,directory):
         
     # initialize api
     session = Session(profile_name="default")
@@ -40,7 +40,7 @@ def get_audio(comment,path,fname_mp3,fname_wav):
         # ensure the close method of the stream object will be called automatically
         # at the end of the with statement's scope.
         with closing(response["AudioStream"]) as stream:
-            output = path+fname_mp3
+            output = directory+fname_mp3
             try:
                 # Open a file for writing the output as a binary stream
                 with open(output, "wb") as file:
@@ -58,10 +58,10 @@ def get_audio(comment,path,fname_mp3,fname_wav):
     
     # pad with 1 second of silence to create breathing room in the video
     combined = AudioSegment.empty()
-    combined += AudioSegment.from_mp3(path+fname_mp3)
-    combined += AudioSegment.from_mp3('/users/josh.flori/desktop/demo/padding.mp3')
+    combined += AudioSegment.from_mp3(directory+'/'+fname_mp3)
+    combined += AudioSegment.from_mp3(directory+'/padding.mp3')
 
-    combined.export(path+fname_mp3, format="mp3")
+    combined.export(directory+'/'+fname_mp3, format="mp3")
     
     
         

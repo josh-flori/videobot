@@ -24,7 +24,7 @@ def get_comments(url):
         return reddit.submission(id=submission_id)
 
    
-
+    
     ######################
     #  GET COMMENT DATA  #
     ######################
@@ -38,9 +38,8 @@ def get_comments(url):
         age_list=[]
         age_type_list=[]
         updoots=[]
-    
         # loop through all comment entities
-        for top_level_comment in some_submission.comments:
+        for top_level_comment in some_submission.comments.list():
             # skip if error
             if isinstance(top_level_comment, MoreComments) or top_level_comment.author is None:
                 continue
@@ -100,7 +99,10 @@ def get_comments(url):
 
     cleaned_comment_list = clean_comments(comments)
     
-    return cleaned_comment_list,users,age_list,age_type_list,updoots,some_submission.title,some_submission.author
+    # concat for the purposes of preserving this information on the spreadsheet
+    total_list=[str(cleaned_comment_list[i])+'^^^^^^^^^^^^^^^^^^^^^^^^^^'+str(users[i])+'^^^^^^^^^^^^^^^^^^^^^^^^^^'+str(age_list[i])+'^^^^^^^^^^^^^^^^^^^^^^^^^^'+str(age_type_list[i])+'^^^^^^^^^^^^^^^^^^^^^^^^^^'+str(updoots[i])+'^^^^^^^^^^^^^^^^^^^^^^^^^^'+str(some_submission.title)+'^^^^^^^^^^^^^^^^^^^^^^^^^^'+str(some_submission.author) for i in range(len(cleaned_comment_list))]
+    
+    return total_list
 
 
 
