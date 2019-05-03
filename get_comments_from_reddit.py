@@ -62,7 +62,9 @@ def get_comments(url):
                 age_type="days"
                 found_age=True
             # make sure it was found
-            assert found_age==True
+            #assert found_age==True
+            if found_age==False:
+                print('\n\n\n\nWarning, found age was false, check date on thread > 1 day\n\n\n')
         
 
             # start appending

@@ -21,7 +21,7 @@ def write_to_sheet(total_list, column,service,_id,sheet,row):
     }
 
     request = service.spreadsheets().values().update(spreadsheetId=_id,
-                                                     range=sheet + column + str(row),
+                                                     range=sheet + '!'+column + str(row),
                                                      valueInputOption='USER_ENTERED',
                                                      body=value_range_body)
     response = request.execute()

@@ -1,4 +1,4 @@
-# /users/josh.flori/desktop/test/bin/python3 /users/josh.flori/desktop/test/lib/python3.6/site-packages/videobot/R_curate.py
+# /users/josh.flori/desktop/test/bin/python3 /users/josh.flori/desktop/test/lib/python3.6/site-packages/videobot/R_curate_ask_reddit.py
 
 from videobot import get_comments_from_reddit
 from videobot import write_to_sheets
@@ -15,7 +15,7 @@ creds = ServiceAccountCredentials.from_json_keyfile_name(
     '/users/josh.flori/drive_backup/drive_backup/python_scripts/client_secret.json', scope)
 service = build('sheets', 'v4', http=creds.authorize(Http()))                
 _id='1sIS1r-vtHNVRll_NR3vMr8Pbdt91B34vRrvAe20Ym9g'
-threads = service.spreadsheets().values().get(spreadsheetId=_id, range='Sheet1!A2:A').execute().get(
+threads = service.spreadsheets().values().get(spreadsheetId=_id, range='AskReddit!A2:A').execute().get(
     'values', [])
     
 
@@ -30,3 +30,5 @@ for thread in threads:
     write_to_sheets.write_to_sheet(total_list,column,service,_id,'AskReddit',2)
     
     i+=1
+    
+    
