@@ -1,8 +1,10 @@
+# export GOOGLE_APPLICATION_CREDENTIALS='/users/josh.flori/downloads/Reddit Vision-a52010045078.json'
 # /users/josh.flori/desktop/test/bin/python3 /users/josh.flori/desktop/test/lib/python3.6/site-packages/videobot/R_curate_memes.py
 
 from videobot import get_audio
 from videobot import write_to_sheets
 from videobot import get_image_data_from_sheet
+from videobot import get_image_data_from_reddit
 from videobot import initialize_folder
 from googleapiclient.discovery import build
 from oauth2client import file
@@ -24,13 +26,16 @@ urls = service.spreadsheets().values().get(spreadsheetId=_id, range='Memes!A:A')
 
 
 # if getting directly from reddit
-# text_list=get_image_data_from_reddit.get_image_data('memes',5)
-
-text_list=get_image_data_from_sheet.get_image_data(urls)
+text_list,url_list=get_image_data_from_reddit.get_image_data('memes',15)
 
 
-write_to_sheets.write_to_sheet(text_list,'C',service,_id,'Memes!',1)
-#write_to_sheets.write_to_sheet(text_list,service,_id)
+# if from urls...
+# text_list=get_image_data_from_sheet.get_image_data(urls)
+
+
+write_to_sheets.write_to_sheet(text_list,'C',service,_id,'Memes',1)
+write_to_sheets.write_to_sheet(url_list,'A',service,_id,'Memes',1)
+
 
 # get TITLE audio
 #get_audio.get_audio(thread_title,'/users/josh.flori/desktop/demo/','thread_title.mp3','thread_title.wav')

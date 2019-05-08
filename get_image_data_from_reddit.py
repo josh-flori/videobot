@@ -22,6 +22,19 @@ def get_image_data(subreddit,limit):
                          user_agent= 'myApp',
                          username= '',
                          password= '')
+
+    # Performs label detection on the image file. Returns stuff like "face, head, water, girl, car" and confidence labels
+    def get_image_text(image_path):
+        """Detects text in the file."""
+        from google.cloud import vision
+        client = vision.ImageAnnotatorClient()
+        with io.open(image_path, 'rb') as image_file:
+            content = image_file.read()
+        image = vision.types.Image(content=content)
+        response = client.text_detection(image=image)
+        texts = response.text_annotations
+        
+        return texts[0].description
 #
     ##################
     #  DO THE STUFF  #
@@ -30,33 +43,22 @@ def get_image_data(subreddit,limit):
 #
     i=0
     text_list=[]
+    url_list=[]
     # loop through posts
     for submission in submissions:
         url = submission.url
         r = requests.get(url, allow_redirects=True)
-        path='/users/josh.flori/desktop/demo1/'+str(i)+'.jpg'
+        path='/users/josh.flori/desktop/memes/'+str(i)+'.jpg'
         print(url)
         if ".gif" not in url:
             open(path, 'wb').write(r.content)     
         i+=1
-#
-        # Performs label detection on the image file. Returns stuff like "face, head, water, girl, car" and confidence labels
-        def get_image_text(image_path):
-            """Detects text in the file."""
-            from google.cloud import vision
-            client = vision.ImageAnnotatorClient()
-            with io.open(image_path, 'rb') as image_file:
-                content = image_file.read()
-            image = vision.types.Image(content=content)
-            response = client.text_detection(image=image)
-            texts = response.text_annotations
-            print(texts[0].description)
-        #
-        get_image_text(path)
+        
+        text_list.append(get_image_text(path))
+        url_list.append(url)
+
+    return text_list,url_list
         
         
         
         
-        
-        
-get_image_data('memes',2)
