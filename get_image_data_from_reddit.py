@@ -39,7 +39,7 @@ def get_image_data(subreddit,limit):
     ##################
     #  DO THE STUFF  #
     ##################
-    submissions = reddit.subreddit("memes").top("day",limit=limit)
+    submissions = reddit.subreddit(subreddit).top("week",limit=limit)
 #
     i=0
     text_list=[]
@@ -54,8 +54,12 @@ def get_image_data(subreddit,limit):
             open(path, 'wb').write(r.content)     
         i+=1
         
-        text_list.append(get_image_text(path))
-        url_list.append(url)
+        # seems to fail when no text
+        try:
+            text_list.append(get_image_text(path))
+            url_list.append(url)
+        except:
+            continue
 
     return text_list,url_list
         

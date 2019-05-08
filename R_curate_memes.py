@@ -26,7 +26,7 @@ urls = service.spreadsheets().values().get(spreadsheetId=_id, range='Memes!A:A')
 
 
 # if getting directly from reddit
-text_list,url_list=get_image_data_from_reddit.get_image_data('memes',15)
+text_list,url_list=get_image_data_from_reddit.get_image_data('memes',100)
 
 
 # if from urls...
