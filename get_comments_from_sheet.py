@@ -4,7 +4,7 @@ from oauth2client.service_account import ServiceAccountCredentials
 
 
 def get_comments(column,service,_id):
-    comment_list=service.spreadsheets().values().get(spreadsheetId=_id, range='Sheet1!'+column+'2:'+column).execute().get(
+    comment_list=service.spreadsheets().values().get(spreadsheetId=_id, range='AskReddit!'+column+'2:'+column).execute().get(
     'values', [])
     
     split_out=[i[0].split('^^^^^^^^^^^^^^^^^^^^^^^^^^') for i in comment_list]

@@ -73,7 +73,7 @@ for i in range(len(threads)):
     # CREATE COMMENT VIDEOS #
     #########################
 
-    for i in range(len(users))[0:5]:
+    for i in range(len(users))[0:3]:
     
         print(len(cleaned_comment_list[i]))
     
