@@ -1,8 +1,8 @@
 #https://googlecloudplatform.github.io/google-cloud-python/latest/vision/gapic/v1/api.html
 
-#export GOOGLE_APPLICATION_CREDENTIALS='/users/josh.flori/downloads/Reddit Vision-a52010045078.json'
+#export GOOGLE_APPLICATION_CREDENTIALS='/users/josh.flori/github/reddit-vision-239200-50adace0d3bf.json'
 
-#pip install --upgrade google-cloud
+#pip install --upgrade google-cloud-vision
 
 import praw
 import requests
