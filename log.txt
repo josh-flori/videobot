@@ -1,0 +1,40 @@
+###############
+#     4/20    #
+###############
+Got connection to reddit/google back up and running
+Images pulling from reddit fine
+Began writing text cleaning algo, includes 1 simple regex
+Wrote function to get size of text boxes relative to entire image as an attempt to remove any extra small text, but
+somehow the results on the first image were not useful regardless of whether i considered area of bounding boxes or height
+only. I think I should give up on that... a better approach would be with each video to export list of timestamps on each
+section and allow user to re-run removing any objectionable timestamped sections.
+
+I feel the images are cleaner this time anyway.
+
+I've reviewed a number of text outputs and they look g2g with 0 processing. Tomorrow I will work on getting audio and
+bounding boxes/rectangles.
+I've thought about it and I think training a network to recognize where to put the bounding boxes would be good. There
+are enough general cases I think it should be ok enough of the time. Try this first:
+https://blog.insightdatascience.com/how-to-train-your-own-yolov3-detector-from-scratch-224d10e55de2
+
+frames to potentially remove: 119,129,13,133,145,18,184
+161 wouldn't load
+
+###############
+#     4/22    #
+###############
+I'm changing my thoughts.. i feel it would be better to just use the bounding boxes from the text recognition to block
+out the text. you need to implement a lot of logic but i think it will work better. then just use the network for
+recognizing frames although to be honest you may be able to do it without the network... idk about that right now.
+
+I tested using paragraph blocks to create text and it looks promising enough. Moving onto masking out sections of the
+paragraph if ':' contained within.
+
+###############
+#     4/23    #
+###############
+it's working reasonably well... need to figure out:
+how to clean text in this format
+how to force proper text order
+if i need to uncover text at all in certain panel types... maybe in 4 panel types just ignore text blocks entirely...
+    maybe you could just have the network recognize 4 panels and then split it evenly into 4 quadrants
