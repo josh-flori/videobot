@@ -1,6 +1,6 @@
 import os, praw, requests, io, re, cv2
+import numpy as np
 from google.cloud import vision
-import construct_frames
 
 # TODO - if 'mods' in text, ignore that image entirely.
 
@@ -39,29 +39,51 @@ def get_image_text(image_path):
     return full_response
 
 
-def get_text_size(image_path, image_text):
-    image = cv2.imread(image_path)
-    for word in image_text[1:]:
-        verts = word.bounding_poly.vertices
-        size = (verts[3].y - verts[0].y)
-        print(size / image.shape[1])
+def find_colon(paragraph):
+    for word in paragraph.words:
+        for symbol in word.symbols:
+            if symbol.text == ':':
+                return symbol.bounding_box.vertices[2].x, symbol.bounding_box.vertices[2].y
 
 
-def clean_text(text):
-    # replace reddit users like u/dopypants where a \n is expected as the first trailing character
-    text = re.sub('u/.*?\\n', '', text)
-    text = re.sub('imgflip.com', '', text)
-    text = re.sub('made with mematic', '', text)
-    text = re.sub('www', '', text)
-    # maybe replace ' U ' with I'll.. see if you get more examples
-    return text
+def get_text(paragraph):
+    # TODO - shouldn't really loop through same shit twice...
+    p_text = ''
+    conf = []
+    lookup = {'': '', 'type: LINE_BREAK\n': '', 'type: SPACE\n': ' ', 'type: EOL_SURE_SPACE\n': ''}
+    for word in paragraph.words:
+        for symbol in word.symbols:
+            p_text += symbol.text
+            # TODO - import actual break types and use that somehow
+            p_text += lookup[str(symbol.property.detected_break)]
+            conf.append(symbol.confidence)
+    return p_text, conf
 
 
-reddit_conn = connect_to_reddit()
-get_image_data('/users/josh.flori/desktop/memes/', 'memes', 'week', 1000, reddit_conn)
-for i in range(15, 30):
-    image_text = get_image_text('/users/josh.flori/desktop/memes/' + str(i) + '.jpg')
-    print(image_text[0].description)
+def create_boxes(boxes, image, img_num, image_path):
+    cv2.imwrite(image_path + str(img_num) + "." + str(len(boxes) + 1) + '.jpg', image)
+    for i in reversed(range(len(boxes))):
+        image = cv2.rectangle(image, boxes[i][0], boxes[i][1], boxes[i][2], -1)
+        cv2.imwrite(image_path + str(img_num) + "." + str(i) + '.jpg', image)
+
+
+def should_exclude(p_text):
+    """ ... """
+    exclude = any([p_text == 'Details',
+                   re.search('u/.*?', p_text) is not None,
+                   re.search('@.*', p_text) is not None,
+                   re.search('imgflip.com', p_text) is not None,
+                   re.search('[0-9] hours ago', p_text) is not None,
+                   re.search('made with mematic', p_text) is not None,
+                   re.search('www', p_text) is not None,
+                   re.search('made with love', p_text) is not None,
+                   p_text.isdigit(),
+                   p_text.replace('-','').isdigit(),
+                   p_text.lower() == 'srgrafo',
+                  'adultswim' in p_text,
+                   p_text=='ORSAIR',
+                   '[deleted]' in p_text])
+    return exclude
 
 
 def create_blocks_from_paragraph(image_text, image, img_num):
@@ -72,80 +94,51 @@ def create_blocks_from_paragraph(image_text, image, img_num):
             for paragraph in block.paragraphs:
                 verts = paragraph.bounding_box.vertices
 
-                def find_colon(paragraph):
-                    for word in paragraph.words:
-                        for symbol in word.symbols:
-                            if symbol.text == ':':
-                                return symbol.bounding_box.vertices[2].x, symbol.bounding_box.vertices[2].y
+                p_text, conf = get_text(paragraph)
+                print(p_text)
+                if not should_exclude(p_text) and np.mean(conf) > .8:
 
-                try:
-                    v0x, v0y = find_colon(paragraph)
-                except TypeError:  # true when ':' not found in paragraph
-                    v0x, v0y = verts[0].x, verts[0].y
+                    # TODO - ask the internet if there is a better way to do this
+                    try:
+                        v0x, v0y = find_colon(paragraph)
+                    except TypeError:  # true when ':' not found in paragraph
+                        v0x, v0y = verts[0].x, verts[0].y
 
-                colon_found = v0x != verts[0].x
-                colon_not_last_char = verts[2].x - v0x > 20
-                multi_line = verts[2].y - v0y > 0
+                    colon_found = v0x != verts[0].x
+                    colon_not_last_char = verts[2].x - v0x > 20
+                    multi_line = verts[2].y - v0y > 0
 
-                # assumes colon will be on first line
-                if colon_found and colon_not_last_char and multi_line:
-                    # print("ya")
-                    boxes.append([(verts[0].x, verts[0].y), (v0x, v0y), (255, 0, 0)])
-                    # image = cv2.rectangle(image, (verts[0].x, verts[0].y), (v0x, v0y), (255, 0, 0), -1)
-                    # cv2.imwrite('/users/josh.flori/desktop/' + str(img_num) + '.' + str(i) + '.jpg', image)
-                    # i += 1
-                    # image = cv2.rectangle(image, (v0x, verts[0].y), (verts[2].x, v0y), (255, 255, 255), -1)
-                    boxes.append([(v0x, verts[0].y), (verts[2].x, v0y), (192, 192, 192)])
-                    # cv2.imwrite('/users/josh.flori/desktop/' + str(img_num) + '.' + str(i) + '.jpg', image)
-                    # i += 1
-                    # image = cv2.rectangle(image, (verts[0].x, v0y), (verts[2].x, verts[2].y), (255, 255, 255), -1)
-                    boxes.append([(verts[0].x, v0y), (verts[2].x, verts[2].y), (192, 192, 192)])
-                    # cv2.imwrite('/users/josh.flori/desktop/' + str(img_num) + '.' + str(i) + '.jpg', image)
-                    # i += 1
-
-                elif colon_found and colon_not_last_char:
-                    # print("y")
-                    # image = cv2.rectangle(image, (verts[0].x, verts[0].y), (v0x, v0y), (255, 0, 0), -1)
-                    boxes.append([(verts[0].x, verts[0].y), (v0x, v0y), (255, 0, 0)])
-                    # cv2.imwrite('/users/josh.flori/desktop/' + str(img_num) + '.' + str(i) + '.jpg', image)
-                    # i += 1
-                    # image = cv2.rectangle(image, (v0x, verts[0].y), (verts[2].x, v0y), (255, 255, 255), -1)
-                    boxes.append([(v0x, verts[0].y), (verts[2].x, v0y), (192, 192, 192)])
-                    # cv2.imwrite('/users/josh.flori/desktop/' + str(img_num) + '.' + str(i) + '.jpg', image)
-                    # i += 1
-                # true when paragraph is single line and ends with colon
-                elif colon_found:
-                    # print("yaa")
-                    # image = cv2.rectangle(image, (verts[0].x, verts[0].y), (verts[2].x, v0y), (255, 0, 0), -1)
-                    boxes.append([(verts[0].x, verts[0].y), (verts[2].x, v0y), (255, 0, 0)])
-                    # cv2.imwrite('/users/josh.flori/desktop/' + str(img_num) + '.' + str(i) + '.jpg', image)
-                    # i += 1
+                    # assumes colon will be on first line
+                    if colon_found and colon_not_last_char and multi_line:
+                        boxes.append([(verts[0].x, verts[0].y), (v0x, v0y), (255, 0, 0)])
+                        boxes.append([(v0x, verts[0].y), (verts[2].x, v0y), (192, 192, 192)])
+                        boxes.append([(verts[0].x, v0y), (verts[2].x, verts[2].y), (192, 192, 192)])
+                    elif colon_found and colon_not_last_char:
+                        boxes.append([(verts[0].x, verts[0].y), (v0x, v0y), (255, 0, 0)])
+                        boxes.append([(v0x, verts[0].y), (verts[2].x, v0y), (192, 192, 192)])
+                    elif colon_found:
+                        boxes.append([(verts[0].x, verts[0].y), (verts[2].x, v0y), (255, 0, 0)])
+                    else:
+                        boxes.append([(verts[0].x, verts[0].y), (verts[2].x, verts[2].y), (192, 192, 192)])
                 else:
-                    # print("b")
-                    # image = cv2.rectangle(image, (verts[0].x, verts[0].y), (verts[2].x, verts[2].y), (255, 255, 255), -1)
-                    boxes.append([(verts[0].x, verts[0].y), (verts[2].x, verts[2].y), (192, 192, 192)])
-                    # cv2.imwrite('/users/josh.flori/desktop/' + str(img_num) + '.' + str(i) + '.jpg', image)
-                    # i += 1
+                    print('skipping')
     return boxes
 
 
-def create_boxes(boxes, image, img_num,  image_path):
-    cv2.imwrite(image_path + str(img_num) + "."+ str(len(boxes)+1) + '.jpg', image)
-    for i in reversed(range(len(boxes))):
-        image = cv2.rectangle(image, boxes[i][0], boxes[i][1], boxes[i][2], -1)
-        cv2.imwrite(image_path + str(img_num)+ "."+str(i) + '.jpg', image)
-
-
-for i in range(40, 60):
+for i in range(30, 35):
     image = cv2.imread('/users/josh.flori/desktop/memes/' + str(i) + '.jpg')
     image_text = get_image_text('/users/josh.flori/desktop/memes/' + str(i) + '.jpg')
     boxes = create_blocks_from_paragraph(image_text, image, i)
     create_boxes(boxes, image, i, '/users/josh.flori/desktop/')
 
-for page in image_text.pages:
-    for block in page.blocks:
-        for paragraph in block.paragraphs:
-            for word in paragraph.words:
-                print(word.symbols[0].text)
-                print("------------")
-print('\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n')
+
+
+reddit_conn = connect_to_reddit()
+get_image_data('/users/josh.flori/desktop/memes/', 'memes', 'week', 1000, reddit_conn)
+for i in range(24, 30):
+    image_text = get_image_text('/users/josh.flori/desktop/memes/' + str(i) + '.jpg')
+    print(image_text[0].description)
+
+print(re.search('u/.*?\\n', 'asdfasdfu/blablfasdf'))
+
+print(str(image_text.text))
