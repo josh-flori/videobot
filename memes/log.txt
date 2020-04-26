@@ -56,6 +56,13 @@ height of the paragraph by that number and create that many blocks, assuming the
 DONE.
 
 ###############
-#     4/25    #
+#     4/26    #
 ###############
 used google automl to create a pretty decent network. time to start writing code for it!
+
+so how would we solve this problem? lets map out some if statements....
+if annotation_count==1 & cleanified(x,x)==[0,1] & cleanified(y)>.05
+well... in order to reveal any frame you HAVE to know it's relationship to the text
+you could have a like, "which_comes_next()" function which just has access to all the bounding boxes for text and frames
+and then just is like, well, which type comes next? and then that would be like the master function creating all the boxes...
+

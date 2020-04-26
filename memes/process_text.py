@@ -1,9 +1,6 @@
 import io, re, cv2
 import numpy as np
 from google.cloud import vision
-import sys
-from google.cloud import automl_v1beta1
-from google.cloud.automl_v1beta1.proto import service_pb2
 
 
 def get_image_text(image_path):
@@ -85,85 +82,23 @@ def create_blocks_from_paragraph(image_text, image, img_num):
                                 [(verts[0].x, int(verts[0].y + (subd * i))),
                                  (verts[2].x, int(verts[0].y + (subd * (i + 1)))),
                                  (255, 0, 0)])
-
-                    #
-                    # # TODO - ask the internet if there is a better way to do this
-                    # # Get colon position else set to left-most paragraph vertex
-                    # try:
-                    #     v0x, v0y = find_colon(paragraph)
-                    # except TypeError:
-                    #     v0x, v0y = verts[0].x, verts[0].y
-                    #
-                    # # Abstract conditions so if statements are easier to read
-                    # colon_found = v0x != verts[0].x
-                    # colon_not_last_char = verts[2].x - v0x > 20
-                    # multi_line = verts[2].y - v0y > 0
-                    #
-                    # # Assumes colon will be on first line
-                    # if colon_found and colon_not_last_char and multi_line:
-                    #     boxes.append([(verts[0].x, verts[0].y), (v0x, v0y), (255, 0, 0)])  # box for colon
-                    #     boxes.append([(v0x, verts[0].y), (verts[2].x, v0y), (192, 192, 192)])  # box after colon
-                    #     boxes.append([(verts[0].x, v0y), (verts[2].x, verts[2].y), (192, 192, 192)])  # entire next line
-                    # elif colon_found and colon_not_last_char:
-                    #     boxes.append([(verts[0].x, verts[0].y), (v0x, v0y), (255, 0, 0)])  # box for colon
-                    #     boxes.append([(v0x, verts[0].y), (verts[2].x, v0y), (192, 192, 192)])  # box after colon
-                    # elif colon_found:
-                    #     boxes.append([(verts[0].x, verts[0].y), (verts[2].x, v0y), (255, 0, 0)])  # box for colon
-                    # else:
-                    #     boxes.append([(verts[0].x, verts[0].y), (verts[2].x, verts[2].y), (192, 192, 192)]) # regular box
                 else:
                     print('skipping')
     return boxes
 
 
-def create_boxes(boxes, image, img_num, image_path):
-    """ Returns successive images to path with less text blocked out after each images. """
-    cv2.imwrite(image_path + str(img_num) + "." + str(len(boxes) + 1) + '.jpg', image)
-    for i in reversed(range(len(boxes))):
-        image = cv2.rectangle(image, boxes[i][0], boxes[i][1], boxes[i][2], -1)
-        cv2.imwrite(image_path + str(img_num) + "." + str(i) + '.jpg', image)
+# def create_boxes(boxes, image, img_num, image_path):
+#     """ Returns successive images to path with less text blocked out after each images. """
+#     cv2.imwrite(image_path + str(img_num) + "." + str(len(boxes) + 1) + '.jpg', image)
+#     for i in reversed(range(len(boxes))):
+#         image = cv2.rectangle(image, boxes[i][0], boxes[i][1], boxes[i][2], -1)
+#         cv2.imwrite(image_path + str(img_num) + "." + str(i) + '.jpg', image)
 
 
-for i in range(0, 1):
-    image = cv2.imread('/users/josh.flori/desktop/memes/' + str(i) + '.jpg')
-    image_text = get_image_text('/users/josh.flori/desktop/memes/' + str(i) + '.jpg')
-    boxes = create_blocks_from_paragraph(image_text, image, i)
-    create_boxes(boxes, image, i, '/users/josh.flori/desktop/')
-
-reddit_conn = connect_to_reddit()
-get_image_data('/users/josh.flori/desktop/memes/', 'memes', 'week', 1000, reddit_conn)
-for i in range(24, 30):
-    image_text = get_image_text('/users/josh.flori/desktop/memes/' + str(i) + '.jpg')
-    print(image_text[0].description)
-
-
-# --------------------------------------------
-
-
-# 'content' is base-64-encoded image data.
-def get_prediction(content, project_id, model_id):
-    prediction_client = automl_v1beta1.PredictionServiceClient()
-
-    name = 'projects/{}/locations/us-central1/models/{}'.format(project_id, model_id)
-    payload = {'image': {'image_bytes': content}}
-    params = {}
-    request = prediction_client.predict(name, payload, params)
-    return request  # waits till request is returned
-
-import os
-os.environ[
-    'GOOGLE_APPLICATION_CREDENTIALS'] = '/users/josh.flori/pycharmprojects/reddit-vision-239200-50adace0d3bf.json'
-
-
-all_annotations=[]
-for i in tqdm.tqdm(range(100)):
-    with open('/users/josh.flori/desktop/memes/'+str(i)+'.jpg', 'rb') as ff:
-        content = ff.read()
-
-    all_annotations.append(get_prediction(content, '140553804812', 'IOD2492808364447236096'))
-
-all_annotations[0]
-for payload in all_annotations[1].payload:
-    print(payload.image_object_detection.bounding_box.normalized_vertices[0])
-    print(payload.image_object_detection.bounding_box.normalized_vertices[1])
-    print("---")
+#
+# def overlay_text_boxes(pathtoimages,outputpath, limit):
+#     for i in range(limit):
+#         image = cv2.imread('/users/josh.flori/desktop/memes/' + str(i) + '.jpg')
+#         image_text = get_image_text(pathtoimages + str(i) + '.jpg')
+#         boxes = create_blocks_from_paragraph(image_text, image, i)
+#         create_boxes(boxes, image, i, outputpath)
