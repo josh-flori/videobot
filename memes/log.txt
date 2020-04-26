@@ -67,3 +67,7 @@ you could have a like, "which_comes_next()" function which just has access to al
 and then just is like, well, which type comes next? and then that would be like the master function creating all the boxes...
 
 I made a successful function for creating boxes/frames/text whatever at least for image 0! moving on to the next...
+
+
+ok debugged some shitty code... next step would be to write function to trim boxes down to the intersection of mostly
+white and mostly non-white pixels like in the case of image 4.jpg.
