@@ -44,7 +44,7 @@ def perc_to_pix(image, perc, dim):
     return val
 
 
-def create_blocks_from_annotations(annotation, image):
+def create_blocks_from_annotations(annotation):
     boxes=[]
     for payload in annotation.payload:
         verts = payload.image_object_detection.bounding_box.normalized_vertices
@@ -53,13 +53,14 @@ def create_blocks_from_annotations(annotation, image):
         bottomright = (perc_to_pix(image, verts[1].x, 'x'),
                        perc_to_pix(image, verts[1].y, 'y'))
         boxes.append([topleft,bottomright,(255, 0, 0)])
+    return boxes
 
 
 
 image = cv2.imread('/users/josh.flori/desktop/memes/0.jpg')
-create_frame_boxes(all_annotations[0], image, '/users/josh.flori/desktop/', 0)
+create_blocks_from_annotations(all_annotations[0])
 
-all_annotations = []
+# all_annotations = []
 for i in tqdm.tqdm(range(100)):
     with open('/users/josh.flori/desktop/memes/' + str(i) + '.jpg', 'rb') as ff:
         content = ff.read()
