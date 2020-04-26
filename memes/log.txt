@@ -27,6 +27,7 @@ I'm changing my thoughts.. i feel it would be better to just use the bounding bo
 out the text. you need to implement a lot of logic but i think it will work better. then just use the network for
 recognizing frames although to be honest you may be able to do it without the network... idk about that right now.
 
+
 I tested using paragraph blocks to create text and it looks promising enough. Moving onto masking out sections of the
 paragraph if ':' contained within.
 
@@ -45,3 +46,16 @@ if i could convert this to something iterable it might be easier?
 ok figured that shit out fast enough...
 
 NEXT UP! break up any multi-line paragraph into individual blocks
+
+###############
+#     4/24    #
+###############
+trying to break up multi-lines... i think you could just count the number of '/n's.... and then just divide the
+height of the paragraph by that number and create that many blocks, assuming they are all the same height of course....
+
+DONE.
+
+###############
+#     4/25    #
+###############
+used google automl to create a pretty decent network. time to start writing code for it!

@@ -3,7 +3,6 @@
 # from videobot import get_audio
 # from videobot import write_to_sheets
 # from videobot import get_image_data_from_sheet
-import get_image_data_from_reddit
 # from videobot import initialize_folder
 # from googleapiclient.discovery import build
 # from oauth2client import file
