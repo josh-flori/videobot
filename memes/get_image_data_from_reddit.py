@@ -1,12 +1,13 @@
 import praw, requests
+from memes import config
 
 
 # TODO - if 'mods' in text, ignore that image entirely.
 
 def connect_to_reddit():
     """ Returns credentialled connection to reddit api. """
-    reddit_conn = praw.Reddit(client_id='eZ0qCk4LGFmlvg',
-                              client_secret='ObVykPZwUf6AtmvQyh-HFIlhn8I',
+    reddit_conn = praw.Reddit(client_id=config.reddit_client_id,
+                              client_secret=config.reddit_client_secret,
                               user_agent='myApp',
                               username='',
                               password='')

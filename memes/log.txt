@@ -74,3 +74,9 @@ white and mostly non-white pixels like in the case of image 4.jpg.
 
 welp, I guess pretty much have a good thing going here :D works pretty damn well
 You know what to do from here... just wrap it up and make sure nothing weird pops up. :D
+
+###############
+#     4/27    #
+###############
+need to work on getting aws config figured out to run audio.. then run audio...
+yadayada... too tired to continue... but still happy with my progress.

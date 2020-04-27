@@ -1,0 +1,5 @@
+aws_ACCESS_KEY = 'AKIAZHJIK7VSX3NOGMFV'
+aws_SECRET = '90NEX623FmzyOctli84+9E3Q+bE1p5oPcX8w18kino'
+aws_region = 'us-east-1'
+reddit_client_id = 'eZ0qCk4LGFmlvg'
+reddit_client_secret = 'ObVykPZwUf6AtmvQyh-HFIlhn8I'

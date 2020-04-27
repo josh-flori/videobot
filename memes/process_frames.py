@@ -70,16 +70,16 @@ def trim_white_space(image, boxes):
                 break
 
 
-
-
-# all_annotations = []
-for i in tqdm.tqdm(range(100)):
-    with open('/users/josh.flori/desktop/memes/' + str(i) + '.jpg', 'rb') as ff:
-        content = ff.read()
-
-    all_annotations.append(get_prediction(content, '140553804812', 'IOD2492808364447236096'))
-
-print_anno(all_annotations[0])
-
-for payload in all_annotations[4].payload:
-    print(payload.image_object_detection.score)
+#
+#
+# # all_annotations = []
+# for i in tqdm.tqdm(range(100)):
+#     with open('/users/josh.flori/desktop/memes/' + str(i) + '.jpg', 'rb') as ff:
+#         content = ff.read()
+#
+#     all_annotations.append(get_prediction(content, '140553804812', 'IOD2492808364447236096'))
+#
+# print_anno(all_annotations[0])
+#
+# for payload in all_annotations[4].payload:
+#     print(payload.image_object_detection.score)
