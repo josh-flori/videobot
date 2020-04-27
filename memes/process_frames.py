@@ -21,13 +21,6 @@ def get_prediction(content, project_id, model_id):
     request = prediction_client.predict(name, payload, params)
     return request
 
-def remove_slivers(boxes)
-    # todo - remove any box with dimensions x1=0,x2=1,height=SMALL
-
-def align_tops()
-    # for boxes that are next to each other and very similar in area, align the tops to be the same so that
-# when sorted, it all comes out right
-# like, if abs(area)-abs(area)<100? and abs(y-y)<10: y[1]=[y0]....
 
 def expand_to_edge(annotation):
     """" Push boundaries of boxes to 0/1 if close to edge of image. """
@@ -61,9 +54,8 @@ def create_blocks_from_annotations(annotation):
                        perc_to_pix(image, verts[0].y, 'y'))
             bottomright = (perc_to_pix(image, verts[1].x, 'x'),
                            perc_to_pix(image, verts[1].y, 'y'))
-            boxes.append([topleft, bottomright, (255, 255, 0)])
+            boxes.append([topleft, bottomright, (255, 255, 255)])
     return boxes
-
 
 def trim_white_space(image, boxes):
     """ Trim bad white space from annotated boxes.

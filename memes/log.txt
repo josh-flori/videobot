@@ -71,3 +71,6 @@ I made a successful function for creating boxes/frames/text whatever at least fo
 
 ok debugged some shitty code... next step would be to write function to trim boxes down to the intersection of mostly
 white and mostly non-white pixels like in the case of image 4.jpg.
+
+welp, I guess pretty much have a good thing going here :D works pretty damn well
+You know what to do from here... just wrap it up and make sure nothing weird pops up. :D
