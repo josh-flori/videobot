@@ -21,7 +21,7 @@ def is_a_sliver(all_boxes, i):
     return sliver
 
 def is_in_frame(all_boxes, i):
-    """  """
+    """ Checks if text is within given frame """
     in_frame = any([all([all_boxes[i][0][0] > box[0][0], all_boxes[i][0][1] > box[0][1], all_boxes[i][1][0] <
                             box[1][0], all_boxes[i][1][1] < box[1][1]]) for box in all_boxes])
     return in_frame

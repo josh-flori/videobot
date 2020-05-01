@@ -10,7 +10,7 @@ from pydub import AudioSegment
 
 AudioSegment.ffmpeg = '/users/josh.flori/pycharmprojects/bla/'
 
-def get_audio(text, fname_mp3, directory):
+def create_mp3_per_frame(text, fname_mp3, directory):
     polly_client = boto3.Session(
         aws_access_key_id=config.aws_ACCESS_KEY,
         aws_secret_access_key=config.aws_SECRET,

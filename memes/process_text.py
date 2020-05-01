@@ -62,6 +62,7 @@ def should_exclude(p_text):
 def create_blocks_from_paragraph(image_text):
     """ Returns list of (x,y,rgb) bounding boxes for all relevant text in image. """
     boxes = []
+    human_readable_text=[]
     # Iterate through text object
     for page in image_text.pages:
         for block in page.blocks:
@@ -74,6 +75,8 @@ def create_blocks_from_paragraph(image_text):
 
                 # Pass if text is irrelevant or confidence below threshold
                 if not should_exclude(p_text) and np.mean(conf) > .8:
+                    # Append to list so we can create audio from it
+                    human_readable_text.append(p_text)
                     # Break up multi-line paragraphs
                     if p_text.count('\n') > 0:
                         subd = (verts[2].y - verts[0].y) / p_text.count('\n')
@@ -84,4 +87,4 @@ def create_blocks_from_paragraph(image_text):
                                  (255, 0, 0)])
                     else:
                         print('skipping')
-        return boxes
+        return boxes, human_readable_text

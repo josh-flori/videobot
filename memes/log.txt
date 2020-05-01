@@ -80,3 +80,9 @@ You know what to do from here... just wrap it up and make sure nothing weird pop
 ###############
 need to work on getting aws config figured out to run audio.. then run audio...
 yadayada... too tired to continue... but still happy with my progress.
+
+###############
+#     4/30    #
+###############
+have ffmpeg figured out. was trying to figure out how to line the audio up with image panels.
+figured out solution. mostly wrote solution, need to finish writing and test it out tomorrow.
