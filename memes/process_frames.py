@@ -4,6 +4,7 @@ import os, cv2, tqdm
 import numpy as np
 
 
+
 def print_anno(annotation):
     for payload in annotation.payload:
         print(payload.image_object_detection.bounding_box.normalized_vertices[0].x)
@@ -12,8 +13,12 @@ def print_anno(annotation):
         print(payload.image_object_detection.bounding_box.normalized_vertices[1].y)
 
 
-def get_prediction(content, project_id, model_id):
+def get_prediction(meme_path, i, project_id, model_id):
     """ Return object detections """
+
+    with open(meme_path + str(i) + '.jpg', 'rb') as ff:
+        content = ff.read()
+
     prediction_client = automl_v1beta1.PredictionServiceClient()
     name = 'projects/{}/locations/us-central1/models/{}'.format(project_id, model_id)
     payload = {'image': {'image_bytes': content}}
@@ -45,7 +50,7 @@ def perc_to_pix(image, perc, dim):
     return val
 
 
-def create_blocks_from_annotations(annotation):
+def create_blocks_from_annotations(annotation,image):
     boxes = []
     for payload in annotation.payload:
         if payload.image_object_detection.score > .85:
@@ -70,16 +75,3 @@ def trim_white_space(image, boxes):
                 break
 
 
-#
-#
-# # all_annotations = []
-# for i in tqdm.tqdm(range(100)):
-#     with open('/users/josh.flori/desktop/memes/' + str(i) + '.jpg', 'rb') as ff:
-#         content = ff.read()
-#
-#     all_annotations.append(get_prediction(content, '140553804812', 'IOD2492808364447236096'))
-#
-# print_anno(all_annotations[0])
-#
-# for payload in all_annotations[4].payload:
-#     print(payload.image_object_detection.score)

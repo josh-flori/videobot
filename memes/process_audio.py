@@ -1,25 +1,25 @@
-# https://console.aws.amazon.com/iam/home?#/users
-
-from boto3 import Session
+# on mac, ffmpeg must be installed liked: brew install ffmpeg
+# and AudioSegment.converter must point to the download location (installs to /usr/local/Cellar/ by default)
+# I had to restart pycharm
 from botocore.exceptions import BotoCoreError, ClientError
 from contextlib import closing
-import os
+from memes import config
+import boto3
 import sys
-import subprocess
-from tempfile import gettempdir
-from os import path
 from pydub import AudioSegment
 
+AudioSegment.ffmpeg = '/users/josh.flori/pycharmprojects/bla/'
 
-def get_audio(text, fname_mp3, fname_wav, directory):
-    # initialize api
-    session = Session()
-    polly = session.client("polly")
+def get_audio(text, fname_mp3, directory):
+    polly_client = boto3.Session(
+        aws_access_key_id=config.aws_ACCESS_KEY,
+        aws_secret_access_key=config.aws_SECRET,
+        region_name='us-west-2').client('polly')
 
     try:
         # Request speech synthesis
-        response = polly.synthesize_speech(Text=text, OutputFormat="mp3",
-                                           VoiceId="Matthew")
+        response = polly_client.synthesize_speech(Text=text, OutputFormat="mp3",
+                                                  VoiceId="Matthew")
     except (BotoCoreError, ClientError) as error:
         # The service returned an error, exit gracefully
         print(error)
@@ -48,15 +48,7 @@ def get_audio(text, fname_mp3, fname_wav, directory):
 
     # pad with 1 second of silence to create breathing room in the video
     combined = AudioSegment.empty()
-    combined += AudioSegment.from_mp3(directory + '/' + fname_mp3)
-    combined += AudioSegment.from_mp3(directory + '/padding.mp3')
+    combined += AudioSegment.from_mp3(directory + fname_mp3)
+    combined += AudioSegment.from_mp3(directory + 'padding.mp3')
+    combined.export(directory + fname_mp3, format="mp3")
 
-    combined.export(directory + '/' + fname_mp3, format="mp3")
-
-
-# aws config (from command line)... then input data...
-# ACCESS_KEY = AKIAZHJIK7VSX3NOGMFV
-# SECRET = 90NEX623FmzyOctli84+9E3Q+bE1p5oPcX8w18kino
-# region = us-east-1
-os.system("aws config")
-get_audio("bla bla bla", 'empty.mp3', '', '/users/josh.flori/desktop/')

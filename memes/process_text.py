@@ -60,7 +60,7 @@ def should_exclude(p_text):
 
 
 def create_blocks_from_paragraph(image_text):
-    """ Returns list of (y,x,rgb) bounding boxes for all relevant text in image. """
+    """ Returns list of (x,y,rgb) bounding boxes for all relevant text in image. """
     boxes = []
     # Iterate through text object
     for page in image_text.pages:
@@ -85,18 +85,3 @@ def create_blocks_from_paragraph(image_text):
                     else:
                         print('skipping')
         return boxes
-
-    # def create_boxes(boxes, image, img_num, image_path):
-    #     """ Returns successive images to path with less text blocked out after each images. """
-    #     cv2.imwrite(image_path + str(img_num) + "." + str(len(boxes) + 1) + '.jpg', image)
-    #     for i in reversed(range(len(boxes))):
-    #         image = cv2.rectangle(image, boxes[i][0], boxes[i][1], boxes[i][2], -1)
-    #         cv2.imwrite(image_path + str(img_num) + "." + str(i) + '.jpg', image)
-
-    #
-    # def overlay_text_boxes(pathtoimages,outputpath, limit):
-    #     for i in range(limit):
-    #         image = cv2.imread('/users/josh.flori/desktop/memes/' + str(i) + '.jpg')
-    #         image_text = get_image_text(pathtoimages + str(i) + '.jpg')
-    #         boxes = create_blocks_from_paragraph(image_text, image, i)
-    #         create_boxes(boxes, image, i, outputpath)

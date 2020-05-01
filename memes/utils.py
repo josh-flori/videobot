@@ -27,7 +27,7 @@ def is_in_frame(all_boxes, i):
     return in_frame
 
 
-def which_comes_next(image, all_boxes, output_path, img_num):
+def write_images(image, all_boxes, output_path, img_num):
     """ Creates boxes over image.
         Boxes of form [ [(top_left_xy),(bottom_right_xy),(rgb)] ,...]"""
     cv2.imwrite(output_path + str(img_num) + "." + str(len(all_boxes) + 1) + '.jpg', image)
