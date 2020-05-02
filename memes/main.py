@@ -1,4 +1,4 @@
-from memes import get_image_data_from_reddit, process_text, process_frames, utils, config, process_audio, process_audio
+from memes import get_image_data_from_reddit, process_text, process_frames, utils, config, process_audio
 import os
 import cv2
 
@@ -10,14 +10,14 @@ os.environ['region'] = config.aws_region
 
 meme_path = '/users/josh.flori/desktop/memes/'
 output_path = '/users/josh.flori/desktop/'
-limit = 3
+limit = 10
 
 # GET IMAGE DATA FROM REDDIT
 
-get_image_data_from_reddit.get_images(meme_path, 'memes', 'week', limit)
+# get_image_data_from_reddit.get_images(meme_path, 'memes', 'week', limit)
 
 print('Dont forget to turn off the custom model!!!!!!!!')
-for i in range(limit):
+for i in range(6,7):
     ############
     # PART 1: GET IMAGE API DATA (TEXT/CUSTOM MODEL BOUNDING BOX DATA
     ############
@@ -54,39 +54,18 @@ for i in range(limit):
     utils.align_tops(all_boxes)
     # RESORT NOW THAT THINGS ARE ALIGNED...
     all_boxes = sorted(all_boxes, key=lambda x: (x[0][1], x[0][0]))
-    utils.write_images(image, all_boxes, output_path, i)
+    true_sorted_boxes=utils.true_sort(all_boxes)
+    print(true_sorted_boxes)
+    utils.write_images(image, true_sorted_boxes, output_path, i)
 
     ############
     # PART 4: CREATE AUDIO CLIPS
     ############
-    print(all_boxes)
-    process_audio.create_mp3_per_frame('', str(i) + '.mp3', '/users/josh.flori/desktop/')
+    # CONVERT ALL_BOXES INTO TEXTUAL REPRESENTATION OF WHAT IS HAPPENING
+    space_text_output=utils.space_text(true_sorted_boxes)
+    # CONVERT THAT INTO TEXT THAT CAN BE FED TO AUDIO FUNCTION
+    text_with_pauses=utils.matchupwhatever(space_text_output, human_readable_text)
+    process_audio.create_mp3s(text_with_pauses, i, '/users/josh.flori/desktop/')
 
-    # everything until this line is all tested and works....
-
-def space_text(all_boxes):
-    """ This function helps solve the problem of how to get audio mixed in with spaces. We have to loop through the
-         boxes and ask whether it is blank or not. If not blank, remove it because it does not need anything special to
-         happen to it, if blank, denote empty_frame... then on the other side of this we loop through p_text, matching
-         \n up with boxes of text in output... then when we reach an empty frame, we pass that information to the audio
-         module so we can stick some extra audio in there... we will need to send all audio to module up UNTIL an
-         empty frame. we then need a seperate audio function that will combine all distinct frame-text-mp3s with
-         the appropriate empty space at the appropriate places"""
-    output = []
-    for box in all_boxes:
-        # [2] corresponds to box rgb tuple, [1] is the g value. will be 0 for text, 255 for frames
-        if box[2][1] == 0:
-            output.append('text')
-        elif box[2][1] == 255:
-            # CHECK IF ANY TEXT IS WITHIN THAT BOX. IF NOT FOUND, DENOTE EMPTY FOR AUDIO SPACING
-            if not utils.is_in_frame(all_boxes, box):
-                output.append('empty_frame')
-            # SKIP - UNIMPORTANT
-            else:
-                pass
-    return output
-
-# I wish i had time to continue this tonight... but i don't... oh well :) i can't be unhappy with myself. i have to
-# live within the limits of reality.
 
 print('Dont forget to turn off the custom model!!!!!!!!')

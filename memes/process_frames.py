@@ -68,7 +68,6 @@ def trim_white_space(image, boxes):
         Boxes of form [ [(top_left_xy),(bottom_right_xy),(rgb)] ,...]"""
     i = 0
     for box in boxes:
-        print(box)
         for ii in range(box[0][1] + 1, box[1][1]):
             if abs(np.mean(image[ii]) - np.mean(image[ii - 1])) > 100:
                 box[0] = (box[0][0], ii)

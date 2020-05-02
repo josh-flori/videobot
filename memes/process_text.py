@@ -70,8 +70,8 @@ def create_blocks_from_paragraph(image_text):
                 verts = paragraph.bounding_box.vertices
 
                 p_text, conf = get_text(paragraph)
-                print(p_text)
-                print(should_exclude(p_text))
+                # print(p_text)
+                # print(should_exclude(p_text))
 
                 # Pass if text is irrelevant or confidence below threshold
                 if not should_exclude(p_text) and np.mean(conf) > .8:
@@ -85,6 +85,6 @@ def create_blocks_from_paragraph(image_text):
                                 [(verts[0].x, int(verts[0].y + (subd * i))),
                                  (verts[2].x, int(verts[0].y + (subd * (i + 1)))),
                                  (255, 0, 0)])
-                    else:
-                        print('skipping')
+                    # else:
+                        # print('skipping')
         return boxes, human_readable_text

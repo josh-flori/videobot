@@ -86,3 +86,16 @@ yadayada... too tired to continue... but still happy with my progress.
 ###############
 have ffmpeg figured out. was trying to figure out how to line the audio up with image panels.
 figured out solution. mostly wrote solution, need to finish writing and test it out tomorrow.
+
+###############
+#     5/1     #
+###############
+have it mostly figured out the only problem is.. all_boxes are not sorted correctly.
+i need to figure out some way to properly sort it....
+you could be like "on the basis of the existence of frames, for each frame that exists vertically, is there any text
+...." well shit i guess you could just write a modified version of the watchamacallit function... ya i guess that would
+work
+
+im sick off deploying the model, here is link for edge https://stackoverflow.com/questions/51867204/can-googles-automl-export-trained-models-for-offline-inference
+
+got sorting working... everything looks useable... lets move onto creating the videos
