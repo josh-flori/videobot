@@ -98,4 +98,17 @@ work
 
 im sick off deploying the model, here is link for edge https://stackoverflow.com/questions/51867204/can-googles-automl-export-trained-models-for-offline-inference
 
+
+###############
+#     5/2     #
+###############
 got sorting working... everything looks useable... lets move onto creating the videos
+
+or jsut deploy model like
+
+https://cloud.google.com/vision/automl/docs/deploy
+
+how do we do this video thing?
+as we perform the initial image creation loop, we need to pass out some indication of the duration of each
+image... i guess that would be based on the length of the audio... so you could either pass it out or jsut read it off
+the audio itself.

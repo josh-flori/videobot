@@ -53,3 +53,4 @@ def create_mp3s(text_with_pauses, image_num, directory):
             empty = AudioSegment.from_mp3(directory + 'padding.mp3')
             empty.export(directory + str(image_num) + '.' + str(f) + '.mp3', format="mp3")
         f+=1
+

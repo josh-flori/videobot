@@ -1,4 +1,4 @@
-from memes import get_image_data_from_reddit, process_text, process_frames, utils, config, process_audio
+from memes import get_image_data_from_reddit, process_text, process_frames, utils, config, process_audio, make_video
 import os
 import cv2
 
@@ -9,7 +9,8 @@ os.environ['SECRET'] = config.aws_SECRET
 os.environ['region'] = config.aws_region
 
 meme_path = '/users/josh.flori/desktop/memes/'
-output_path = '/users/josh.flori/desktop/'
+meme_output_path = '/users/josh.flori/desktop/memes_output/'
+audio_output_path = '/users/josh.flori/desktop/mp3_output/'
 limit = 10
 
 # GET IMAGE DATA FROM REDDIT
@@ -17,7 +18,10 @@ limit = 10
 # get_image_data_from_reddit.get_images(meme_path, 'memes', 'week', limit)
 
 print('Dont forget to turn off the custom model!!!!!!!!')
-for i in range(6,7):
+# to be passed to make_video module to determine frame length
+all_text_with_pauses = []
+i = 3
+for i in range(6, 7):
     ############
     # PART 1: GET IMAGE API DATA (TEXT/CUSTOM MODEL BOUNDING BOX DATA
     ############
@@ -54,18 +58,22 @@ for i in range(6,7):
     utils.align_tops(all_boxes)
     # RESORT NOW THAT THINGS ARE ALIGNED...
     all_boxes = sorted(all_boxes, key=lambda x: (x[0][1], x[0][0]))
-    true_sorted_boxes=utils.true_sort(all_boxes)
-    print(true_sorted_boxes)
-    utils.write_images(image, true_sorted_boxes, output_path, i)
+    true_sorted_boxes = utils.true_sort(all_boxes)
+    utils.write_images(image, true_sorted_boxes, meme_output_path, i)
 
     ############
     # PART 4: CREATE AUDIO CLIPS
     ############
     # CONVERT ALL_BOXES INTO TEXTUAL REPRESENTATION OF WHAT IS HAPPENING
-    space_text_output=utils.space_text(true_sorted_boxes)
+    space_text_output = utils.space_text(true_sorted_boxes)
     # CONVERT THAT INTO TEXT THAT CAN BE FED TO AUDIO FUNCTION
-    text_with_pauses=utils.matchupwhatever(space_text_output, human_readable_text)
+    text_with_pauses = utils.matchupwhatever(space_text_output, human_readable_text)
+    all_text_with_pauses += text_with_pauses
     process_audio.create_mp3s(text_with_pauses, i, '/users/josh.flori/desktop/')
 
+os.remove(meme_output_path + '.DS_Store')
+assert (len(all_text_with_pauses) == len(os.listdir(meme_output_path)))
+durations = make_video.get_frame_duration(all_text_with_pauses)
+make_video.create_video(durations, meme_output_path)
 
 print('Dont forget to turn off the custom model!!!!!!!!')
