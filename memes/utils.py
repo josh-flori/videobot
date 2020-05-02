@@ -48,7 +48,7 @@ def true_sort(all_boxes):
             true_sort_boxes.append(box)
         if box[2][1] != 255 and box not in true_sort_boxes:
             true_sort_boxes.append(box)
-        for boxx in all_boxes[i+1:]:
+        for boxx in all_boxes[i + 1:]:
             boxx_in_box = all(
                 [boxx[0][0] > box[0][0], boxx[0][1] > box[0][1], boxx[1][0] < box[1][0], boxx[1][1] < box[1][1]])
             if boxx_in_box and boxx[2][1] != 255:
@@ -103,22 +103,18 @@ def matchupwhatever(space_text_output, human_readable_text):
     break_count = sum([i.count('\n') for i in human_readable_text])
     text_box_count = space_text_output.count('text')
     assert (break_count == text_box_count)
-    total_n_count = 0
-    total_text_count = 0
     i = 0
-    for text in human_readable_text:
-        total_n_count += text.count('\n')
-        for ii in space_text_output[0+i:]:
-            if ii == 'text':
-                total_text_count += 1
-                i += 1
-            elif ii == 'empty_frame':
-                text_with_pauses.append('empty')
-                i += 1
-            if total_text_count == total_n_count:
-                text_with_pauses.append(text)
-                break
+    x = 0
+    for text in space_text_output:
+        if text == 'text':
+            i += 1
+            if i == human_readable_text[x].count('\n'):
+                text_with_pauses.append(human_readable_text[x])
+                x += 1
+                i = 0
+        elif text == 'empty_frame':
+            text_with_pauses.append('empty')
 
-    text_with_pauses.append('empty') # stick empty at end for breathing room
+    text_with_pauses.append('empty')  # stick empty at end for breathing room
 
     return text_with_pauses

@@ -11,7 +11,7 @@ from pydub import AudioSegment
 AudioSegment.ffmpeg = '/users/josh.flori/pycharmprojects/bla/'
 
 
-def create_mp3s(text_with_pauses, image_num, directory):
+def create_mp3s(text_with_pauses, image_num, directory,padding_dir):
     """ Returns distinct mp3 files for each section of text or silence. To be combined in later function. """
     polly_client = boto3.Session(
         aws_access_key_id=config.aws_ACCESS_KEY,
@@ -50,7 +50,7 @@ def create_mp3s(text_with_pauses, image_num, directory):
                 print("Could not stream audio")
                 sys.exit(-1)
         else:
-            empty = AudioSegment.from_mp3(directory + 'padding.mp3')
+            empty = AudioSegment.from_mp3(padding_dir + 'padding.mp3')
             empty.export(directory + str(image_num) + '.' + str(f) + '.mp3', format="mp3")
         f+=1
 

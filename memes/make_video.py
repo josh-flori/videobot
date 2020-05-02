@@ -10,8 +10,10 @@ def get_frame_duration(all_text_with_pauses):
     frame_durations=[]
     for text in all_text_with_pauses:
         if text != 'empty':
-            for subtext in text.split('\n')[0:-1]: # [0:-1] avoids empty string split introduces
-                frame_durations.append(len(subtext)/22)
+            for subtext in text.split('\n'):
+                print(subtext)
+                if subtext != '':
+                    frame_durations.append(len(subtext)/22)
         else:
             frame_durations.append(.67)
     return frame_durations
