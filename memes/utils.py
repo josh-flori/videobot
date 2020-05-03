@@ -115,6 +115,7 @@ def write_images(image, all_boxes, output_path, img_num):
     # catch it
     if dump !=[] and dump not in output_text:
         output_text.append(dump)
+    output_text.append([['first_frame']])
     return output_text
 
 def clean_output_text(output_text):

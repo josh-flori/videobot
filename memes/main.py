@@ -86,7 +86,7 @@ for i in range(limit):
 
 os.remove(meme_output_path + '.DS_Store')
 os.remove(audio_output_path + '.DS_Store')
-durations = make_video.get_frame_duration(audio_output_path)
+durations = make_video.get_frame_duration(all_output_text)
 make_video.create_video(durations, meme_output_path)
 
 # response = model_client.undeploy_model(model_full_id)
