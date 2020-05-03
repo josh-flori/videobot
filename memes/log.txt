@@ -133,3 +133,7 @@ i feel there should be a more gauranteed way to link to images...
 like...as you write the images... get information about what text is within those particular text boxes...
 shouldn't be that hard???
 ya i think you can pass the paragraph text into the boxes.. and then do something with that
+
+-------
+9:18pm... got the video working... fuck that was kind of hard actually. i NEED to restructure and comment the shit
+out of this
