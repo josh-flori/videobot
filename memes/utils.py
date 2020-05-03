@@ -152,7 +152,7 @@ def matchupwhatever(space_text_output, human_readable_text):
     """ The purpose of this function is to come after space_text... it will take all text from p_text
         (human_readable_text) and line up the boxes from all_boxes with the text, inserting 'empty' where
         there should be an empty frame... then this gets passed to the audio function"""
-    text_with_pauses = []
+    audio_text = []
     break_count = sum([i.count('\n') for i in human_readable_text])
     text_box_count = space_text_output.count('text')
     assert (break_count == text_box_count)
@@ -162,12 +162,10 @@ def matchupwhatever(space_text_output, human_readable_text):
         if text == 'text':
             i += 1
             if i == human_readable_text[x].count('\n'):
-                text_with_pauses.append(human_readable_text[x])
+                audio_text.append(human_readable_text[x])
                 x += 1
                 i = 0
         elif text == 'empty_frame':
-            text_with_pauses.append('empty')
+            audio_text.append('empty')
 
-    text_with_pauses.append('empty')  # stick empty at end for breathing room
-
-    return text_with_pauses
+    return audio_text

@@ -137,3 +137,15 @@ ya i think you can pass the paragraph text into the boxes.. and then do somethin
 -------
 9:18pm... got the video working... fuck that was kind of hard actually. i NEED to restructure and comment the shit
 out of this
+
+###############
+#     5/3     #
+###############
+working on tweaking the parameters so the video length is just about right.
+im noticing that there needs to be a minimum length in the case where text is within a frame and it's small text where
+the resulting duration would be less than the standard waiting time for a frame.
+
+it just feels so inelegant to base this off approximations. i should do it on the audio itself.
+
+11:20 confirmed that at a small enough resolution, the duration set in movie writer is indeed in seconds, whereas
+the audio len is measured in milliseconds

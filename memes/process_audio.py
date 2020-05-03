@@ -11,14 +11,14 @@ from pydub import AudioSegment
 AudioSegment.ffmpeg = '/users/josh.flori/pycharmprojects/bla/'
 
 
-def create_mp3s(text_with_pauses, image_num, directory,padding_dir):
+def create_mp3s(audio_text, image_num, directory,padding_dir):
     """ Returns distinct mp3 files for each section of text or silence. To be combined in later function. """
     polly_client = boto3.Session(
         aws_access_key_id=config.aws_ACCESS_KEY,
         aws_secret_access_key=config.aws_SECRET,
         region_name='us-west-2').client('polly')
     f = 0
-    for text in text_with_pauses:
+    for text in audio_text:
         if text != 'empty':
             try:
                 # Request speech synthesis

@@ -21,6 +21,7 @@ meme_path = '/users/josh.flori/desktop/memes/'
 meme_output_path = '/users/josh.flori/desktop/memes_output/'
 audio_output_path = '/users/josh.flori/desktop/mp3_output/'
 padding_dir = '/users/josh.flori/desktop/'
+output_audio_fname='out.mp3'
 limit = 8
 
 # GET IMAGE DATA FROM REDDIT
@@ -28,9 +29,10 @@ limit = 8
 # get_image_data_from_reddit.get_images(meme_path, 'memes', 'week', limit)
 
 print('Dont forget to turn off the custom model!!!!!!!!')
-# to be passed to make_video module to determine frame length
-all_text_with_pauses = []
-all_output_text = []
+all_audio_text = []  # chunked text at paragraph level to create audio files
+all_frame_text = []  # chunked text at frame level, each chunk represents a frame
+
+
 for i in range(limit):
     ############
     # PART 1: GET IMAGE API DATA (TEXT/CUSTOM MODEL BOUNDING BOX DATA
@@ -72,43 +74,22 @@ for i in range(limit):
     print(true_sorted_boxes)
     output_text = utils.write_images(image, true_sorted_boxes, meme_output_path, i)
     print(output_text)
-    cleaned_output=utils.clean_output_text(output_text)
-    all_output_text.append(cleaned_output)
+    frame_text=utils.clean_output_text(output_text)
+    all_frame_text.append(frame_text)
     ############
     # PART 4: CREATE AUDIO CLIPS
     ############
     # CONVERT ALL_BOXES INTO TEXTUAL REPRESENTATION OF WHAT IS HAPPENING
     space_text_output = utils.space_text(true_sorted_boxes)
     # CONVERT THAT INTO TEXT THAT CAN BE FED TO AUDIO FUNCTION
-    text_with_pauses = utils.matchupwhatever(space_text_output, human_readable_text)
-    all_text_with_pauses += text_with_pauses
-    process_audio.create_mp3s(text_with_pauses, i, audio_output_path, padding_dir)
+    audio_text = utils.matchupwhatever(space_text_output, human_readable_text)
+    all_audio_text.append(audio_text)
+    process_audio.create_mp3s(audio_text, i, audio_output_path, padding_dir)
 
-os.remove(meme_output_path + '.DS_Store')
-os.remove(audio_output_path + '.DS_Store')
-durations = make_video.get_frame_duration(all_output_text)
-make_video.create_video(durations, meme_output_path)
+    audio_length = make_video.combine_audio(audio_output_path, 'out.mp3', i)
+    frame_durations = make_video.GET_FRAME_DURATION_FOR_REAL_THIS_TIME(audio_output_path, audio_text, frame_text, i, '/users/josh.flori/desktop/padding.mp3')
+    make_video.create_video(frame_durations, meme_output_path, audio_output_path, 'out.mp3', i)
 
 # response = model_client.undeploy_model(model_full_id)
 # print("Model un-deployment finished. {}".format(response.result()))
 
-
-#
-# filename='/users/josh.flori/desktop/shelve.out'
-# my_shelf = shelve.open(filename,'n') # 'n' for new
-#
-# for key in dir():
-#     try:
-#         my_shelf[key] = globals()[key]
-#     except TypeError:
-#         #
-#         # __builtins__, my_shelf, and imported modules can not be shelved.
-#         #
-#         print('ERROR shelving: {0}'.format(key))
-# my_shelf.close()
-#
-#
-# my_shelf = shelve.open(filename)
-# for key in my_shelf:
-#     globals()[key]=my_shelf[key]
-# my_shelf.close()
