@@ -84,7 +84,8 @@ def create_blocks_from_paragraph(image_text):
                             boxes.append(
                                 [(verts[0].x, int(verts[0].y + (subd * i))),
                                  (verts[2].x, int(verts[0].y + (subd * (i + 1)))),
-                                 (255, 0, 0)])
+                                 (255, 0, 0),
+                                 [p_text.split('\n')[i]]])
                     # else:
                         # print('skipping')
         return boxes, human_readable_text

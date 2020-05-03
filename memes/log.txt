@@ -119,3 +119,17 @@ be abstracted and passed to both functions so if they logic updates, both are up
 
 then, you need to offset your waiting times so that the first frame is uncovered almost immediately and the duration of the
 NEXT frame is equal to the length of that frame... ok i guess this is fine.
+
+-- coming back to this, i was thinking while doing dishes, why didn't i just read the len of the audio? that really is
+the best way to go! OH FUCK NOW I'M REMEMBERING WHY I DIDN'T DO THAT!!! THERE AREN'T AS MANY FUCKING MP3S as there are
+images god damnit
+ok we can't use the same logic because that logic fucking removes text and the very thing we're trying to do is account
+for text. HMMMM
+as i think about it...
+so the problem really arises when the number of paragraphs INSIDE a frame is greater than 1.
+ok my brain is really starting to break down on everything that is fucking happening here...
+
+i feel there should be a more gauranteed way to link to images...
+like...as you write the images... get information about what text is within those particular text boxes...
+shouldn't be that hard???
+ya i think you can pass the paragraph text into the boxes.. and then do something with that

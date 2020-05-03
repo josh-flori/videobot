@@ -4,14 +4,15 @@ import cv2
 import shelve
 from google.cloud import automl
 
+os.environ[
+    'GOOGLE_APPLICATION_CREDENTIALS'] = '/users/josh.flori/pycharmprojects/reddit-vision-239200-50adace0d3bf.json'
 # model_client = automl.AutoMlClient()
 # model_full_id = model_client.model_path(config.custom_model_project_id, "us-central1", config.custom_model_model_id)
 # response = model_client.deploy_model(model_full_id)
-#
+
 # print("Model deployment finished. {}".format(response.result()))
 
-os.environ[
-    'GOOGLE_APPLICATION_CREDENTIALS'] = '/users/josh.flori/pycharmprojects/reddit-vision-239200-50adace0d3bf.json'
+
 os.environ['ACCESS_KEY'] = config.aws_ACCESS_KEY
 os.environ['SECRET'] = config.aws_SECRET
 os.environ['region'] = config.aws_region
@@ -19,7 +20,7 @@ os.environ['region'] = config.aws_region
 meme_path = '/users/josh.flori/desktop/memes/'
 meme_output_path = '/users/josh.flori/desktop/memes_output/'
 audio_output_path = '/users/josh.flori/desktop/mp3_output/'
-padding_dir='/users/josh.flori/desktop/'
+padding_dir = '/users/josh.flori/desktop/'
 limit = 8
 
 # GET IMAGE DATA FROM REDDIT
@@ -29,8 +30,8 @@ limit = 8
 print('Dont forget to turn off the custom model!!!!!!!!')
 # to be passed to make_video module to determine frame length
 all_text_with_pauses = []
-
-for i in range(7,8):
+all_output_text = []
+for i in range(limit):
     ############
     # PART 1: GET IMAGE API DATA (TEXT/CUSTOM MODEL BOUNDING BOX DATA
     ############
@@ -69,8 +70,10 @@ for i in range(7,8):
     all_boxes = sorted(all_boxes, key=lambda x: (x[0][1], x[0][0]))
     true_sorted_boxes = utils.true_sort(all_boxes)
     print(true_sorted_boxes)
-    utils.write_images(image, true_sorted_boxes, meme_output_path, i)
-
+    output_text = utils.write_images(image, true_sorted_boxes, meme_output_path, i)
+    print(output_text)
+    cleaned_output=utils.clean_output_text(output_text)
+    all_output_text.append(cleaned_output)
     ############
     # PART 4: CREATE AUDIO CLIPS
     ############
@@ -78,12 +81,12 @@ for i in range(7,8):
     space_text_output = utils.space_text(true_sorted_boxes)
     # CONVERT THAT INTO TEXT THAT CAN BE FED TO AUDIO FUNCTION
     text_with_pauses = utils.matchupwhatever(space_text_output, human_readable_text)
-    print(text_with_pauses)
     all_text_with_pauses += text_with_pauses
-    process_audio.create_mp3s(text_with_pauses, i, audio_output_path,padding_dir)
+    process_audio.create_mp3s(text_with_pauses, i, audio_output_path, padding_dir)
 
 os.remove(meme_output_path + '.DS_Store')
-durations = make_video.get_frame_duration(all_text_with_pauses)
+os.remove(audio_output_path + '.DS_Store')
+durations = make_video.get_frame_duration(audio_output_path)
 make_video.create_video(durations, meme_output_path)
 
 # response = model_client.undeploy_model(model_full_id)

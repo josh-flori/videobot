@@ -1,4 +1,5 @@
 import cv2
+import numpy as np
 
 
 def align_tops(all_boxes):
@@ -22,10 +23,14 @@ def is_a_sliver(all_boxes, i):
 
 
 def is_in_frame(all_boxes, i):
-    """ Checks if box is within a frame """
-    in_frame = any([all([all_boxes[i][0][0] > box[0][0], all_boxes[i][0][1] > box[0][1], all_boxes[i][1][0] <
-                         box[1][0], all_boxes[i][1][1] < box[1][1]]) for box in all_boxes])
-    return in_frame
+    """ Checks if box is within a frame. we have to return the frame it is in for use in write_images()....
+     that helps us determine which text is in which image which is useful for determining the time
+     needed to wait for each frame"""
+    in_any_box = [all([all_boxes[i][0][0] > box[0][0], all_boxes[i][0][1] > box[0][1], all_boxes[i][1][0] <
+                       box[1][0], all_boxes[i][1][1] < box[1][1]]) for box in all_boxes]
+    in_frame = any(in_any_box)
+    which = np.where(in_any_box)
+    return in_frame, which
 
 
 def has_any_text(all_boxes, i):
@@ -62,12 +67,59 @@ def write_images(image, all_boxes, output_path, img_num):
     """ Creates boxes over image.
         Boxes of form [ [(top_left_xy),(bottom_right_xy),(rgb)] ,...]"""
     cv2.imwrite(output_path + str(img_num) + "." + str(len(all_boxes) + 1) + '.jpg', image)
+    output_text = []
+    # dump is used to concat together multiple text boxes that are within a frame
+    dump = []
+    previous_which = ''
     for i in reversed(range(len(all_boxes))):
-        in_frame = is_in_frame(all_boxes, i)
+        in_frame, which = is_in_frame(all_boxes, i)
         is_sliver = is_a_sliver(all_boxes, i)
+        has_text=has_any_text(all_boxes, i)
         if not in_frame and not is_sliver:
+            # true when first text was in frame and next is not
+            if dump != []:
+                output_text.append(dump)
+                dump = []
+                previous_which = ''
+            # true if box is text, box may not be text
+            if all_boxes[i][2][1] == 0:
+                output_text.append([all_boxes[i][3]])
+            elif not has_text:
+                output_text.append([['empty']])
+
             image = cv2.rectangle(image, all_boxes[i][0], all_boxes[i][1], all_boxes[i][2], -1)
             cv2.imwrite(output_path + str(img_num) + "." + str(i + 1) + '.jpg', image)
+        # make sure it's not a stupid sliver that doesn't need to exist
+        elif all_boxes[i][2][1] == 0:
+            # print(all_boxes[i][3])
+            # print(previous_which)
+            # print(which)
+            # print(dump)
+            if previous_which == '':
+                dump.append(all_boxes[i][3])
+                previous_which = which
+                # print('yup')
+            elif which == previous_which:
+                dump.append(all_boxes[i][3])
+                previous_which = which
+                # print('p')
+            else:
+                output_text.append(dump)
+                previous_which = ''
+                dump = []
+                dump.append(all_boxes[i][3])
+                # print('ysdfsdp')
+                # print(dump)
+    # i don't think you need to check both these conditions but it's easier than me trying to figure out if they
+    # would ever both be true. we have to append dump for the final iteration because otherwise the loop doesn't
+    # catch it
+    if dump !=[] and dump not in output_text:
+        output_text.append(dump)
+    return output_text
+
+def clean_output_text(output_text):
+    cleaned=list(reversed([' '.join([ii[0] for ii in reversed(i)]) if len(i) > 1 else i[0][0] for i in output_text]))
+    return cleaned
 
 
 def space_text(all_boxes):
