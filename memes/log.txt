@@ -149,3 +149,5 @@ it just feels so inelegant to base this off approximations. i should do it on th
 
 11:20 confirmed that at a small enough resolution, the duration set in movie writer is indeed in seconds, whereas
 the audio len is measured in milliseconds
+
+fuckk yaaaa i did it. time to comment the shit out of this shit

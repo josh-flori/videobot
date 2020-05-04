@@ -4,7 +4,9 @@ from google.cloud import vision
 
 
 def get_image_text(image_path):
-    """ Returns full text from image. """
+    """ Uses google vision api to return full text from meme image. A credentialled connection must have already been
+    created but does not need to be passed. full_response contains a large nested structure of information at
+    character level which must be built into words in further functions."""
     with io.open(image_path, 'rb') as image_file:
         content = image_file.read()
     client = vision.ImageAnnotatorClient()
@@ -13,21 +15,10 @@ def get_image_text(image_path):
     return full_response
 
 
-def find_colon(paragraph):
-    """ Returns top right bounding boxes of first colon found in paragraph text.
-        Used to create custom block over text like: 'Me: blablabla...
-                                                     My Mom: blablabla... """
-    for word in paragraph.words:
-        for symbol in word.symbols:
-            if symbol.text == ':':
-                return symbol.bounding_box.vertices[2].x, symbol.bounding_box.vertices[2].y
-
-
 def get_text(paragraph):
     """ Returns: concatenated symbol text into single text string for evaluation by should_exclude(),
                  all confidence scores for each symbol. if mean score < threshold, paragraph is skipped by
                  create_blocks_from_paragraph() """
-    # TODO - is redundantly looping over same shit as find_colon()... not great
     p_text = ''
     conf = []
     lookup = {'': '', 'type: LINE_BREAK\n': '\n', 'type: SPACE\n': ' ', 'type: EOL_SURE_SPACE\n': '\n'}
@@ -62,7 +53,7 @@ def should_exclude(p_text):
 def create_blocks_from_paragraph(image_text):
     """ Returns list of (x,y,rgb) bounding boxes for all relevant text in image. """
     boxes = []
-    human_readable_text=[]
+    human_readable_text = []
     # Iterate through text object
     for page in image_text.pages:
         for block in page.blocks:
@@ -87,5 +78,5 @@ def create_blocks_from_paragraph(image_text):
                                  (255, 0, 0),
                                  [p_text.split('\n')[i]]])
                     # else:
-                        # print('skipping')
+                    # print('skipping')
         return boxes, human_readable_text
