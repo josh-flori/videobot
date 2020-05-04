@@ -1,6 +1,3 @@
-# on mac, ffmpeg must be installed liked: brew install ffmpeg
-# and AudioSegment.converter must point to the download location (installs to /usr/local/Cellar/ by default)
-# I had to restart pycharm
 from botocore.exceptions import BotoCoreError, ClientError
 from contextlib import closing
 from memes import config
@@ -8,10 +5,13 @@ import boto3
 import sys
 from pydub import AudioSegment
 
+# To properly install ffmpeg on mac, it must be brew installed and AudioSegment.converter must point to the download
+# location (installs to /usr/local/Cellar/ by default). After doing this, I had to restart pycharm.
+
 AudioSegment.ffmpeg = '/users/josh.flori/pycharmprojects/bla/'
 
 
-def create_mp3s(audio_text, image_num, directory,padding_dir):
+def create_mp3s(audio_text, image_num, directory, padding_dir):
     """ Returns distinct mp3 files for each section of text or silence. To be combined in later function. """
     polly_client = boto3.Session(
         aws_access_key_id=config.aws_ACCESS_KEY,
@@ -52,5 +52,4 @@ def create_mp3s(audio_text, image_num, directory,padding_dir):
         else:
             empty = AudioSegment.from_mp3(padding_dir + 'padding.mp3')
             empty.export(directory + str(image_num) + '.' + str(f) + '.mp3', format="mp3")
-        f+=1
-
+        f += 1

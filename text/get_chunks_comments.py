@@ -70,7 +70,7 @@ def get_chunks(comment,audio_file,audio_padding_length,directory):
             indent.append(incrementing_chunk)
             chunk_len.append(len(dump))
             
-           # get_text_metrics("verdana", 14, ".")
+           # parse_text_metrics("verdana", 14, ".")
         # true when sentence has ended before the end of the line but when sentence ends with a quote
         elif all([any([comment[i-1]==".",comment[i-1]=="?",comment[i-1]=="!"]),comment[i]=='"' and comment[i+1]==" "]):
             dump="".join(temp).lstrip()

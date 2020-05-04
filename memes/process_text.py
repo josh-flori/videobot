@@ -2,10 +2,14 @@ import io, re
 import numpy as np
 from google.cloud import vision
 
+""" The purpose of this module is to return meme text using google vision api, combine with some exclusion rules to 
+ignore irrelevant text and return bounding a list of bounding boxes around all relevant text boxes. Text boxes are 
+combined with frame boxes from process_frames.py to create a total list of boxes needed to unveil the image, 
+bit by bit. """
 
 def get_image_text_from_google(image_path):
     """ Uses google vision api to return full text from meme image. A credentialled connection must have already been
-    created but does not need to be passed. full_response contains a large nested structure of information at
+    created but does not need to be passed. full_response contains a large nested structure of text information at
     character level which must be built into words in further functions."""
     with io.open(image_path, 'rb') as image_file:
         content = image_file.read()
@@ -15,7 +19,7 @@ def get_image_text_from_google(image_path):
     return raw_text_response
 
 
-def get_text(paragraph):
+def parse_text(paragraph):
     """ get_image_text_from_google() returns text at character level. This function concatenates those symbols into a
     single, human-readable chunk of text.
 
@@ -62,7 +66,7 @@ def create_blocks_from_paragraph(raw_text_response):
         for block in page.blocks:
             for paragraph in block.paragraphs:
                 verts = paragraph.bounding_box.vertices
-                p_text, conf = get_text(paragraph)
+                p_text, conf = parse_text(paragraph)
                 # DEBUGGING
                 # print(p_text)
                 # print(should_exclude(p_text))

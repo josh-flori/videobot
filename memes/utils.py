@@ -3,7 +3,10 @@ import numpy as np
 
 
 def align_tops(all_boxes):
-    """ Align boxes which should be on the same line. Helps sorting work correctly. """
+    """ It may be the case that when we pass an image to auto_ml it identifies frames which in reality are on the
+    same horizontal line but it offsets them a couple pixels from each other. This is a problem because when we sort
+    our boxes to create a linear succession of video frames, frames would be out of order. We need to align the tops
+    of frames that are close so that sorting frames into proper succession works correctly. """
     for i in range(1, len(all_boxes)):
         area_cur = (all_boxes[i][1][0] - all_boxes[i][0][0]) * (all_boxes[i][1][1] - all_boxes[i][0][1])
         area_prev = (all_boxes[i - 1][1][0] - all_boxes[i - 1][0][0]) * (
@@ -14,7 +17,7 @@ def align_tops(all_boxes):
 
 
 def is_a_sliver(all_boxes, i):
-    """  """
+    """  auto_ml sometimes creates a sliver of a block - something small and irrelevant. This discards such boxes."""
     if all_boxes[i][1][1] - all_boxes[i][0][1] < 20:
         sliver = True
     else:
@@ -23,9 +26,9 @@ def is_a_sliver(all_boxes, i):
 
 
 def is_in_frame(all_boxes, i):
-    """ Checks if box is within a frame. we have to return the frame it is in for use in write_images()....
-     that helps us determine which text is in which image which is useful for determining the time
-     needed to wait for each frame"""
+    """ Checks whether a given box is within an auto_ml identified frame. This should only be true for text boxes.
+    The purpose of this is to avoid creating blocks over text boxes if that text is within a frame. This
+    is an artistic decision. """
     in_any_box = [all([all_boxes[i][0][0] > box[0][0], all_boxes[i][0][1] > box[0][1], all_boxes[i][1][0] <
                        box[1][0], all_boxes[i][1][1] < box[1][1]]) for box in all_boxes]
     in_frame = any(in_any_box)
@@ -34,25 +37,28 @@ def is_in_frame(all_boxes, i):
 
 
 def has_any_text(all_boxes, i):
-    """ basically the exact same as is_in_frame but flipped around because im stupid coder and do things backward """
+    """ Checks whether a box has any boxes within it. This should only be the case when text is within an
+    auto_ml box. The purpose of this is to decide whether the audio for this frame should be empty or not. """
     has_text = any([all([all_boxes[i][0][0] < box[0][0], all_boxes[i][0][1] < box[0][1], all_boxes[i][1][0] >
                          box[1][0], all_boxes[i][1][1] > box[1][1]]) for box in all_boxes])
     return has_text
 
 
 def true_sort(all_boxes):
-    """ The purpose of this function is to true sort all_boxes where everything within each frame will be sorted
-        together, otherwise the previous behavior was to give precedent to frames which were on the same line
-        and only after sorting frames, text came next. that wasn't a problem with write images because text wasn't being
-        displayed if in a frame, but we abandon that paradigm because otherwise space_text wouldn't work."""
+    """ The purpose of this function is to true sort all_boxes (comprised of text and auto_ml frames) where everything
+    within each frame will be sorted together, in other words, imagine a four panel image with panels in top left,
+    top right, bottom left, bottom right, each with text in them. We want the top left to reveal first, then the text
+    within that frame. Then top right, then text within that frame. true_sort() accomplishes this.
+    box[2][1] == 255 denotes frame, box[2][1] != 255 denotes text box"""
+
     true_sort_boxes = []
     i = 0
     for box in all_boxes:
-        # 255 denotes frame
         if box[2][1] == 255:
             true_sort_boxes.append(box)
         if box[2][1] != 255 and box not in true_sort_boxes:
             true_sort_boxes.append(box)
+        # Check if any text boxes contained within that frame. If yes, append to true_sort.
         for boxx in all_boxes[i + 1:]:
             boxx_in_box = all(
                 [boxx[0][0] > box[0][0], boxx[0][1] > box[0][1], boxx[1][0] < box[1][0], boxx[1][1] < box[1][1]])
@@ -66,6 +72,7 @@ def true_sort(all_boxes):
 def write_images(image, all_boxes, output_path, img_num):
     """ Creates boxes over image.
         Boxes of form [ [(top_left_xy),(bottom_right_xy),(rgb)] ,...]"""
+    # Create the final frame with no rectangles covering anything up.
     cv2.imwrite(output_path + str(img_num) + "." + str(len(all_boxes) + 1) + '.jpg', image)
     output_text = []
     # dump is used to concat together multiple text boxes that are within a frame
@@ -91,6 +98,7 @@ def write_images(image, all_boxes, output_path, img_num):
             cv2.imwrite(output_path + str(img_num) + "." + str(i + 1) + '.jpg', image)
         # make sure it's not a stupid sliver that doesn't need to exist
         elif all_boxes[i][2][1] == 0:
+            # DEBUGGING
             # print(all_boxes[i][3])
             # print(previous_which)
             # print(which)
@@ -98,16 +106,19 @@ def write_images(image, all_boxes, output_path, img_num):
             if previous_which == '':
                 dump.append(all_boxes[i][3])
                 previous_which = which
+                # DEBUGGING
                 # print('yup')
             elif which == previous_which:
                 dump.append(all_boxes[i][3])
                 previous_which = which
+                # DEBUGGING
                 # print('p')
             else:
                 output_text.append(dump)
                 previous_which = ''
                 dump = []
                 dump.append(all_boxes[i][3])
+                # DEBUGGING
                 # print('ysdfsdp')
                 # print(dump)
     # i don't think you need to check both these conditions but it's easier than me trying to figure out if they

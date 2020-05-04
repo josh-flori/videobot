@@ -45,7 +45,7 @@ for i in range(limit):
     # CREATE TEXT BOUNDING BOXES WITH A BUNCH OF RULES AND EXCLUSIONS BUILT IN
     text_boxes, human_readable_text = process_text.create_blocks_from_paragraph(raw_text_response)
     # GET MODEL BOUNDING BOXES
-    annotation = process_frames.get_prediction(meme_path, i, config.custom_model_project_id,
+    annotation = process_frames.get_frame_prediction_from_google(meme_path, i, config.custom_model_project_id,
                                                config.custom_model_model_id)
 
     ############

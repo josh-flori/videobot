@@ -1,30 +1,25 @@
-from google.cloud import automl_v1beta1
-from google.cloud.automl_v1beta1.proto import service_pb2
-import os, cv2, tqdm
+from google.cloud import automl
 import numpy as np
 
+""" The purpose of this module is for google's auto_ml to return bounding boxes around all relevant frames in the 
+meme. Those bounding boxes are cleaned up and then combined with text boxes from process_text.py to create a total 
+list of boxes needed to unveil the image, bit by bit. """
 
+def get_frame_prediction_from_google(meme_path, img_num, project_id, model_id):
+    """ I trained a custom model using google's auto_ml product to put bounding boxes around what I defined as
+    relevant frames. So in a 4 panel meme, it would learn where those four panels are. This function returns bounding
+    boxes from that model. These 'frames' will combine with the text bounding boxes from the process_text module to
+    create all the boxes needed to unveil the image, bit by bit."""
 
-def print_anno(annotation):
-    for payload in annotation.payload:
-        print(payload.image_object_detection.bounding_box.normalized_vertices[0].x)
-        print(payload.image_object_detection.bounding_box.normalized_vertices[0].y)
-        print(payload.image_object_detection.bounding_box.normalized_vertices[1].x)
-        print(payload.image_object_detection.bounding_box.normalized_vertices[1].y)
-
-
-def get_prediction(meme_path, i, project_id, model_id):
-    """ Return object detections """
-
-    with open(meme_path + str(i) + '.jpg', 'rb') as ff:
+    with open(meme_path + str(img_num) + '.jpg', 'rb') as ff:
         content = ff.read()
 
-    prediction_client = automl_v1beta1.PredictionServiceClient()
+    prediction_client = automl.PredictionServiceClient()
     name = 'projects/{}/locations/us-central1/models/{}'.format(project_id, model_id)
     payload = {'image': {'image_bytes': content}}
     params = {}
-    request = prediction_client.predict(name, payload, params)
-    return request
+    annotation = prediction_client.predict(name, payload, params)
+    return annotation
 
 
 def expand_to_edge(annotation):
@@ -50,7 +45,9 @@ def perc_to_pix(image, perc, dim):
     return val
 
 
-def create_blocks_from_annotations(annotation,image):
+def create_blocks_from_annotations(annotation, image):
+    """ Parse the vertices of the bounding boxes from the google auto_ml annotation into list like:
+    [topleft, bottomright, (255, 255, 255)]"""
     boxes = []
     for payload in annotation.payload:
         if payload.image_object_detection.score > .85:
@@ -62,15 +59,14 @@ def create_blocks_from_annotations(annotation,image):
             boxes.append([topleft, bottomright, (255, 255, 255)])
     return boxes
 
+
 def trim_white_space(image, boxes):
-    """ Trim bad white space from annotated boxes.
-        Assumes there will be extra white space on top....
-        Boxes of form [ [(top_left_xy),(bottom_right_xy),(rgb)] ,...]"""
-    i = 0
+    """ Trim bad white space from annotated boxes in the case where a box has been annotated around a picture with
+    extra, empty white pixels hanging above the top of it. """
     for box in boxes:
-        for ii in range(box[0][1] + 1, box[1][1]):
-            if abs(np.mean(image[ii]) - np.mean(image[ii - 1])) > 100:
-                box[0] = (box[0][0], ii)
+        # loop from top row to bottom row of that box
+        for i in range(box[0][1] + 1, box[1][1]):
+            # when this is true it denotes the transition from the row being all-white to non-all-white.
+            if abs(np.mean(image[i]) - np.mean(image[i - 1])) > 100:
+                box[0] = (box[0][0], i)
                 break
-
-
