@@ -41,9 +41,9 @@ for i in range(limit):
     # LOAD IMAGE
     image = cv2.imread('/users/josh.flori/desktop/memes/' + str(i) + '.jpg')
     # GET IMAGE TEXT FROM GOOGLE API
-    image_text_raw = process_text.get_image_text('/users/josh.flori/desktop/memes/' + str(i) + '.jpg')
+    raw_text_response = process_text.get_image_text_from_google('/users/josh.flori/desktop/memes/' + str(i) + '.jpg')
     # CREATE TEXT BOUNDING BOXES WITH A BUNCH OF RULES AND EXCLUSIONS BUILT IN
-    text_boxes, human_readable_text = process_text.create_blocks_from_paragraph(image_text_raw)
+    text_boxes, human_readable_text = process_text.create_blocks_from_paragraph(raw_text_response)
     # GET MODEL BOUNDING BOXES
     annotation = process_frames.get_prediction(meme_path, i, config.custom_model_project_id,
                                                config.custom_model_model_id)
