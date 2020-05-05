@@ -4,7 +4,7 @@ from google.cloud import vision
 
 """ The purpose of this module is to return meme text using google vision api, combine with some exclusion rules to 
 ignore irrelevant text and return bounding a list of bounding boxes around all relevant text boxes. Text boxes are 
-combined with frame boxes from process_frames.py to create a total list of boxes needed to unveil the image, 
+combined with frame boxes from frames.py to create a total list of boxes needed to unveil the image, 
 bit by bit. """
 
 def get_image_text_from_google(image_path):

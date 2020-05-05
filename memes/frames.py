@@ -2,7 +2,7 @@ from google.cloud import automl
 import numpy as np
 
 """ The purpose of this module is for google's auto_ml to return bounding boxes around all relevant frames in the 
-meme. Those bounding boxes are cleaned up and then combined with text boxes from process_text.py to create a total 
+meme. Those bounding boxes are cleaned up and then combined with text boxes from text.py to create a total 
 list of boxes needed to unveil the image, bit by bit. """
 
 def get_frame_prediction_from_google(meme_path, img_num, project_id, model_id):
