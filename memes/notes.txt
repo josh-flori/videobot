@@ -1,0 +1,45 @@
+# TEXT LIST OVERVIEWS...
+
+# --- raw_text --- = ['what kim jong un saw before\nthe sedatives kicked in\n']
+# WHAT IS: every non-excluded paragraph level text from google response
+# RETURNED FROM: text.create_blocks_from_paragraph()
+# USED BY: processing.get_audio_text(box_text_type, raw_text)
+# USED FOR: used to return audio_text. imagine a set of paragraphs like ['blab\nlabla\n','bla\nblabla\n']. ok, cool.
+# do you pass those to the audio function to create two mp3s? no! what if there are empty slides in between those
+# paragraphs? the video needs empty audio for empty slides after all! to answer that question and insert such empty
+# mp3s, we use box_text_type (in combination with raw_text) which may look like this:
+# ['text', 'text', 'empty', 'text', 'text']... in this scenario, the first two 'text's correspond to the
+# first paragraph in raw_text, then there is an empty slide with no text, then the last two texts correspond to the
+# second paragraph. we determine which texts correspond to which paragraph because the count of newlines in
+# paragraphs correspond to the count of 'text's. this is because newlines create text boxes in our logic. in this
+# way, we do not blindly send text off for mp3 processing but rather, determine where in that text we need to pause.
+# technically slide_text could be used instead of box_text_type, but the code would need to be rewritten
+# to handle that. this is easier to read but more obfuscated since we have so many different text lists running around.
+
+# --- slide_text --- = ['first_frame', 'what kim jong un saw before', 'the sedatives kicked in', 'empty']
+# WHAT IS: a list of text for each slide, technically its a list of list of lists
+# RETURNED FROM: write_images()
+# USED BY: compute_slide_duration(...audio_text, slide_text...)
+# USED FOR: slide text is sub-audio-text level, meaning a single audio_text elements may contain multiple slide_text
+# elements. so we loop through slide text to see what all is in a given audio_text, which then is matched against the
+# audio files where we ask how long they are, then we distribute that length (seconds) across each slide_text,
+# determining slide length
+
+# --- box_text_type --- = ['text', 'text', 'empty']
+# WHAT IS: a list of 'text' or 'empty' depending on whether that given box contains text or not, but is usually less
+# than the length of all_boxes because any frame with text has no representation in this list. this is only a list of
+# text boxes and empty frames, no frames with text have representation.
+# RETURNED FROM: encode_box_text_type(all_boxes)
+# USED BY: get_audio_text(box_text_type, raw_text)
+# USED FOR: see explanation for raw_text
+
+
+# --- audio_text --- = ['what kim jong un saw before\nthe sedatives kicked in\n', 'empty']
+# WHAT IS: a list of paragraphs from google vision with 'empty' strings thrown in where an empty slide/frame exists in
+# the meme. yes, it would have been more elegant to just sent slide text to the audio function and avoid all of this
+# confusion, but the amazon polly api does not create realistic sounding speech when you break a 'paragraph' (in
+# reality a sentence) up into multiple requests. so we must send a single paragraph at once and break up on our end
+# when determining slide length.
+# RETURNED FROM: get_audio_text(box_text_type, raw_text)
+# USED BY: compute_slide_duration(...audio_text, slide_text...)
+# USED FOR: see explanation for slide_text
