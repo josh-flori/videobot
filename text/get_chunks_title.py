@@ -12,7 +12,7 @@ def get_chunks(title_text,path_to_audio,audio_padding_length,directory):
     count = 0
     # chunked holds total chunked list (a chunk is the new text in a given frame)
     chunked=[]
-    # temp holds each letter as the for loop progress, dumped into chunked once character limit or sentence end is reached
+    # temp holds each letter as the for loop progress, sub_slide_texted into chunked once character limit or sentence end is reached
     temp=[]
     # used for setting movie duration for that frame
     chunk_len=[]
@@ -24,18 +24,18 @@ def get_chunks(title_text,path_to_audio,audio_padding_length,directory):
         count+=1
         # true when reached the end of the comment and no other condition was met
         if i == len(title_text)-1:
-            dump="".join(temp).lstrip()
-            chunked.append(dump)
-            chunk_len.append(len(dump))
+            sub_slide_text="".join(temp).lstrip()
+            chunked.append(sub_slide_text)
+            chunk_len.append(len(sub_slide_text))
         # test if end of line has been reached
         elif count >35:
             # wait until end of current word
             if title_text[i]==" ":
-                dump="".join(temp).lstrip()
-                chunked.append(dump)
+                sub_slide_text="".join(temp).lstrip()
+                chunked.append(sub_slide_text)
                 temp=[]
                 count=0
-                chunk_len.append(len(dump))
+                chunk_len.append(len(sub_slide_text))
                 
                 
     # now you will need to figure out how long the timing should be for each clip.....

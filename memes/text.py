@@ -4,8 +4,7 @@ from google.cloud import vision
 
 """ The purpose of this module is to return meme text using google vision api, combine with some exclusion rules to 
 ignore irrelevant text and return bounding a list of bounding boxes around all relevant text boxes. Text boxes are 
-combined with frame boxes from frames.py to create a total list of boxes needed to unveil the image, 
-bit by bit. """
+combined with frame boxes from frames.py to create a total list of boxes needed to unveil the meme, bit by bit. """
 
 def get_image_text_from_google(image_path):
     """ Uses google vision api to return full text from meme image. A credentialled connection must have already been
@@ -19,7 +18,7 @@ def get_image_text_from_google(image_path):
     return raw_text_response
 
 
-def parse_text(paragraph):
+def slide_text(paragraph):
     """ get_image_text_from_google() returns text at character level. This function concatenates those symbols into a
     single, human-readable chunk of text.
 
@@ -57,22 +56,22 @@ def should_exclude(p_text):
 
 
 def create_blocks_from_paragraph(raw_text_response):
-    """ Returns a list of (x,y,rgb,text) bounding boxes for all relevant text in image. Returning human_readable_text
+    """ Returns a list of (x,y,rgb,text) bounding boxes for all relevant text in image. Returning raw_text
     and putting the text in the image block is slightly redundant, but each have their purposes."""
     boxes = []
-    human_readable_text = []
+    raw_text = []
     # Iterate through text object returned by get_image_text_from_google()
     for page in raw_text_response.pages:
         for block in page.blocks:
             for paragraph in block.paragraphs:
                 verts = paragraph.bounding_box.vertices
-                p_text, conf = parse_text(paragraph)
+                p_text, conf = slide_text(paragraph)
                 # DEBUGGING
                 # print(p_text)
                 # print(should_exclude(p_text))
 
                 if not should_exclude(p_text) and np.mean(conf) > .8:
-                    human_readable_text.append(p_text)
+                    raw_text.append(p_text)
                     # Break up multi-line paragraphs
                     if p_text.count('\n') > 0:
                         # Split multi-line text into equal sized vertical sections to create greater visual appeal
@@ -86,4 +85,4 @@ def create_blocks_from_paragraph(raw_text_response):
                     # DEBUGGING
                     # else:
                     # print('skipping')
-        return boxes, human_readable_text
+        return boxes, raw_text

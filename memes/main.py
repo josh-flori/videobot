@@ -1,7 +1,6 @@
 from memes import get_image_data_from_reddit, text, frames, processing, config, process_audio, make_video
 import os
 import cv2
-import shelve
 from google.cloud import automl
 
 os.environ[
@@ -12,7 +11,6 @@ response = model_client.deploy_model(model_full_id)
 
 print("Model deployment finished. {}".format(response.result()))
 
-
 os.environ['ACCESS_KEY'] = config.aws_ACCESS_KEY
 os.environ['SECRET'] = config.aws_SECRET
 os.environ['region'] = config.aws_region
@@ -21,14 +19,13 @@ meme_path = '/users/josh.flori/desktop/memes/'
 meme_output_path = '/users/josh.flori/desktop/memes_output/'
 audio_output_path = '/users/josh.flori/desktop/mp3_output/'
 padding_dir = '/users/josh.flori/desktop/'
-output_audio_fname='out.mp3'
-limit = 8
+output_audio_fname = 'out.mp3'
+limit = 1
 
 # GET IMAGE DATA FROM REDDIT
 
 # get_image_data_from_reddit.get_images(meme_path, 'memes', 'week', limit)
 
-print('Dont forget to turn off the custom model!!!!!!!!')
 all_audio_text = []  # chunked text at paragraph level to create audio files
 
 for i in range(limit):
@@ -41,7 +38,7 @@ for i in range(limit):
     # GET IMAGE TEXT FROM GOOGLE API
     raw_text_response = text.get_image_text_from_google('/users/josh.flori/desktop/memes/' + str(i) + '.jpg')
     # CREATE TEXT BOUNDING BOXES WITH A BUNCH OF RULES AND EXCLUSIONS BUILT IN
-    text_boxes, human_readable_text = text.create_blocks_from_paragraph(raw_text_response)
+    text_boxes, raw_text = text.create_blocks_from_paragraph(raw_text_response)
     # GET MODEL BOUNDING BOXES
     annotation = frames.get_frame_prediction_from_google(meme_path, i, config.custom_model_project_id,
                                                          config.custom_model_model_id)
@@ -69,21 +66,23 @@ for i in range(limit):
     # RESORT NOW THAT THINGS ARE ALIGNED...
     all_boxes = sorted(all_boxes, key=lambda x: (x[0][1], x[0][0]))
     true_sorted_boxes = processing.true_sort(all_boxes)
-    frame_text = processing.write_images(image, true_sorted_boxes, meme_output_path, i)
-    parse_text=processing.clean_frame_text(frame_text)
+    slide_text = processing.write_images(image, true_sorted_boxes, meme_output_path, i)
+    slide_text = processing.clean_slide_text(slide_text)
     ############
     # PART 4: CREATE AUDIO CLIPS
     ############
     # CONVERT ALL_BOXES INTO TEXTUAL REPRESENTATION OF WHAT IS HAPPENING
-    space_text_output = processing.space_text(true_sorted_boxes)
+    box_text_type = processing.encode_box_text_type(true_sorted_boxes)
     # CONVERT THAT INTO TEXT THAT CAN BE FED TO AUDIO FUNCTION
-    audio_text = processing.matchupwhatever(space_text_output, human_readable_text)
+    audio_text = processing.get_audio_text(box_text_type, raw_text)
     all_audio_text.append(audio_text)
     process_audio.create_mp3s(audio_text, i, audio_output_path, padding_dir)
 
-    frame_durations = make_video.GET_FRAME_DURATION_FOR_REAL_THIS_TIME(audio_output_path, audio_text, parse_text, i, '/users/josh.flori/desktop/padding.mp3')
-    make_video.create_video(frame_durations, meme_output_path, audio_output_path, 'out.mp3', i)
+    slide_durations = make_video.compute_slide_duration(audio_output_path, audio_text, slide_text, i,
+                                                        '/users/josh.flori/desktop/padding.mp3')
+    make_video.create_video(slide_durations, meme_output_path, audio_output_path, 'out.mp3', i)
 
 response = model_client.undeploy_model(model_full_id)
 print("Model un-deployment finished. {}".format(response.result()))
+
 

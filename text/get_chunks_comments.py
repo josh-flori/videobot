@@ -20,7 +20,7 @@ def get_chunks(comment,audio_file,audio_padding_length,directory):
     count = 0
     # chunked holds total chunked list (a chunk is the new text in a given frame)
     chunked=[]
-    # temp holds each letter as the for loop progress, dumped into chunked once character limit or sentence end is reached
+    # temp holds each letter as the for loop progress, sub_slide_texted into chunked once character limit or sentence end is reached
     temp=[]
     # contains information about whether that chunk is the end of a sentence, to be passed in when creating the images so that the image thing knows to put the next chunk on the same line rather than the next line
     is_eos=[]
@@ -38,51 +38,51 @@ def get_chunks(comment,audio_file,audio_padding_length,directory):
         count+=1
         # true when reached the end of the comment and no other condition was met
         if i == len(comment)-1:
-            dump="".join(temp).lstrip()
-            chunked.append(dump)
+            sub_slide_text="".join(temp).lstrip()
+            chunked.append(sub_slide_text)
             is_eos.append(False)
             indent.append(0)
-            chunk_len.append(len(dump))
+            chunk_len.append(len(sub_slide_text))
         # test if end of line has been reached
         elif count >67:
             # wait until end of current word
             if comment[i]==" ":
-                dump="".join(temp).lstrip()
-                chunked.append(dump)
+                sub_slide_text="".join(temp).lstrip()
+                chunked.append(sub_slide_text)
                 temp=[]
                 count=0
                 is_eos.append(False)
                 indent.append(0)
                 incrementing_chunk=0
-                chunk_len.append(len(dump))
+                chunk_len.append(len(sub_slide_text))
         # true when sentence has ended before the end of the line
         elif all([any([comment[i] == "." or comment[i] == "!" or comment[i] == "?"]),comment[i+1]==" "]):
             # join letters together into single string
-            dump="".join(temp).lstrip()
+            sub_slide_text="".join(temp).lstrip()
             # append to chunked
-            chunked.append(dump)
+            chunked.append(sub_slide_text)
             # reset temporary holding list
             temp=[]
             # this will be used to govern the x_adjust parameter in the image thing
             is_eos.append(True)
-            incrementing_chunk+=font.getsize(dump)[0]
+            incrementing_chunk+=font.getsize(sub_slide_text)[0]
             # this will be used to govern the x_adjust parameter in the image thing        
             indent.append(incrementing_chunk)
-            chunk_len.append(len(dump))
+            chunk_len.append(len(sub_slide_text))
             
-           # parse_text_metrics("verdana", 14, ".")
+           # slide_text_metrics("verdana", 14, ".")
         # true when sentence has ended before the end of the line but when sentence ends with a quote
         elif all([any([comment[i-1]==".",comment[i-1]=="?",comment[i-1]=="!"]),comment[i]=='"' and comment[i+1]==" "]):
-            dump="".join(temp).lstrip()
-            chunked.append(dump)
+            sub_slide_text="".join(temp).lstrip()
+            chunked.append(sub_slide_text)
             temp=[]
             is_eos.append(True)
             
-            incrementing_chunk+=font.getsize(dump)[0]
+            incrementing_chunk+=font.getsize(sub_slide_text)[0]
             # this will be used to govern the x_adjust parameter in the image thing        
             indent.append(incrementing_chunk)
             
-            chunk_len.append(len(dump))
+            chunk_len.append(len(sub_slide_text))
     
     
     # now you will need to figure out how long the timing should be for each clip.....

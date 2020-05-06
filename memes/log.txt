@@ -113,7 +113,7 @@ as we perform the initial image creation loop, we need to pass out some indicati
 image... i guess that would be based on the length of the audio... so you could either pass it out or jsut read it off
 the audio itself.
 
-so im discovering that the function that creates space_text_output doesn't follow the same logic as teh function
+so im discovering that the function that creates box_text_type doesn't follow the same logic as teh function
 that writes the images... bOTH are based on boxes but write_images ignores some boxes. that ignore logic needs to
 be abstracted and passed to both functions so if they logic updates, both are updated.
 
