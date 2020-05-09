@@ -27,7 +27,7 @@ limit = 10
 reddit.get_images(meme_path, 'memes', 'week', limit)
 
 all_audio_text = []  # chunked text at paragraph level to create audio files
-i=4
+i=3
 for i in range(4, 5):
 
     # PART 1: GET MEME DATA FROM APIs (VISION & AUTO_ML)

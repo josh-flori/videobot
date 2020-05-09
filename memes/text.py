@@ -105,43 +105,70 @@ def create_paragraphs(text_boxes, raw_text, debug=False):
      that point you could find where that text is in raw_text and join everything together between that point and the
      previous point, whether that be the beginning or the previous stop point"""
 
-    def vertically_aligned(i, text_boxes):
-        midpoint = text_boxes[i][1][0] - text_boxes[i][0][0]
-        is_vertically_aligned = midpoint > text_boxes[i - 1][0][0] and midpoint < text_boxes[i - 1][1][0]
+    def vertically_aligned(i, ii, text_boxes):
+        """ Compare two adjacent text boxes to see if they both fall along a vertical line drawn through the midpoint of
+        the reference box: i """
+        midpoint = text_boxes[i][1][0] - ((text_boxes[i][1][0] - text_boxes[i][0][0]) / 2)
+        is_vertically_aligned = midpoint > text_boxes[ii][0][0] and midpoint < text_boxes[ii][1][0]
         return is_vertically_aligned
 
-    # start loop at second box since first box cannot be part of a previous paragraph
+    def horizontally_aligned_with_next(i, text_boxes, height_of_current_box):
+        """ Compare two adjacent text boxes to see if the next comes vertically within .5 height of previous. """
+        return text_boxes[i + 1][0][1] < text_boxes[i][1][1] + (height_of_current_box * .5)
+
+    def horizontally_aligned_with_previous(i, text_boxes, height_of_previous_box):
+        """ Compare two adjacent text boxes to see if the next comes vertically within .5 height of previous. """
+        return text_boxes[i][0][1] < text_boxes[i - 1][1][1] + (height_of_previous_box * .5)
+
     raw_text_output = []
     part_of_previous = False
-    for i in range(1, len(text_boxes)):
-        print('...'+str(i))
-        height_of_previous_box = text_boxes[i - 1][1][1] - text_boxes[i - 1][0][1]
+
+    for i in range(len(text_boxes)):
         height_of_current_box = text_boxes[i][1][1] - text_boxes[i][0][1]
-        if text_boxes[i][0][1] < text_boxes[i - 1][1][1] + (height_of_previous_box * .5) and vertically_aligned(i,
-                                                                                                                text_boxes):
-            if part_of_previous == False:
-                previous_text_index = [ii for ii in range(len(raw_text)) if text_boxes[i - 1][3][0] in raw_text[ii]][0]
-                print(previous_text_index)
-                part_of_previous = True
-        # True at the end of a sequence of boxes that meet the criteria
-        elif part_of_previous == True:
-            next_raw_text_index = [ii for ii in range(len(raw_text)) if text_boxes[i][3][0] in raw_text[ii]][0]
-            raw_text_output.append(''.join(raw_text[previous_text_index:next_raw_text_index]))
-            part_of_previous = False
-            if debug:
-                print(previous_text_index)
-                print(next_raw_text_index)
-                print('--2')
-            previous_text_index = next_raw_text_index
-            print(previous_text_index)
-        # true when this box not part of previous box and not part of next box either...
-        elif i < len(text_boxes) and not text_boxes[i + 1][0][1] < text_boxes[i][1][1] + (height_of_current_box * .5):
-            raw_text_output.append(text_boxes[i][3][0])
-            if debug:
-                print('3')
-        # Catches final iteration
-        if i == len(text_boxes) - 1:
-            raw_text_output.append(''.join(raw_text[previous_text_index:]))
+        # FIRST BOX
+        if i == 0:
+            # if it is not aligned with
+            if not vertically_aligned(i, i + 1, text_boxes):
+                raw_text_output.append(raw_text[0])
+        # FINAL BOX
+        elif i == len(text_boxes) - 1:
+            if horizontally_aligned_with_previous(i, text_boxes, height_of_previous_box) \
+                    and vertically_aligned(i, i - 1, text_boxes):
+                raw_text_output.append(''.join(raw_text[previous_text_index:]))
+            else:
+                raw_text_output.append(''.join(raw_text[-1]))
+        # ALL OTHER BOXES
+        else:
+            height_of_previous_box = text_boxes[i - 1][1][1] - text_boxes[i - 1][0][1]
+            # IF ALIGNED WITH PREVIOUS
+            if horizontally_aligned_with_previous(i, text_boxes, height_of_previous_box) \
+                    and vertically_aligned(i, i - 1, text_boxes):
+
+                if part_of_previous == False:
+                    previous_text_index = \
+                        [ii for ii in range(len(raw_text)) if text_boxes[i - 1][3][0] in raw_text[ii]][0]
+                    part_of_previous = True
+                # IF NOT ALIGNED WITH NEXT
+                if not vertically_aligned(i, i + 1, text_boxes) \
+                        or not horizontally_aligned_with_next(i, text_boxes, height_of_current_box):
+                    # DUMP
+                    next_text_index = \
+                    [ii for ii in range(previous_text_index, len(raw_text)) if text_boxes[i][
+                        3][0] in raw_text[ii]][0] + previous_text_index
+                    if previous_text_index==next_text_index:
+                        raw_text_output.append(''.join(raw_text[previous_text_index:next_text_index+1]))
+                    else:
+                        raw_text_output.append(''.join(raw_text[previous_text_index:next_text_index]))
+                    part_of_previous = False
+                    previous_text_index = next_text_index
+            # IF NOT ALIGNED WITH PREVIOUS OR NEXT
+            elif not vertically_aligned(i, i + 1, text_boxes) \
+                    or not horizontally_aligned_with_next(i, text_boxes, height_of_current_box):
+                raw_text_output.append(text_boxes[i][3][0])
+            # IF NOT ALIGNED WITH PREVIOUS, MAY BE ALIGNED WITH NEXT
+            elif not vertically_aligned(i, i - 1, text_boxes) \
+                    or not horizontally_aligned_with_previous(i, text_boxes, height_of_current_box):
+                part_of_previous = False
     return raw_text_output
 
 
