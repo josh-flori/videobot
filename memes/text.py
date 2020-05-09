@@ -122,7 +122,6 @@ def create_paragraphs(text_boxes, raw_text, debug=False):
 
     raw_text_output = []
     part_of_previous = False
-
     for i in range(len(text_boxes)):
         height_of_current_box = text_boxes[i][1][1] - text_boxes[i][0][1]
         # FIRST BOX
@@ -143,7 +142,6 @@ def create_paragraphs(text_boxes, raw_text, debug=False):
             # IF ALIGNED WITH PREVIOUS
             if horizontally_aligned_with_previous(i, text_boxes, height_of_previous_box) \
                     and vertically_aligned(i, i - 1, text_boxes):
-
                 if part_of_previous == False:
                     previous_text_index = \
                         [ii for ii in range(len(raw_text)) if text_boxes[i - 1][3][0] in raw_text[ii]][0]
@@ -154,11 +152,10 @@ def create_paragraphs(text_boxes, raw_text, debug=False):
                     # DUMP
                     next_text_index = \
                     [ii for ii in range(previous_text_index, len(raw_text)) if text_boxes[i][
-                        3][0] in raw_text[ii]][0] + previous_text_index
-                    if previous_text_index==next_text_index:
-                        raw_text_output.append(''.join(raw_text[previous_text_index:next_text_index+1]))
-                    else:
-                        raw_text_output.append(''.join(raw_text[previous_text_index:next_text_index]))
+                        3][0] in raw_text[ii]][0]
+                    raw_text_output.append(''.join(raw_text[previous_text_index:next_text_index+1]))
+                    print(previous_text_index)
+                    print(next_text_index)
                     part_of_previous = False
                     previous_text_index = next_text_index
             # IF NOT ALIGNED WITH PREVIOUS OR NEXT

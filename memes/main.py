@@ -27,13 +27,13 @@ limit = 10
 reddit.get_images(meme_path, 'memes', 'week', limit)
 
 all_audio_text = []  # chunked text at paragraph level to create audio files
-i=3
+i=4
 for i in range(4, 5):
 
     # PART 1: GET MEME DATA FROM APIs (VISION & AUTO_ML)
     image = cv2.imread('/users/josh.flori/desktop/memes/' + str(i) + '.jpg')
     raw_text_response = text.get_image_text_from_google('/users/josh.flori/desktop/memes/' + str(i) + '.jpg')
-    text_boxes, raw_text = text.create_blocks_from_paragraph(raw_text_response)
+    text_boxesssss, raw_texttttt = text.create_blocks_from_paragraph(raw_text_response)
     annotation = frames.get_frame_prediction_from_google(meme_path, i, config.custom_model_project_id,
                                                          config.custom_model_model_id)
 
