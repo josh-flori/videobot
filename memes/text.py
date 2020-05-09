@@ -105,29 +105,44 @@ def create_paragraphs(text_boxes, raw_text, debug=False):
      that point you could find where that text is in raw_text and join everything together between that point and the
      previous point, whether that be the beginning or the previous stop point"""
 
+    def vertically_aligned(i, text_boxes):
+        midpoint = text_boxes[i][1][0] - text_boxes[i][0][0]
+        is_vertically_aligned = midpoint > text_boxes[i - 1][0][0] and midpoint < text_boxes[i - 1][1][0]
+        return is_vertically_aligned
+
     # start loop at second box since first box cannot be part of a previous paragraph
     raw_text_output = []
     part_of_previous = False
-    for i in range(1, len(text_boxes) - 1):
+    for i in range(1, len(text_boxes)):
+        print('...'+str(i))
         height_of_previous_box = text_boxes[i - 1][1][1] - text_boxes[i - 1][0][1]
-        if text_boxes[i][0][1] < text_boxes[i - 1][1][1] + (height_of_previous_box * .5):
+        height_of_current_box = text_boxes[i][1][1] - text_boxes[i][0][1]
+        if text_boxes[i][0][1] < text_boxes[i - 1][1][1] + (height_of_previous_box * .5) and vertically_aligned(i,
+                                                                                                                text_boxes):
             if part_of_previous == False:
-                previous_text_index = i - 1
-            part_of_previous = True
-            if debug:
-                print(text_boxes[i])
-                print('part of previous box')
+                previous_text_index = [ii for ii in range(len(raw_text)) if text_boxes[i - 1][3][0] in raw_text[ii]][0]
+                print(previous_text_index)
+                part_of_previous = True
         # True at the end of a sequence of boxes that meet the criteria
         elif part_of_previous == True:
             next_raw_text_index = [ii for ii in range(len(raw_text)) if text_boxes[i][3][0] in raw_text[ii]][0]
-            raw_text_output.append(raw_text[previous_text_index:next_raw_text_index])
-            previous_text_index = next_raw_text_index
+            raw_text_output.append(''.join(raw_text[previous_text_index:next_raw_text_index]))
             part_of_previous = False
+            if debug:
+                print(previous_text_index)
+                print(next_raw_text_index)
+                print('--2')
+            previous_text_index = next_raw_text_index
+            print(previous_text_index)
+        # true when this box not part of previous box and not part of next box either...
+        elif i < len(text_boxes) and not text_boxes[i + 1][0][1] < text_boxes[i][1][1] + (height_of_current_box * .5):
+            raw_text_output.append(text_boxes[i][3][0])
+            if debug:
+                print('3')
+        # Catches final iteration
+        if i == len(text_boxes) - 1:
+            raw_text_output.append(''.join(raw_text[previous_text_index:]))
     return raw_text_output
 
 
-# this is tricky... because what happens when you have a sequence of text that doesn't belong... then you get some
-# that does belong?
-# if part_of_previous is false and one belongs, then flip previous_index to previous i
-
-create_paragraphs(text_boxes, raw_text)
+create_paragraphs(text_boxes, raw_text, True)
