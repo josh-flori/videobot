@@ -151,3 +151,22 @@ it just feels so inelegant to base this off approximations. i should do it on th
 the audio len is measured in milliseconds
 
 fuckk yaaaa i did it. time to comment the shit out of this shit
+
+###############
+#     5/6     #
+###############
+lotsssss of problems that need to be fixed still....
+big one right at this exact moment is...
+so i have the case of a bad model! creating this boxes...
+[(0, 420), (582, 801), (255, 255, 255)]
+[(0, 400), (508, 426), (255, 255, 255)]
+which overlap and are just not good.... we need to clean that shit up...
+
+ok i suppose i solved that... still have shit issues... like google thinking things are paragraphs that fucking arent...
+
+
+###############
+#     5/7     #
+###############
+you could define a paragraph as any text box that comes the same distance below the previous text box as the one before
+it as well as being within the same horizontal plane

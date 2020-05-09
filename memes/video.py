@@ -5,7 +5,17 @@ from pydub import AudioSegment
 
 AudioSegment.ffmpeg = '/users/josh.flori/pycharmprojects/bla/'
 
-def compute_slide_duration(audio_output_path, audio_text, slide_text, img_num, padding_path):
+def combine_audio(audio_output_path, output_audio_fname, i):
+    """ Combine audio for a single meme"""
+    combined = AudioSegment.empty()
+    for f in sorted(os.listdir(audio_output_path)):
+        if f[0:len(str(i)) + 1] == str(i) + '.':
+            combined += AudioSegment.from_mp3(audio_output_path + f)
+    combined.export(audio_output_path + output_audio_fname, format="mp3")
+    audio_length = len(combined)
+    return audio_length
+
+def compute_slide_durations(audio_output_path, audio_text, slide_text, img_num, padding_path):
     """ The purpose of this function is to distribute the length of each audio clip across all relevant
         slide_texts which make up that audio but are at a smaller chunked level than the audio clips themselves"""
     n = 0  # to be used to iterate through slide_text to match up against audio_text
@@ -28,10 +38,17 @@ def compute_slide_duration(audio_output_path, audio_text, slide_text, img_num, p
                 n += 1
     return slide_durations
 
+# so the problem im having is due to multiple paragraphs in a slide... i hadn't run into that before. i wonder what the
+# occurence of that is and if i can just ignore those...
 
 def create_video(slide_durations, meme_output_path, audio_output_path, output_audio_fname, i):
     image_paths = [meme_output_path + f for f in sorted(os.listdir(meme_output_path)) if
                    f[0:len(str(i)) + 1] == str(i) + '.']
+    print(image_paths)
+    print(slide_durations)
+    print(len(image_paths))
+    print(len(slide_durations))
+
     # DEBUGGING
     # print(len(image_paths))
     # print(len(slide_durations))

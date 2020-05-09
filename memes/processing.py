@@ -94,7 +94,7 @@ def write_images(image, all_boxes, output_path, img_num):
     that means the current text in the loop exists in the same frame as text from the previous loop and BOTH of
     those, up until all text in that frame, are the text for that SLIDE and act as a single entity within slide_text. """
     # Create the final slide with no rectangles covering anything up.
-    cv2.imwrite(output_path + str(img_num) + "." + str(len(all_boxes) + 1) + '.jpg', image)
+    cv2.imwrite(output_path + str(img_num) + "." + str(len(all_boxes) + 100) + '.jpg', image)
     slide_text = []
     sub_slide_text = []
     previous_which = ''
@@ -102,6 +102,8 @@ def write_images(image, all_boxes, output_path, img_num):
         in_frame, which = is_in_frame(all_boxes, i)
         is_sliver = is_a_sliver(all_boxes, i)
         has_text = has_any_text(all_boxes, i)
+        print(i)
+        print(all_boxes[i])
         if not in_frame and not is_sliver:
             # true when first text was in frame and next is not
             if sub_slide_text != []:
@@ -115,7 +117,8 @@ def write_images(image, all_boxes, output_path, img_num):
                 slide_text.append([['empty']])
 
             image = cv2.rectangle(image, all_boxes[i][0], all_boxes[i][1], all_boxes[i][2], -1)
-            cv2.imwrite(output_path + str(img_num) + "." + str(i + 1) + '.jpg', image)
+            cv2.imwrite(output_path + str(img_num) + "." + str(i + 100) + '.jpg', image) # add 100 so when we run
+            # video.createvideo the sorted() function doens't stick 1.10.jpg in front of 1.2.jpg >:[
         # make sure it's not a stupid sliver that doesn't need to exist
         elif all_boxes[i][2][1] == 0:
             # DEBUGGING

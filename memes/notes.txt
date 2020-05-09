@@ -7,7 +7,7 @@
 # USED FOR: used to return audio_text. imagine a set of paragraphs like ['blab\nlabla\n','bla\nblabla\n']. ok, cool.
 # do you pass those to the audio function to create two mp3s? no! what if there are empty slides in between those
 # paragraphs? the video needs empty audio for empty slides after all! to answer that question and insert such empty
-# mp3s, we use box_text_type (in combination with raw_text) which may look like this:
+# mp3s, we use box_text_type which may look like this:
 # ['text', 'text', 'empty', 'text', 'text']... in this scenario, the first two 'text's correspond to the
 # first paragraph in raw_text, then there is an empty slide with no text, then the last two texts correspond to the
 # second paragraph. we determine which texts correspond to which paragraph because the count of newlines in
@@ -19,8 +19,8 @@
 # --- slide_text --- = ['first_frame', 'what kim jong un saw before', 'the sedatives kicked in', 'empty']
 # WHAT IS: a list of text for each slide, technically its a list of list of lists
 # RETURNED FROM: write_images()
-# USED BY: compute_slide_duration(...audio_text, slide_text...)
-# USED FOR: slide text is sub-audio-text level, meaning a single audio_text elements may contain multiple slide_text
+# USED BY: compute_slide_durations(...audio_text, slide_text...)
+# USED FOR: slide text is sub-audio-text level, meaning a single audio_text element may contain multiple slide_text
 # elements. so we loop through slide text to see what all is in a given audio_text, which then is matched against the
 # audio files where we ask how long they are, then we distribute that length (seconds) across each slide_text,
 # determining slide length
@@ -41,5 +41,5 @@
 # reality a sentence) up into multiple requests. so we must send a single paragraph at once and break up on our end
 # when determining slide length.
 # RETURNED FROM: get_audio_text(box_text_type, raw_text)
-# USED BY: compute_slide_duration(...audio_text, slide_text...)
+# USED BY: compute_slide_durations(...audio_text, slide_text...)
 # USED FOR: see explanation for slide_text

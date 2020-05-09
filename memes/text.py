@@ -6,6 +6,7 @@ from google.cloud import vision
 ignore irrelevant text and return bounding a list of bounding boxes around all relevant text boxes. Text boxes are 
 combined with frame boxes from frames.py to create a total list of boxes needed to unveil the meme, bit by bit. """
 
+
 def get_image_text_from_google(image_path):
     """ Uses google vision api to return full text from meme image. A credentialled connection must have already been
     created but does not need to be passed. full_response contains a large nested structure of text information at
@@ -43,7 +44,7 @@ def should_exclude(p_text):
                    re.search('@.*', p_text) is not None,
                    re.search('imgflip.com', p_text) is not None,
                    re.search('[0-9] hours ago', p_text) is not None,
-                   re.search('made with mematic', p_text) is not None,
+                   re.search('mematic', p_text) is not None,
                    re.search('www', p_text) is not None,
                    re.search('made with love', p_text) is not None,
                    p_text.isdigit(),
@@ -58,7 +59,7 @@ def should_exclude(p_text):
 def create_blocks_from_paragraph(raw_text_response):
     """ Returns a list of (x,y,rgb,text) bounding boxes for all relevant text in image. Returning raw_text
     and putting the text in the image block is slightly redundant, but each have their purposes."""
-    boxes = []
+    text_boxes = []
     raw_text = []
     # Iterate through text object returned by get_image_text_from_google()
     for page in raw_text_response.pages:
@@ -77,7 +78,7 @@ def create_blocks_from_paragraph(raw_text_response):
                         # Split multi-line text into equal sized vertical sections to create greater visual appeal
                         subd = (verts[2].y - verts[0].y) / p_text.count('\n')
                         for i in range(p_text.count('\n')):
-                            boxes.append(
+                            text_boxes.append(
                                 [(verts[0].x, int(verts[0].y + (subd * i))),
                                  (verts[2].x, int(verts[0].y + (subd * (i + 1)))),
                                  (255, 0, 0),
@@ -85,4 +86,48 @@ def create_blocks_from_paragraph(raw_text_response):
                     # DEBUGGING
                     # else:
                     # print('skipping')
-        return boxes, raw_text
+        return text_boxes, raw_text
+
+
+def create_paragraphs(text_boxes, raw_text, debug=False):
+    """" It may be the case that google vision takes some true paragraph like 'my ability to fall asleep at night'
+    and turns it into seperate paragraphs. this is a problem because it both slows down the audio and makes it sound
+    very unnatural. The goal of this function is to identify any text boxes which should all be a single paragraph
+    and combine them into a single text box. The logic works like this: assume sequentiality, which is to say that
+    boxes that are in the same paragraph will only ever be next to each other in sequence, the midpoint of a
+    given textbox should be within the left/right bounds of the previous box (aligned vertically) AND the vertical
+    space between this box and the previous should be no more than .5x the height of the previous box (in fact it
+    will usually be very close to 0x higher than he end of the previous box). If all those conditions are true,
+    we assume the current box belongs with the previous box even if google doesn't think so (
+    damn google).
+    We leave text_boxes the way they are a d use text_boxes to alter raw_text. Ok.
+    So I guess what you could do is have a variable that stays true UNTIL a text box is not part of the previous one. At
+     that point you could find where that text is in raw_text and join everything together between that point and the
+     previous point, whether that be the beginning or the previous stop point"""
+
+    # start loop at second box since first box cannot be part of a previous paragraph
+    raw_text_output = []
+    part_of_previous = False
+    for i in range(1, len(text_boxes) - 1):
+        height_of_previous_box = text_boxes[i - 1][1][1] - text_boxes[i - 1][0][1]
+        if text_boxes[i][0][1] < text_boxes[i - 1][1][1] + (height_of_previous_box * .5):
+            if part_of_previous == False:
+                previous_text_index = i - 1
+            part_of_previous = True
+            if debug:
+                print(text_boxes[i])
+                print('part of previous box')
+        # True at the end of a sequence of boxes that meet the criteria
+        elif part_of_previous == True:
+            next_raw_text_index = [ii for ii in range(len(raw_text)) if text_boxes[i][3][0] in raw_text[ii]][0]
+            raw_text_output.append(raw_text[previous_text_index:next_raw_text_index])
+            previous_text_index = next_raw_text_index
+            part_of_previous = False
+    return raw_text_output
+
+
+# this is tricky... because what happens when you have a sequence of text that doesn't belong... then you get some
+# that does belong?
+# if part_of_previous is false and one belongs, then flip previous_index to previous i
+
+create_paragraphs(text_boxes, raw_text)

@@ -5,6 +5,7 @@ import numpy as np
 meme. Those bounding boxes are cleaned up and then combined with text boxes from text.py to create a total 
 list of boxes needed to unveil the meme, bit by bit. """
 
+
 def get_frame_prediction_from_google(meme_path, img_num, project_id, model_id):
     """ I trained a custom model using google's auto_ml product to put bounding boxes around what I defined as
     relevant frames. So in a 4 panel meme, it would learn where those four panels are. This function returns bounding
@@ -43,6 +44,28 @@ def perc_to_pix(image, perc, dim):
     else:
         val = int(image.shape[0] * perc)
     return val
+
+
+def remove_overlapping_frames(boxes):
+    """ If two frames overlap, return the larger of the two. """
+    non_overlapping_frames = []
+    for box in boxes:
+        for boxx in boxes:
+            # TODO - there is a better way to loop over this shit.... have to make sure you don't compare the same
+            #  box to itself otherwise it will be viewed as 'overlapping' in technicallity and be returned
+            #  automatically, even if it's the smaller of two overlapping boxes.
+            if box!=boxx:
+                # This checks if anything overlaps
+                if not box[1][1] < boxx[0][1] or boxx[1][1] < box[0][1] or box[1][0] < boxx[0][0] or boxx[1][0] < box[0][0]:
+                    larger = box if (box[1][1]-box[0][1])*(box[1][0]-box[0][0]) > (boxx[1][1]-boxx[0][1])*(boxx[1][
+                        0]-boxx[0][0]) else boxx
+                    gaaaa=[(box[1][1]-box[0][1])*(box[1][0]-box[0][0]),(boxx[1][1]-boxx[0][1])*(boxx[1][
+                        0]-boxx[0][0])]
+                    print(gaaaa)
+                    print(max(gaaaa))
+                    if larger not in non_overlapping_frames:
+                        non_overlapping_frames.append(larger)
+    return non_overlapping_frames
 
 
 def create_blocks_from_annotations(annotation, image):
