@@ -37,6 +37,25 @@ def slide_text(paragraph):
     return p_text, conf
 
 
+def add_period(p_text):
+    """ The purpose of this function is to add periods for proper audio spacing, so for instance given this
+    paragraph: '"A degree in art is useless"\nMe as an art major:\n', we would want to add a period after the word
+    useless so the audio module creates natural sounding speech. The idea is to create pauses where needed."""
+    quote_count = 0
+    p_text_output = ''
+    for i in range(len(p_text)):
+        if p_text[i] != '"':
+            p_text_output += p_text[i]
+        elif p_text[i] == '"' and quote_count == 0:
+            p_text_output += p_text[i]
+            quote_count += 1
+        elif p_text[i] == '"' and quote_count == 1:
+            p_text_output += '.'
+            p_text_output += p_text[i]
+            quote_count = 0
+    return p_text_output
+
+
 def should_exclude(p_text):
     """ Returns True if paragraph text is evaluated as garbage. """
     exclude = any([p_text == 'Details',
@@ -67,6 +86,7 @@ def create_blocks_from_paragraph(raw_text_response):
             for paragraph in block.paragraphs:
                 verts = paragraph.bounding_box.vertices
                 p_text, conf = slide_text(paragraph)
+                p_text = add_period(p_text)
                 # DEBUGGING
                 # print(p_text)
                 # print(should_exclude(p_text))

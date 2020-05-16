@@ -170,3 +170,11 @@ ok i suppose i solved that... still have shit issues... like google thinking thi
 ###############
 you could define a paragraph as any text box that comes the same distance below the previous text box as the one before
 it as well as being within the same horizontal plane
+
+###############
+#     5/16    #
+###############
+fixed bug in compute_slide_durations. easiest bug fix ever, hopefully it works across all cases.
+now i have the interesting scenario where you need to CREATE more paragraphs.... or at least create pauses... cuz we
+have this case: '"A degree in art is useless"\nMe as an art major:\n' where it's all one paragraph and the voice doesn't
+ pause at 'useless'... i guess you could... add periods. that would probably work.
