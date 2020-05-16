@@ -109,7 +109,10 @@ def create_paragraphs(text_boxes, raw_text, debug=False):
         """ Compare two adjacent text boxes to see if they both fall along a vertical line drawn through the midpoint of
         the reference box: i """
         midpoint = text_boxes[i][1][0] - ((text_boxes[i][1][0] - text_boxes[i][0][0]) / 2)
-        is_vertically_aligned = midpoint > text_boxes[ii][0][0] and midpoint < text_boxes[ii][1][0]
+        midpoint_ii = text_boxes[ii][1][0] - ((text_boxes[ii][1][0] - text_boxes[ii][0][0]) / 2)
+        is_vertically_aligned = midpoint > text_boxes[ii][0][0] and midpoint < text_boxes[ii][1][0] and not text_boxes[
+                                                                                                                i][0][
+                                                                                                                0] > midpoint_ii
         return is_vertically_aligned
 
     def horizontally_aligned_with_next(i, text_boxes, height_of_current_box):
@@ -120,6 +123,9 @@ def create_paragraphs(text_boxes, raw_text, debug=False):
         """ Compare two adjacent text boxes to see if the next comes vertically within .5 height of previous. """
         return text_boxes[i][0][1] < text_boxes[i - 1][1][1] + (height_of_previous_box * .5)
 
+    # If the whole thing is 1 paragraph, just skip it
+    if len(raw_text) == 1:
+        return raw_text
     raw_text_output = []
     part_of_previous = False
     for i in range(len(text_boxes)):
@@ -127,10 +133,12 @@ def create_paragraphs(text_boxes, raw_text, debug=False):
         # FIRST BOX
         if i == 0:
             # if it is not aligned with
-            if not vertically_aligned(i, i + 1, text_boxes):
+            if not vertically_aligned(i, i + 1, text_boxes) or not horizontally_aligned_with_next(i, text_boxes,
+                                                                                                  height_of_current_box):
                 raw_text_output.append(raw_text[0])
         # FINAL BOX
         elif i == len(text_boxes) - 1:
+            height_of_previous_box = text_boxes[i - 1][1][1] - text_boxes[i - 1][0][1]
             if horizontally_aligned_with_previous(i, text_boxes, height_of_previous_box) \
                     and vertically_aligned(i, i - 1, text_boxes):
                 raw_text_output.append(''.join(raw_text[previous_text_index:]))
@@ -151,11 +159,9 @@ def create_paragraphs(text_boxes, raw_text, debug=False):
                         or not horizontally_aligned_with_next(i, text_boxes, height_of_current_box):
                     # DUMP
                     next_text_index = \
-                    [ii for ii in range(previous_text_index, len(raw_text)) if text_boxes[i][
-                        3][0] in raw_text[ii]][0]
-                    raw_text_output.append(''.join(raw_text[previous_text_index:next_text_index+1]))
-                    print(previous_text_index)
-                    print(next_text_index)
+                        [ii for ii in range(previous_text_index, len(raw_text)) if text_boxes[i][
+                            3][0] in raw_text[ii]][0]
+                    raw_text_output.append(''.join(raw_text[previous_text_index:next_text_index + 1]))
                     part_of_previous = False
                     previous_text_index = next_text_index
             # IF NOT ALIGNED WITH PREVIOUS OR NEXT
@@ -166,7 +172,5 @@ def create_paragraphs(text_boxes, raw_text, debug=False):
             elif not vertically_aligned(i, i - 1, text_boxes) \
                     or not horizontally_aligned_with_previous(i, text_boxes, height_of_current_box):
                 part_of_previous = False
+                previous_text_index = [ii for ii in range(len(raw_text)) if text_boxes[i][3][0] in raw_text[ii]][0]
     return raw_text_output
-
-
-create_paragraphs(text_boxes, raw_text, True)

@@ -20,7 +20,8 @@ def create_paragraphs(text_boxes, raw_text, debug=False):
         midpoint = text_boxes[i][1][0] - ((text_boxes[i][1][0] - text_boxes[i][0][0]) / 2)
         midpoint_ii = text_boxes[ii][1][0] - ((text_boxes[ii][1][0] - text_boxes[ii][0][0]) / 2)
         is_vertically_aligned = midpoint > text_boxes[ii][0][0] and midpoint < text_boxes[ii][1][0] and not text_boxes[
-            i][0][0] > midpoint_ii
+                                                                                                                i][0][
+                                                                                                                0] > midpoint_ii
         return is_vertically_aligned
 
     def horizontally_aligned_with_next(i, text_boxes, height_of_current_box):
@@ -41,7 +42,8 @@ def create_paragraphs(text_boxes, raw_text, debug=False):
         # FIRST BOX
         if i == 0:
             # if it is not aligned with
-            if not vertically_aligned(i, i + 1, text_boxes):
+            if not vertically_aligned(i, i + 1, text_boxes) or not horizontally_aligned_with_next(i, text_boxes,
+                                                                                                  height_of_current_box):
                 raw_text_output.append(raw_text[0])
         # FINAL BOX
         elif i == len(text_boxes) - 1:
@@ -82,7 +84,8 @@ def create_paragraphs(text_boxes, raw_text, debug=False):
                 previous_text_index = [ii for ii in range(len(raw_text)) if text_boxes[i][3][0] in raw_text[ii]][0]
     return raw_text_output
 
-for i in range(0,9):
+
+for i in range(1053, 1054):
     image = cv2.imread('/users/josh.flori/desktop/memes/' + str(i) + '.jpg')
     raw_text_response = text.get_image_text_from_google('/users/josh.flori/desktop/memes/' + str(i) + '.jpg')
     text_boxes, raw_text = text.create_blocks_from_paragraph(raw_text_response)
