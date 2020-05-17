@@ -194,4 +194,19 @@ I'm going to focus today on updating my model... it needs some work
 * slide_durations still giving me some problems... ok we have an issue where the paragraph function i created that uses
 hard rules to squash things into a single paragraph is bOrKeN.... i need to... add logic so that if the height of the
 two boxes are not the same, don't squash into paragraph, assuming true paragraphs will all have same height...... that
-seems like a risky assumption... no, i think checking left alignment would be a better idea.
+seems like a risky assumption... no, i think checking left alignment would be a better idea. ... eh, i think it might be
+ easier to just turn it off and see how well things perform in the longer run....
+
+* next issue, slivers are still left in all_boxes which throws off the slide durations function, i need to remove
+slivers from all_boxes not just ignore them when writing frames... done.
+* next issue... slide_durations is set to assume that a slide_text is always at a level <= audio_text, but that's not
+true for slides where there are multiple paragraphs inside a frame. in that case you would have audio text like
+'BUT...\n', 'HAVE YOU EVER SEEN ONE OF THESE???\n' and slide text like
+'BUT... HAVE YOU EVER SEEN ONE OF THESE???'
+.... how do you handle this?
+you could say, for each text... if it is not first, empty, or found in later audio_texts, and not in audio_text[i], then
+ that means it's a greater length.... and you should append the corresponding audio text to a seperate list, then once
+ you're done... wait....
+once you hit that point you can create a new sub loop.... where you basically go the other way... and do everything you
+need to do,..... that may work...
+

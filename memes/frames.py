@@ -62,8 +62,8 @@ def remove_overlapping_frames(boxes):
                     if not box[1][1] < boxx[0][1] or boxx[1][1] < box[0][1] or box[1][0] < boxx[0][0] or boxx[1][0] < \
                             box[0][0]:
                         larger = box if (box[1][1] - box[0][1]) * (box[1][0] - box[0][0]) > (
-                                    boxx[1][1] - boxx[0][1]) * (boxx[1][
-                                                                    0] - boxx[0][0]) else boxx
+                                boxx[1][1] - boxx[0][1]) * (boxx[1][
+                                                                0] - boxx[0][0]) else boxx
                         gaaaa = [(box[1][1] - box[0][1]) * (box[1][0] - box[0][0]),
                                  (boxx[1][1] - boxx[0][1]) * (boxx[1][
                                                                   0] - boxx[0][0])]
@@ -99,3 +99,12 @@ def trim_white_space(image, boxes):
             if abs(np.mean(image[i]) - np.mean(image[i - 1])) > 100:
                 box[0] = (box[0][0], i)
                 break
+
+
+def remove_slivers(all_boxes):
+    """  auto_ml sometimes creates a sliver of a block - something small and irrelevant. This discards such boxes."""
+    no_slivers = []
+    for box in all_boxes:
+        if box[1][1] - box[0][1] > 41:
+            no_slivers.append(box)
+    return no_slivers

@@ -20,15 +20,6 @@ def align_tops(all_boxes):
                 all_boxes[i][0] = (all_boxes[i][0][0], all_boxes[i - 1][0][1])
 
 
-def is_a_sliver(all_boxes, i):
-    """  auto_ml sometimes creates a sliver of a block - something small and irrelevant. This discards such boxes."""
-    if all_boxes[i][1][1] - all_boxes[i][0][1] < 41:
-        sliver = True
-    else:
-        sliver = False
-    return sliver
-
-
 def is_in_frame(all_boxes, i):
     """ Checks whether a given box is within an auto_ml identified frame. This should only be true for text boxes.
     The purpose of this is to avoid creating blocks over text boxes if that text is within a frame. This
@@ -101,11 +92,10 @@ def write_images(image, all_boxes, output_path, img_num):
     previous_which = ''
     for i in reversed(range(len(all_boxes))):
         in_frame, which = is_in_frame(all_boxes, i)
-        is_sliver = is_a_sliver(all_boxes, i)
         has_text = has_any_text(all_boxes, i)
         print(i)
         print(all_boxes[i])
-        if not in_frame and not is_sliver:
+        if not in_frame:
             # true when first text was in frame and next is not
             if sub_slide_text != []:
                 slide_text.append(sub_slide_text)

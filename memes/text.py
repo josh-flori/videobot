@@ -146,9 +146,8 @@ def create_paragraphs(text_boxes, raw_text, debug=False):
         return text_boxes[i][0][1] < text_boxes[i - 1][1][1] + (height_of_previous_box * .5)
 
     def left_aligned(i, ii, text_boxes):
-        width_refrence_box = text_boxes[i][1][0]-text_boxes[i][0][0]
-        return abs(text_boxes[i][0][0] - text_boxes[ii][0][0]) < width_refrence_box/4
-
+        width_refrence_box = text_boxes[i][1][0] - text_boxes[i][0][0]
+        return abs(text_boxes[i][0][0] - text_boxes[ii][0][0]) < width_refrence_box / 4
 
     # If the whole thing is 1 paragraph, just skip it
     if len(raw_text) == 1:
@@ -160,13 +159,14 @@ def create_paragraphs(text_boxes, raw_text, debug=False):
         # FIRST BOX
         if i == 0:
             # if it is not aligned with
-            if not vertically_aligned(i, i + 1, text_boxes) or not horizontally_aligned_with_next(i, text_boxes,
-                                                                                                  height_of_current_box):
+            if not vertically_aligned(i, i + 1, text_boxes) or not \
+                    horizontally_aligned_with_next(i, text_boxes, height_of_current_box):
                 raw_text_output.append(raw_text[0])
         # FINAL BOX
         elif i == len(text_boxes) - 1:
             height_of_previous_box = text_boxes[i - 1][1][1] - text_boxes[i - 1][0][1]
-            if horizontally_aligned_with_previous(i, text_boxes, height_of_previous_box) \
+            if left_aligned(i, i - 1, text_boxes) and horizontally_aligned_with_previous(i, text_boxes,
+                                                                                         height_of_previous_box) \
                     and vertically_aligned(i, i - 1, text_boxes):
                 raw_text_output.append(''.join(raw_text[previous_text_index:]))
             else:
@@ -175,7 +175,8 @@ def create_paragraphs(text_boxes, raw_text, debug=False):
         else:
             height_of_previous_box = text_boxes[i - 1][1][1] - text_boxes[i - 1][0][1]
             # IF ALIGNED WITH PREVIOUS
-            if horizontally_aligned_with_previous(i, text_boxes, height_of_previous_box) \
+            if left_aligned(i, i - 1, text_boxes) and horizontally_aligned_with_previous(i, text_boxes,
+                                                                                         height_of_previous_box) \
                     and vertically_aligned(i, i - 1, text_boxes):
                 if part_of_previous == False:
                     previous_text_index = \

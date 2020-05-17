@@ -7,9 +7,9 @@ os.environ[
     'GOOGLE_APPLICATION_CREDENTIALS'] = '/users/josh.flori/pycharmprojects/reddit-vision-239200-50adace0d3bf.json'
 model_client = automl.AutoMlClient()
 model_full_id = model_client.model_path(config.custom_model_project_id, "us-central1", config.custom_model_model_id)
-#
-# response = model_client.deploy_model(model_full_id)
-# print("Model deployment finished. {}".format(response.result()))
+
+response = model_client.deploy_model(model_full_id)
+print("Model deployment finished. {}".format(response.result()))
 
 os.environ['ACCESS_KEY'] = config.aws_ACCESS_KEY
 os.environ['SECRET'] = config.aws_SECRET
@@ -27,14 +27,13 @@ limit = 10
 # reddit.get_images(meme_path, 'memes', 'day', limit)
 
 all_audio_text = []  # chunked text at paragraph level to create audio files
-
-for i in range(2,3):
-
+i=2
+for i in range(2, 3):
     # PART 1: GET MEME DATA FROM APIs (VISION & AUTO_ML)
     image = cv2.imread('/users/josh.flori/desktop/memes/' + str(i) + '.jpg')
     raw_text_response = text.get_image_text_from_google('/users/josh.flori/desktop/memes/' + str(i) + '.jpg')
     text_boxes, raw_text = text.create_blocks_from_paragraph(raw_text_response)
-    raw_text = text.create_paragraphs(text_boxes, raw_text, debug=False)
+    # raw_text = text.create_paragraphs(text_boxes, raw_text, debug=False)
     raw_text = text.add_newline(raw_text)
     annotation = frames.get_frame_prediction_from_google(meme_path, i, config.custom_model_project_id,
                                                          config.custom_model_model_id)
@@ -43,6 +42,7 @@ for i in range(2,3):
     frames.expand_to_edge(annotation)
     frame_boxes = frames.create_blocks_from_annotations(annotation, image)
     frames.trim_white_space(image, frame_boxes)
+    frame_boxes = frames.remove_slivers(frame_boxes)
     # frame_boxes = frames.remove_overlapping_frames(frame_boxes)
 
     # PART 3: CREATE MASTER LIST OF BOX OBJECTS
@@ -69,8 +69,5 @@ for i in range(2,3):
     video.combine_audio(audio_output_path, 'out.mp3', i)
     video.create_video(slide_durations, meme_output_path, audio_output_path, 'out.mp3', i)
 
-
-
-
-# response = model_client.undeploy_model(model_full_id)
-# print("Model un-deployment finished. {}".format(response.result()))
+response = model_client.undeploy_model(model_full_id)
+print("Model un-deployment finished. {}".format(response.result()))
