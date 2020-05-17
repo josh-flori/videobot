@@ -14,9 +14,10 @@ def align_tops(all_boxes):
         area_cur = (all_boxes[i][1][0] - all_boxes[i][0][0]) * (all_boxes[i][1][1] - all_boxes[i][0][1])
         area_prev = (all_boxes[i - 1][1][0] - all_boxes[i - 1][0][0]) * (
                 all_boxes[i - 1][1][1] - all_boxes[i - 1][0][1])
-        if abs((area_cur - area_prev) / area_cur) < .05 and abs(all_boxes[i][0][1] - all_boxes[i - 1][0][1]) < 20:
-            print('aligning..')
-            all_boxes[i][0] = (all_boxes[i][0][0], all_boxes[i - 1][0][1])
+        if all_boxes[i][2][1] == 255 and all_boxes[i - 1][2][1] == 255:
+            if abs((area_cur - area_prev) / area_cur) < .1 and abs(all_boxes[i][0][1] - all_boxes[i - 1][0][1]) < 50:
+                print('aligning..')
+                all_boxes[i][0] = (all_boxes[i][0][0], all_boxes[i - 1][0][1])
 
 
 def is_a_sliver(all_boxes, i):
@@ -117,7 +118,7 @@ def write_images(image, all_boxes, output_path, img_num):
                 slide_text.append([['empty']])
 
             image = cv2.rectangle(image, all_boxes[i][0], all_boxes[i][1], all_boxes[i][2], -1)
-            cv2.imwrite(output_path + str(img_num) + "." + str(i + 100) + '.jpg', image) # add 100 so when we run
+            cv2.imwrite(output_path + str(img_num) + "." + str(i + 100) + '.jpg', image)  # add 100 so when we run
             # video.createvideo the sorted() function doens't stick 1.10.jpg in front of 1.2.jpg >:[
         # make sure it's not a stupid sliver that doesn't need to exist
         elif all_boxes[i][2][1] == 0:

@@ -71,7 +71,9 @@ def should_exclude(p_text):
                    p_text.strip().lower() == 'srgrafo',
                    'adultswim' in p_text,
                    p_text.strip() == 'ORSAIR',
-                   '[deleted]' in p_text])
+                   '[deleted]' in p_text,
+                  'Ad ' in p_text,
+                  re.search('[0-9]{1,2}:[0-9]{2}', p_text) is not None and len(p_text) <= 5])
     return exclude
 
 
@@ -194,3 +196,14 @@ def create_paragraphs(text_boxes, raw_text, debug=False):
                 part_of_previous = False
                 previous_text_index = [ii for ii in range(len(raw_text)) if text_boxes[i][3][0] in raw_text[ii]][0]
     return raw_text_output
+
+def add_newline(raw_text):
+    """ It happens that the assertion in get_audio_text() basically requires each paragraph end in \n since thats how
+    most of them are. This function just appends \n to anything that doesn't have it. """
+    out = []
+    for p_text in raw_text:
+        if p_text[-1:] != '\n':
+            out.append(p_text + '\n')
+        else:
+            out.append(p_text)
+    return out

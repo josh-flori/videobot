@@ -181,3 +181,14 @@ pause at 'useless'... i guess you could... add periods. that would probably work
 
 ok so now we have a problem of slide durations not being equal in length to the number of images....
 it looks like i need to update my break logic... it has to break sooner than it is...
+
+I'm going to focus today on updating my model... it needs some work
+
+###############
+#     5/17    #
+###############
+* trained new model, tripled training set size, looks like it should perform better...
+* right now i see an issue where if each raw_text does not end with a \n, that's a problem. fixed that.
+* debugging remove_overlapping_frames... it was not returning anything if there was only one box
+* also seeing issues with slide_durations not giving enough output.. i think the issue comes from how i combine
+paragraphs...
