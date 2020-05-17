@@ -22,7 +22,7 @@ def align_tops(all_boxes):
 
 def is_a_sliver(all_boxes, i):
     """  auto_ml sometimes creates a sliver of a block - something small and irrelevant. This discards such boxes."""
-    if all_boxes[i][1][1] - all_boxes[i][0][1] < 20:
+    if all_boxes[i][1][1] - all_boxes[i][0][1] < 41:
         sliver = True
     else:
         sliver = False

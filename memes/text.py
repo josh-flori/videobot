@@ -72,8 +72,8 @@ def should_exclude(p_text):
                    'adultswim' in p_text,
                    p_text.strip() == 'ORSAIR',
                    '[deleted]' in p_text,
-                  'Ad ' in p_text,
-                  re.search('[0-9]{1,2}:[0-9]{2}', p_text) is not None and len(p_text) <= 5])
+                   'Ad ' in p_text,
+                   re.search('[0-9]{1,2}:[0-9]{2}', p_text) is not None and len(p_text) <= 5])
     return exclude
 
 
@@ -121,7 +121,7 @@ def create_paragraphs(text_boxes, raw_text, debug=False):
     space between this box and the previous should be no more than .5x the height of the previous box (in fact it
     will usually be very close to 0x higher than he end of the previous box). If all those conditions are true,
     we assume the current box belongs with the previous box even if google doesn't think so (
-    damn google).
+    damn google). We also check left alignment.
     We leave text_boxes the way they are a d use text_boxes to alter raw_text. Ok.
     So I guess what you could do is have a variable that stays true UNTIL a text box is not part of the previous one. At
      that point you could find where that text is in raw_text and join everything together between that point and the
@@ -144,6 +144,11 @@ def create_paragraphs(text_boxes, raw_text, debug=False):
     def horizontally_aligned_with_previous(i, text_boxes, height_of_previous_box):
         """ Compare two adjacent text boxes to see if the next comes vertically within .5 height of previous. """
         return text_boxes[i][0][1] < text_boxes[i - 1][1][1] + (height_of_previous_box * .5)
+
+    def left_aligned(i, ii, text_boxes):
+        width_refrence_box = text_boxes[i][1][0]-text_boxes[i][0][0]
+        return abs(text_boxes[i][0][0] - text_boxes[ii][0][0]) < width_refrence_box/4
+
 
     # If the whole thing is 1 paragraph, just skip it
     if len(raw_text) == 1:
@@ -196,6 +201,7 @@ def create_paragraphs(text_boxes, raw_text, debug=False):
                 part_of_previous = False
                 previous_text_index = [ii for ii in range(len(raw_text)) if text_boxes[i][3][0] in raw_text[ii]][0]
     return raw_text_output
+
 
 def add_newline(raw_text):
     """ It happens that the assertion in get_audio_text() basically requires each paragraph end in \n since thats how

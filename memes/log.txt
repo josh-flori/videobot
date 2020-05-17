@@ -190,5 +190,8 @@ I'm going to focus today on updating my model... it needs some work
 * trained new model, tripled training set size, looks like it should perform better...
 * right now i see an issue where if each raw_text does not end with a \n, that's a problem. fixed that.
 * debugging remove_overlapping_frames... it was not returning anything if there was only one box
-* also seeing issues with slide_durations not giving enough output.. i think the issue comes from how i combine
-paragraphs...
+* updated align_tops()
+* slide_durations still giving me some problems... ok we have an issue where the paragraph function i created that uses
+hard rules to squash things into a single paragraph is bOrKeN.... i need to... add logic so that if the height of the
+two boxes are not the same, don't squash into paragraph, assuming true paragraphs will all have same height...... that
+seems like a risky assumption... no, i think checking left alignment would be a better idea.
