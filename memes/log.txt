@@ -218,3 +218,8 @@ second_of_silence = AudioSegment.silent() # use default
 second_of_silence = AudioSegment.silent(duration=1000) # or be explicit
 
 # the trouble with adding silence is you have to do it to the audio files as well...
+
+###############
+#     5/18    #
+###############
+made sure trim_whitespace only activates if there IS whitespace at top.

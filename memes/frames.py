@@ -93,13 +93,20 @@ def trim_white_space(image, boxes):
     """ Trim bad white space from annotated boxes in the case where a box has been annotated around a picture with
     extra, empty white pixels hanging above the top of it. """
     for box in boxes:
-        # loop from top row to bottom row of that box
+        starts_with_white = [x[0] == 255 for x in image[box[0][1]]].count(True) / len(image[box[0][1]]) >= .99
         for i in range(box[0][1] + 1, box[1][1]):
             # when this is true it denotes the transition from the row being all-white to non-all-white.
-            if abs(np.mean(image[i]) - np.mean(image[i - 1])) > 100:
+
+            # you could also use this to be more explicit if you needed to be
+            # [x[0] == 255 for x in image[i - 1]].count(True) / len(image[i - 1]) >= .99 and \
+            # [x[0] == 255 for x in image[i]].count(True) / len(image[i - 1]) < .9:
+
+            if abs(np.mean(image[i]) - np.mean(image[i - 1])) > 100 and starts_with_white:
                 box[0] = (box[0][0], i)
                 break
 
+
+# so you want to make sure it's at the top...
 
 def remove_slivers(all_boxes):
     """  auto_ml sometimes creates a sliver of a block - something small and irrelevant. This discards such boxes."""

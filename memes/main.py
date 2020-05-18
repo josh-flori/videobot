@@ -8,8 +8,8 @@ os.environ[
 model_client = automl.AutoMlClient()
 model_full_id = model_client.model_path(config.custom_model_project_id, "us-central1", config.custom_model_model_id)
 
-response = model_client.deploy_model(model_full_id)
-print("Model deployment finished. {}".format(response.result()))
+# response = model_client.deploy_model(model_full_id)
+# print("Model deployment finished. {}".format(response.result()))
 
 os.environ['ACCESS_KEY'] = config.aws_ACCESS_KEY
 os.environ['SECRET'] = config.aws_SECRET
@@ -20,15 +20,15 @@ meme_output_path = '/users/josh.flori/desktop/memes_output/'
 audio_output_path = '/users/josh.flori/desktop/mp3_output/'
 padding_dir = '/users/josh.flori/desktop/'
 output_audio_fname = 'out.mp3'
-limit = 10
+limit = 40
 
 # GET IMAGE DATA FROM REDDIT
 
-reddit.get_images(meme_path, 'memes', 'day', limit)
+# reddit.get_images(meme_path, 'memes', 'day', limit)
 
 all_audio_text = []  # chunked text at paragraph level to create audio files
 
-for i in range(9,10):
+for i in range(3,4):
     # PART 1: GET MEME DATA FROM APIs (VISION & AUTO_ML)
     image = cv2.imread('/users/josh.flori/desktop/memes/' + str(i) + '.jpg')
     raw_text_response = text.get_image_text_from_google('/users/josh.flori/desktop/memes/' + str(i) + '.jpg')
@@ -60,15 +60,15 @@ for i in range(9,10):
     audio_text = processing.get_audio_text(box_text_type, raw_text)
     all_audio_text.append(audio_text)
     audio.create_mp3s(audio_text, i, audio_output_path, padding_dir)
-    extend_short_audio(audio_output_path, audio_text, i)
+    audio.extend_short_audio(audio_output_path, audio_text, i)
 
     # PART 5: CREATE VIDEO
-    slide_durations = compute_slide_durations(audio_output_path, audio_text, slide_text, i,
+    slide_durations = video.compute_slide_durations(audio_output_path, audio_text, slide_text, i,
                                                     '/users/josh.flori/desktop/padding.mp3')
     video.combine_audio(audio_output_path, 'out.mp3', i)
-    create_video(slide_durations, meme_output_path, audio_output_path, 'out.mp3', i)
+    video.create_video(slide_durations, meme_output_path, audio_output_path, 'out.mp3', i)
 
 
 #
-response = model_client.undeploy_model(model_full_id)
-print("Model un-deployment finished. {}".format(response.result()))
+# response = model_client.undeploy_model(model_full_id)
+# print("Model un-deployment finished. {}".format(response.result()))
