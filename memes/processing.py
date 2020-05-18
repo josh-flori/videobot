@@ -66,6 +66,38 @@ def true_sort(all_boxes):
     return true_sort_boxes
 
 
+def update_true_sort(true_sorted_boxes):
+    """ there's an issue with sorting happening here... if there is text in white region to left of frame,
+    sorting does not work. you could make an explicit rule... going through the sorted boxes... and if each box is
+    text, if it is not in a frame and is to the left of a frame, move it to be before the subsequent frame... that
+    would work..."""
+    out = []
+    last_frame = -1
+    insert_at = 0
+    for i in range(len(true_sorted_boxes)):
+        if i == 0:
+            out.append(true_sorted_boxes[0])
+        if true_sorted_boxes[i][2][1] == 255:
+            insert_at = 0
+            last_frame = true_sorted_boxes[i]
+            if true_sorted_boxes[i] not in out:
+                out.append(last_frame)
+        if true_sorted_boxes[i][2][1] == 0 and last_frame != -1 and i > 0:
+            last_frame_i = out.index(last_frame)
+            aside_frame = true_sorted_boxes[i][0][1] > last_frame[0][1] and true_sorted_boxes[i][1][1] < last_frame[1][1]
+            print(last_frame_i)
+            if aside_frame and not is_in_frame(true_sorted_boxes, i)[0]:
+                if insert_at == 0:
+                    out.insert(last_frame_i, true_sorted_boxes[i])
+                    insert_at = last_frame_i
+                else:
+                    out.insert(insert_at, true_sorted_boxes[i])
+                insert_at += 1
+        elif true_sorted_boxes[i][2][1] != 255:
+            out.append(true_sorted_boxes[i])
+    return out
+
+
 def write_images(image, all_boxes, output_path, img_num):
     """ Creates images in succession with each boxed element being unveiled slide after slide. Also returns
     slide_text which is the entire text string for that given unveiled video slide. This differs from and will be
