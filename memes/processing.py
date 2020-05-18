@@ -82,11 +82,11 @@ def update_true_sort(true_sorted_boxes):
             last_frame = true_sorted_boxes[i]
             if true_sorted_boxes[i] not in out:
                 out.append(last_frame)
-        if true_sorted_boxes[i][2][1] == 0 and last_frame != -1 and i > 0:
+        if true_sorted_boxes[i][2][1] == 0 and last_frame != -1 and i > 0 and not is_in_frame(true_sorted_boxes, i)[0]:
             last_frame_i = out.index(last_frame)
             aside_frame = true_sorted_boxes[i][0][1] > last_frame[0][1] and true_sorted_boxes[i][1][1] < last_frame[1][1]
             print(last_frame_i)
-            if aside_frame and not is_in_frame(true_sorted_boxes, i)[0]:
+            if aside_frame:
                 if insert_at == 0:
                     out.insert(last_frame_i, true_sorted_boxes[i])
                     insert_at = last_frame_i

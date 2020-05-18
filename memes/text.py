@@ -76,7 +76,8 @@ def should_exclude(p_text):
                    re.search('[0-9]{1,2}:[0-9]{2}', p_text) is not None and len(p_text) <= 5,
                    re.search('[0-9]{1,2}, [0-9]{4} AT [0-9]{1,2}:[0-9]{1,2}', p_text) is not None,
                    p_text == "I'm Luis! ^_^\n",
-                   p_text == "June 20, 2017 Science\n"])
+                   p_text == "June 20, 2017 Science\n",
+                   p_text== "GAME THRONES\n"])
     return exclude
 
 

@@ -35,8 +35,8 @@ for i in range(4,5):
     text_boxes, raw_text = text.create_blocks_from_paragraph(raw_text_response)
     # raw_text = text.create_paragraphs(text_boxes, raw_text, debug=False)
     raw_text = text.add_newline(raw_text)
-    # annotation = frames.get_frame_prediction_from_google(meme_path, i, config.custom_model_project_id,
-    #                                                      config.custom_model_model_id)
+    annotation = frames.get_frame_prediction_from_google(meme_path, i, config.custom_model_project_id,
+                                                         config.custom_model_model_id)
 
     # PART 2: CLEAN UP THE DATA
     frames.expand_to_edge(annotation)
@@ -51,7 +51,7 @@ for i in range(4,5):
     processing.align_tops(all_boxes)
     all_boxes = sorted(all_boxes, key=lambda x: (x[0][1], x[0][0]))  # RESORT NOW THAT THINGS ARE ALIGNED...
     true_sorted_boxes = processing.true_sort(all_boxes)
-    true_sorted_boxes = update_true_sort(true_sorted_boxes)
+    true_sorted_boxes = processing.update_true_sort(true_sorted_boxes)
 
     slide_text = processing.write_images(image, true_sorted_boxes, meme_output_path, i)
     slide_text = processing.clean_slide_text(slide_text)
@@ -72,5 +72,5 @@ for i in range(4,5):
 
 
 #
-response = model_client.undeploy_model(model_full_id)
-print("Model un-deployment finished. {}".format(response.result()))
+# response = model_client.undeploy_model(model_full_id)
+# print("Model un-deployment finished. {}".format(response.result()))
