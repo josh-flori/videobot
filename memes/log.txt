@@ -210,3 +210,11 @@ you could say, for each text... if it is not first, empty, or found in later aud
 once you hit that point you can create a new sub loop.... where you basically go the other way... and do everything you
 need to do,..... that may work...
 
+
+* things are going well... what i think i want to do is FINALLY move onto a higher level function (quality improvement,
+not just a bug fix) and extend audio out. a bit.
+# but honestly i should probably take a break... eat something... come back....
+second_of_silence = AudioSegment.silent() # use default
+second_of_silence = AudioSegment.silent(duration=1000) # or be explicit
+
+# the trouble with adding silence is you have to do it to the audio files as well...

@@ -53,3 +53,20 @@ def create_mp3s(audio_text, image_num, directory, padding_dir):
             empty = AudioSegment.from_mp3(padding_dir + 'padding.mp3')
             empty.export(directory + str(image_num) + '.' + str(f) + '.mp3', format="mp3")
         f += 1
+
+
+def extend_short_audio(audio_output_path, audio_text, img_num):
+    """ It happens that there may be an entire paragraph/slide with the only word being 'hey', or something short.
+    Well, the problem with this is it doesn't take long to speak and then the slide rushes by as soon as it is
+    spoken. But this is too fast. We need to pause at least some minimum amount for ease of comprehension. This
+    function will add silence to any audio_text equal to the difference between audio length and the determined
+    minimum viable length. """
+    min_vi_len = 1.5
+    for i in range(len(audio_text)):
+        audio_len = len(AudioSegment.from_mp3(audio_output_path + str(img_num) + '.' + str(i) + '.mp3')) / 1000
+        if audio_len < min_vi_len:
+            dif=min_vi_len-audio_len
+            audio_file = AudioSegment.from_mp3(audio_output_path + str(img_num) + '.' + str(i) + '.mp3')
+            audio_file += AudioSegment.silent(duration=dif*1000)
+            audio_file.export(audio_output_path + str(img_num) + '.' + str(i) + '.mp3')
+

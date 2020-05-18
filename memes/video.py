@@ -25,7 +25,7 @@ def compute_slide_durations(audio_output_path, audio_text, slide_text, img_num, 
     padding_time = len(AudioSegment.from_mp3(padding_path)) / 1000
     # loop through the text that created the audio files
     for i in range(len(audio_text)):
-        audio_len = len(AudioSegment.from_mp3(audio_output_path + str(img_num) + '.' + str(i) + '.mp3')) / 1000
+        audio_len = (len(AudioSegment.from_mp3(audio_output_path + str(img_num) + '.' + str(i) + '.mp3')) / 1000)
         temp_text = ''
         for text in slide_text[n:]:
             # print('Loop: ' + str(i) + 'n: ' + str(n) + '\nSlide_text: ' + text + '\nAudio_text[i]: ' + audio_text[i])
@@ -36,7 +36,6 @@ def compute_slide_durations(audio_output_path, audio_text, slide_text, img_num, 
             if i < len(audio_text) - 1 and text != 'empty':
                 look_ahead = any([text in audio_text[ii].replace('\n', ' ') for ii in range(i + 1, len(audio_text))])
                 if look_ahead:
-                    print('hit')
                     break
                 # this will be triggered when slide_text is longer than audio_text, like this:
                 # audio_text == 'BUT...\n', 'HAVE YOU EVER SEEN ONE OF THESE???\n' and slide text like
@@ -65,7 +64,7 @@ def compute_slide_durations(audio_output_path, audio_text, slide_text, img_num, 
                 break
             elif text in audio_text[i].replace('\n', ' '):
                 # proportionalize the amount that text is of the entire text
-                slide_durations.append((len(text) / len(audio_text[i])) * audio_len)
+                slide_durations.append((len(text) / len(audio_text[i].replace('\n', ''))) * audio_len)
                 n += 1
     return slide_durations
 
@@ -84,4 +83,4 @@ def create_video(slide_durations, meme_output_path, audio_output_path, output_au
     clips = [ImageClip(image_paths[i]).set_duration(slide_durations[i]) for i in range(len(image_paths))]
     concat_clip = concatenate_videoclips(clips, method='compose')
     concat_clip.write_videofile('/users/josh.flori/desktop/out' + str(i) + '.mp4',
-                                audio=audio_output_path + output_audio_fname, fps=15)
+                                audio=audio_output_path + output_audio_fname, fps=5)
