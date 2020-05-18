@@ -77,24 +77,31 @@ def update_true_sort(true_sorted_boxes):
     for i in range(len(true_sorted_boxes)):
         if i == 0:
             out.append(true_sorted_boxes[0])
-        if true_sorted_boxes[i][2][1] == 255:
-            insert_at = 0
-            last_frame = true_sorted_boxes[i]
-            if true_sorted_boxes[i] not in out:
-                out.append(last_frame)
-        if true_sorted_boxes[i][2][1] == 0 and last_frame != -1 and i > 0 and not is_in_frame(true_sorted_boxes, i)[0]:
-            last_frame_i = out.index(last_frame)
-            aside_frame = true_sorted_boxes[i][0][1] > last_frame[0][1] and true_sorted_boxes[i][1][1] < last_frame[1][1]
-            print(last_frame_i)
-            if aside_frame:
-                if insert_at == 0:
-                    out.insert(last_frame_i, true_sorted_boxes[i])
-                    insert_at = last_frame_i
+            if true_sorted_boxes[i][2][1] == 255:
+                insert_at = 0
+                last_frame = true_sorted_boxes[i]
+                if true_sorted_boxes[i] not in out:
+                    out.append(last_frame)
+        else:
+            if true_sorted_boxes[i][2][1] == 255:
+                insert_at = 0
+                last_frame = true_sorted_boxes[i]
+                if true_sorted_boxes[i] not in out:
+                    out.append(last_frame)
+            if true_sorted_boxes[i][2][1] == 0 and last_frame != -1 and not is_in_frame(true_sorted_boxes, i)[0]:
+                last_frame_i = out.index(last_frame)
+                aside_frame = true_sorted_boxes[i][0][1] > last_frame[0][1] and true_sorted_boxes[i][1][1] < last_frame[1][1]
+                if aside_frame:
+                    if insert_at == 0:
+                        out.insert(last_frame_i, true_sorted_boxes[i])
+                        insert_at = last_frame_i
+                    else:
+                        out.insert(insert_at, true_sorted_boxes[i])
+                    insert_at += 1
                 else:
-                    out.insert(insert_at, true_sorted_boxes[i])
-                insert_at += 1
-        elif true_sorted_boxes[i][2][1] != 255:
-            out.append(true_sorted_boxes[i])
+                    out.append(true_sorted_boxes[i])
+            elif true_sorted_boxes[i][2][1] != 255:
+                out.append(true_sorted_boxes[i])
     return out
 
 
