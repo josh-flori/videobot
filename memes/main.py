@@ -28,7 +28,7 @@ limit = 40
 
 all_audio_text = []  # chunked text at paragraph level to create audio files
 
-for i in range(5):
+for i in range(13,20):
     # PART 1: GET MEME DATA FROM APIs (VISION & AUTO_ML)
     image = cv2.imread('/users/josh.flori/desktop/memes/' + str(i) + '.jpg')
     raw_text_response = text.get_image_text_from_google('/users/josh.flori/desktop/memes/' + str(i) + '.jpg')

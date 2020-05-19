@@ -27,14 +27,31 @@ def compute_slide_durations(audio_output_path, audio_text, slide_text, img_num, 
     for i in range(len(audio_text)):
         audio_len = (len(AudioSegment.from_mp3(audio_output_path + str(img_num) + '.' + str(i) + '.mp3')) / 1000)
         temp_text = ''
+        proceed = True
         for text in slide_text[n:]:
+            if text == 'first_frame':
+                slide_durations.append(0)
+                n += 1
+            elif text == 'empty':
+                slide_durations.append(padding_time)
+                n += 1
+                break
+            elif text in audio_text[i].replace('\n', ' '):
+                print(text)
+                # proportionalize the amount that text is of the entire text
+                slide_durations.append((len(text) / len(audio_text[i].replace('\n', ''))) * audio_len)
+                n += 1
+                proceed = False
+                if text == audio_text[i].replace('\n', ' ') or audio_text[i].replace('\n', ' ').endswith(text):
+                    proceed = True
             # print('Loop: ' + str(i) + 'n: ' + str(n) + '\nSlide_text: ' + text + '\nAudio_text[i]: ' + audio_text[i])
             # you want a way to break out of this loop because the problem is otherwise it will continue on through
-            # the end which is bad because then it would increment n based on the presense of 'empty' which may exist
+            # the end which is bad because then it would increment n based on the presence of 'empty' which may exist
             # later in slide text than you want to go, thus skipping past where you need to be next iteration through
             # slide_text[n:]...
-            if i < len(audio_text) - 1 and text != 'empty':
-                look_ahead = any([text in audio_text[ii].replace('\n', ' ') for ii in range(i + 1, len(audio_text))])
+            if i < len(audio_text) - 1 and text != 'empty' and proceed:
+                look_ahead = any(
+                    [text in audio_text[ii].replace('\n', ' ') for ii in range(i + 1, len(audio_text))])
                 if look_ahead:
                     break
                 # this will be triggered when slide_text is longer than audio_text, like this:
@@ -46,26 +63,15 @@ def compute_slide_durations(audio_output_path, audio_text, slide_text, img_num, 
                         audio_len += len(AudioSegment.from_mp3(
                             audio_output_path + str(img_num) + '.' + str(i) + '.mp3')) / 1000
                         # fast-forward through audio_text
-                        for a in range(i+1, len(audio_text)):
-                            if audio_text[a].replace('\n','') in text:
-                                temp_text+=audio_text[a]
+                        for a in range(i + 1, len(audio_text)):
+                            if audio_text[a].replace('\n', '') in text:
+                                temp_text += audio_text[a]
                                 audio_len += len(AudioSegment.from_mp3(
                                     audio_output_path + str(img_num) + '.' + str(a) + '.mp3')) / 1000
-                                i+=1
+                                i += 1
                             else:
                                 break
                             slide_durations.append((len(text) / len(temp_text)) * audio_len)
-            if text == 'first_frame':
-                slide_durations.append(0)
-                n += 1
-            elif text == 'empty':
-                slide_durations.append(padding_time)
-                n += 1
-                break
-            elif text in audio_text[i].replace('\n', ' '):
-                # proportionalize the amount that text is of the entire text
-                slide_durations.append((len(text) / len(audio_text[i].replace('\n', ''))) * audio_len)
-                n += 1
     return slide_durations
 
 

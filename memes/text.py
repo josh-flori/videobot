@@ -27,7 +27,8 @@ def slide_text(paragraph):
     be parsed. """
     p_text = ''
     conf = []
-    lookup = {'': '', 'type: LINE_BREAK\n': '\n', 'type: SPACE\n': ' ', 'type: EOL_SURE_SPACE\n': '\n'}
+    lookup = {'': '', 'type: LINE_BREAK\n': '\n', 'type: SPACE\n': ' ', 'type: EOL_SURE_SPACE\n': '\n',
+              'type: HYPHEN\n':'\n'}
     for word in paragraph.words:
         for symbol in word.symbols:
             p_text += symbol.text
