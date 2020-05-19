@@ -28,7 +28,7 @@ limit = 40
 
 all_audio_text = []  # chunked text at paragraph level to create audio files
 
-for i in range(16):
+for i in range(29,30):
     # PART 1: GET MEME DATA FROM APIs (VISION & AUTO_ML)
     image = cv2.imread('/users/josh.flori/desktop/memes/' + str(i) + '.jpg')
     raw_text_response = text.get_image_text_from_google('/users/josh.flori/desktop/memes/' + str(i) + '.jpg')
@@ -44,6 +44,7 @@ for i in range(16):
     frame_boxes = frames.create_blocks_from_annotations(annotation, image)
     frames.trim_white_space(image, frame_boxes)
     frame_boxes = frames.remove_slivers(frame_boxes)
+    frames.remove_unneeded_outer_frame(frame_boxes, image)
     # frame_boxes = frames.remove_overlapping_frames(frame_boxes)
 
     # PART 3: CREATE MASTER LIST OF BOX OBJECTS

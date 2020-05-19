@@ -97,16 +97,15 @@ def trim_white_space(image, boxes):
         for i in range(box[0][1] + 1, box[1][1]):
             # when this is true it denotes the transition from the row being all-white to non-all-white.
 
-            # you could also use this to be more explicit if you needed to be
-            # [x[0] == 255 for x in image[i - 1]].count(True) / len(image[i - 1]) >= .99 and \
-            # [x[0] == 255 for x in image[i]].count(True) / len(image[i - 1]) < .9:
+            # old method
+            # abs(np.mean(image[i]) - np.mean(image[i - 1])) > 100
 
-            if abs(np.mean(image[i]) - np.mean(image[i - 1])) > 100 and starts_with_white:
+            if [x[0] == 255 for x in image[i - 1]].count(True) / len(image[i - 1]) >= .99 and [x[0] == 255 for x in
+                                                                                               image[i]].count(
+                    True) / len(image[i - 1]) < .9 and starts_with_white:
                 box[0] = (box[0][0], i)
                 break
 
-
-# so you want to make sure it's at the top...
 
 def remove_slivers(all_boxes):
     """  auto_ml sometimes creates a sliver of a block - something small and irrelevant. This discards such boxes."""
@@ -115,3 +114,12 @@ def remove_slivers(all_boxes):
         if box[1][1] - box[0][1] > 41:
             no_slivers.append(box)
     return no_slivers
+
+
+def remove_unneeded_outer_frame(frame_boxes, image):
+    """ It may be the case that automl identifies that entire image as a frame AS WELL AS identifying frames within
+    it. In this case, write_images will fail because text boxes would be within two frames at once which just isn't
+    what we want to be working with. The solution is to remove the outer frame. If a frame is around the entire """
+    for i in frame_boxes:
+        if i[0][0] == 0 and i[0][1] == 0 and i[1][0] == image.shape[1] and i[1][1] == image.shape[0]:
+            frame_boxes.remove(i)
