@@ -1,5 +1,6 @@
 import cv2
 import numpy as np
+from operator import itemgetter
 
 """ This module exists between frames.py/text.py and creation of the audio and video files. See notes.txt for an 
 explanation on how all the text lists fit together. """
@@ -67,7 +68,7 @@ def true_sort(all_boxes):
 
 
 def update_true_sort(true_sorted_boxes):
-    """ there's an issue with sorting happening here... if there is text in white region to left of frame,
+    """ there's an issue with sorting happening here... if there is text in white region to left of an empty frame,
     sorting does not work. you could make an explicit rule... going through the sorted boxes... and if each box is
     text, if it is not in a frame and is to the left of a frame, move it to be before the subsequent frame... that
     would work..."""
@@ -90,7 +91,8 @@ def update_true_sort(true_sorted_boxes):
                     out.append(last_frame)
             if true_sorted_boxes[i][2][1] == 0 and last_frame != -1 and not is_in_frame(true_sorted_boxes, i)[0]:
                 last_frame_i = out.index(last_frame)
-                aside_frame = true_sorted_boxes[i][0][1] > last_frame[0][1] and true_sorted_boxes[i][1][1] < last_frame[1][1]
+                aside_frame = true_sorted_boxes[i][0][1] > last_frame[0][1] and true_sorted_boxes[i][1][1] < \
+                              last_frame[1][1]
                 if aside_frame:
                     if insert_at == 0:
                         out.insert(last_frame_i, true_sorted_boxes[i])
@@ -239,3 +241,41 @@ def get_audio_text(box_text_type, raw_text):
             audio_text.append('empty')
 
     return audio_text
+
+
+
+def rerank(raw_text, true_sorted_boxes):
+    """ The purpose of this function is to update the order of raw_text according to how the boxes have changed
+    position, if at all. Remember that raw_text and text_boxes are generated at the same time and then raw_text is
+    passed off to create audio, but then the text_boxes are combined with frame_boxes and the order of the text may
+    be change through sorting, but this is indepedent from the raw_text. Thus, your audio and slides may become out
+    of order. So, when we produce our text_boxes, we pass in what the RANK of that text was out of the original
+    ordered raw_text, where there is 1 rank for each text box, less than or equal to the number of paragraph texts.
+    This function will first split the raw_text on '\n' and also append the number indicating which paragraph it came
+    from. Then, we re-order the texts according to the updated rank (new_rank) obtained from true_sorted boxes. Then,
+    for all texts within each original p_text, we combine them back into paragraphs so the audio function can read it
+    correctly. """
+    # Get updated rank
+    ranks = [i[4] for i in true_sorted_boxes if i[2][1] == 0]
+
+    # Split out raw_text on newline so it matches the number of ranked elements above, but keep information regarding
+    # which paragraph it belonged to so they can be joined later.
+    split_out = []
+    for i in range(len(raw_text)):
+        for ii in raw_text[i].split('\n'):
+            if ii != '':
+                split_out.append([ii, i])
+
+    reordered_raw_text = [split_out[i] for i in ranks]
+
+
+    indexes = []
+    for i in reordered_raw_text:
+        if i[1] not in indexes:
+            indexes.append(i[1])
+
+    joined_text = []
+    for num in indexes:
+        joined_text.append('\n'.join([i[0] for i in reordered_raw_text if i[1] == num]))
+    joined_text=[i+'\n' for i in joined_text]
+    return joined_text

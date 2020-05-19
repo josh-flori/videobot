@@ -229,3 +229,11 @@ work. you could make an explicit rule... going through the sorted boxes... and i
 frame and is to the left of a frame, move it to be before the subsequent frame... that would work...
 
 * so i guess we have a serious problem with slide_durations where text is VALIDLY ahead of the present text...
+
+
+###############
+#     5/19    #
+###############
+I think the best way to handle this would be... when you create the text boxes, put another item in there as [i]
+indicating the rank of that box from the ORIGINAL raw_text, then when you have your completed sort, pass that rank back
+to the raw_text and sort it accordingly.

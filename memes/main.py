@@ -28,14 +28,14 @@ limit = 40
 
 all_audio_text = []  # chunked text at paragraph level to create audio files
 
-for i in range(15, 20):
+for i in range(16):
     # PART 1: GET MEME DATA FROM APIs (VISION & AUTO_ML)
     image = cv2.imread('/users/josh.flori/desktop/memes/' + str(i) + '.jpg')
     raw_text_response = text.get_image_text_from_google('/users/josh.flori/desktop/memes/' + str(i) + '.jpg')
     text_boxes, raw_text = text.create_blocks_from_paragraph(raw_text_response)
     # raw_text = text.create_paragraphs(text_boxes, raw_text, debug=False)
     raw_text = text.add_newline(raw_text)
-    raw_text = text.sort_text(text_boxes)
+    # raw_text = text.sort_text(text_boxes,raw_boxes)
     annotation = frames.get_frame_prediction_from_google(meme_path, i, config.custom_model_project_id,
                                                          config.custom_model_model_id)
 
@@ -60,7 +60,8 @@ for i in range(15, 20):
     # print(true_sorted_boxes)
     # PART 4: CREATE AUDIO CLIPS
     box_text_type = processing.encode_box_text_type(true_sorted_boxes)
-    audio_text = processing.get_audio_text(box_text_type, raw_text)
+    reordered_raw_text = processing.rerank(raw_text, true_sorted_boxes)
+    audio_text = processing.get_audio_text(box_text_type, reordered_raw_text)
     all_audio_text.append(audio_text)
     audio.create_mp3s(audio_text, i, audio_output_path, padding_dir)
     audio.extend_short_audio(audio_output_path, audio_text, i)

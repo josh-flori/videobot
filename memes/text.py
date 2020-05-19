@@ -84,9 +84,13 @@ def should_exclude(p_text):
 
 def create_blocks_from_paragraph(raw_text_response):
     """ Returns a list of (x,y,rgb,text) bounding boxes for all relevant text in image. Returning raw_text
-    and putting the text in the image block is slightly redundant, but each have their purposes."""
+    and putting the text in the image block is slightly redundant, but each have their purposes.
+    To each text box we also append the rank corresponding to where that chunk of text came from out of the original
+    raw_text. This is so when we alter the sorting of the boxes later independent of raw_text, we can pass the
+    updated rank back into raw_text for use in the audio module, and so slide/audio are aligned. """
     text_boxes = []
     raw_text = []
+    rank = 0
     # Iterate through text object returned by get_image_text_from_google()
     for page in raw_text_response.pages:
         for block in page.blocks:
@@ -97,7 +101,6 @@ def create_blocks_from_paragraph(raw_text_response):
                 # DEBUGGING
                 # print(p_text)
                 # print(should_exclude(p_text))
-
                 if not should_exclude(p_text) and np.mean(conf) > .8:
                     raw_text.append(p_text)
                     # Break up multi-line paragraphs
@@ -109,7 +112,9 @@ def create_blocks_from_paragraph(raw_text_response):
                                 [(verts[0].x, int(verts[0].y + (subd * i))),
                                  (verts[2].x, int(verts[0].y + (subd * (i + 1)))),
                                  (255, 0, 0),
-                                 [p_text.split('\n')[i]]])
+                                 [p_text.split('\n')[i]],
+                                 rank])
+                            rank += 1
                     # DEBUGGING
                     # else:
                     # print('skipping')
@@ -221,16 +226,28 @@ def add_newline(raw_text):
     return out
 
 
-def sort_text(text_boxes):
+def sort_text(raw_boxes):
     """" It just so happens that magically, most of the time, the raw_text returned from google is in the exactly
-    proper sequence and I have not had to align or sorrt it in any way until now. But it happens 4 panel memes
-    (and more im sure) that one text paragraphs on left may be slightly lower than text panel on right causing the
+    proper sequence and I have not had to align or sort it in any way until now. But it happens in 4 panel memes
+    (and more im sure) that one text paragraph on left may be slightly lower than text panel on right causing the
     raw text to go in that backward order. Thus, we need to sort any paragraphs that are very close to each other on
     a line. This works similar to processing.align_tops."""
-    for i in range(1, len(text_boxes)):
-        height_cur = text_boxes[i][1][1] - text_boxes[i][0][1]
-        height_prev = text_boxes[i - 1][1][1] - text_boxes[i - 1][0][1]
-        if abs(height_cur - height_prev) < 10 and abs(text_boxes[i][0][1] - text_boxes[i - 1][0][1]) < 30:
-            text_boxes[i][0] = (text_boxes[i][0][0], text_boxes[i - 1][0][1])
-    sorted_boxes = sorted(text_boxes, key=lambda x: (x[0][1], x[0][0]))
-    return [i[3][0]+'\n' for i in sorted_boxes]
+    for i in range(1, len(raw_boxes)):
+        # height_cur = raw_boxes[i][1][1] - raw_boxes[i][0][1]
+        # height_prev = raw_boxes[i - 1][1][1] - raw_boxes[i - 1][0][1]
+        if abs(raw_boxes[i][0][1] - raw_boxes[i - 1][0][1]) < 30:
+            raw_boxes[i][0] = (raw_boxes[i][0][0], raw_boxes[i - 1][0][1])
+    sorted_boxes = sorted(raw_boxes, key=lambda x: (x[0][1], x[0][0]))
+    raw_text = [i[3][0] for i in sorted_boxes], [i[3][0] for i in sorted_boxes]
+    text_boxes = []
+
+    for i in sorted_boxes:
+        p_text = i[3][0]
+        subd = (i[1][1] - i[0][1]) / p_text.count('\n')
+        for ii in range(p_text.count('\n')):
+            text_boxes.append(
+                [(i[0][0], int(i[0][1] + (subd * ii))),
+                 (i[1][0], int(i[0][1] + (subd * (ii + 1)))),
+                 (255, 0, 0),
+                 [p_text.split('\n')[ii]]])
+    return text_boxes, raw_text
