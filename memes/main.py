@@ -28,13 +28,14 @@ limit = 40
 
 all_audio_text = []  # chunked text at paragraph level to create audio files
 
-for i in range(13,20):
+for i in range(15, 20):
     # PART 1: GET MEME DATA FROM APIs (VISION & AUTO_ML)
     image = cv2.imread('/users/josh.flori/desktop/memes/' + str(i) + '.jpg')
     raw_text_response = text.get_image_text_from_google('/users/josh.flori/desktop/memes/' + str(i) + '.jpg')
     text_boxes, raw_text = text.create_blocks_from_paragraph(raw_text_response)
     # raw_text = text.create_paragraphs(text_boxes, raw_text, debug=False)
     raw_text = text.add_newline(raw_text)
+    raw_text = text.sort_text(text_boxes)
     annotation = frames.get_frame_prediction_from_google(meme_path, i, config.custom_model_project_id,
                                                          config.custom_model_model_id)
 
@@ -69,7 +70,6 @@ for i in range(13,20):
                                                     '/users/josh.flori/desktop/padding.mp3')
     video.combine_audio(audio_output_path, 'out.mp3', i)
     video.create_video(slide_durations, meme_output_path, audio_output_path, 'out.mp3', i)
-
 
 #
 # response = model_client.undeploy_model(model_full_id)

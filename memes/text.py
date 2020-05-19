@@ -28,7 +28,7 @@ def slide_text(paragraph):
     p_text = ''
     conf = []
     lookup = {'': '', 'type: LINE_BREAK\n': '\n', 'type: SPACE\n': ' ', 'type: EOL_SURE_SPACE\n': '\n',
-              'type: HYPHEN\n':'\n'}
+              'type: HYPHEN\n': '\n'}
     for word in paragraph.words:
         for symbol in word.symbols:
             p_text += symbol.text
@@ -78,7 +78,7 @@ def should_exclude(p_text):
                    re.search('[0-9]{1,2}, [0-9]{4} AT [0-9]{1,2}:[0-9]{1,2}', p_text) is not None,
                    p_text == "I'm Luis! ^_^\n",
                    p_text == "June 20, 2017 Science\n",
-                   p_text== "GAME THRONES\n"])
+                   p_text == "GAME THRONES\n"])
     return exclude
 
 
@@ -219,3 +219,18 @@ def add_newline(raw_text):
         else:
             out.append(p_text)
     return out
+
+
+def sort_text(text_boxes):
+    """" It just so happens that magically, most of the time, the raw_text returned from google is in the exactly
+    proper sequence and I have not had to align or sorrt it in any way until now. But it happens 4 panel memes
+    (and more im sure) that one text paragraphs on left may be slightly lower than text panel on right causing the
+    raw text to go in that backward order. Thus, we need to sort any paragraphs that are very close to each other on
+    a line. This works similar to processing.align_tops."""
+    for i in range(1, len(text_boxes)):
+        height_cur = text_boxes[i][1][1] - text_boxes[i][0][1]
+        height_prev = text_boxes[i - 1][1][1] - text_boxes[i - 1][0][1]
+        if abs(height_cur - height_prev) < 10 and abs(text_boxes[i][0][1] - text_boxes[i - 1][0][1]) < 30:
+            text_boxes[i][0] = (text_boxes[i][0][0], text_boxes[i - 1][0][1])
+    sorted_boxes = sorted(text_boxes, key=lambda x: (x[0][1], x[0][0]))
+    return [i[3][0]+'\n' for i in sorted_boxes]
