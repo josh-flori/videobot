@@ -237,3 +237,12 @@ frame and is to the left of a frame, move it to be before the subsequent frame..
 I think the best way to handle this would be... when you create the text boxes, put another item in there as [i]
 indicating the rank of that box from the ORIGINAL raw_text, then when you have your completed sort, pass that rank back
 to the raw_text and sort it accordingly.
+
+
+you may be able to set thumbnail here https://developers.google.com/youtube/v3/docs/thumbnails/set
+
+
+
+###############
+#     5/22    #
+###############

@@ -33,6 +33,7 @@ def compute_slide_durations(audio_output_path, audio_text, slide_text, img_num, 
                 slide_durations.append(0)
                 n += 1
             elif text == 'empty':
+                print('ya')
                 slide_durations.append(padding_time)
                 n += 1
                 break

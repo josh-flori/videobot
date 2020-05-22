@@ -25,12 +25,27 @@ def is_in_frame(all_boxes, i):
     """ Checks whether a given box is within an auto_ml identified frame. This should only be true for text boxes.
     The purpose of this is to avoid creating blocks over text boxes if that text is within a frame. This
     is an artistic decision. all_boxes will be at meme level and holds all text and frame boxes. which tells you,
-    for any given box (should only apply to text boxes) which other box it resides in (should only apply to frames) """
-    in_any_box = [all([all_boxes[i][0][0] > box[0][0], all_boxes[i][0][1] > box[0][1], all_boxes[i][1][0] <
-                       box[1][0], all_boxes[i][1][1] < box[1][1]]) for box in all_boxes]
+    for any given box (should only apply to text boxes) which other box it resides in (should only apply to frames).
+    Expand the edges of each target box just in case the text box extends beyond the frame a teeny little bit. """
+    in_any_box = [all([all_boxes[i][0][0] > box[0][0] - 10, all_boxes[i][0][1] > box[0][1] - 10, all_boxes[i][1][0] <
+                       box[1][0] + 10, all_boxes[i][1][1] < box[1][1] + 10]) for box in all_boxes]
     in_frame = any(in_any_box)
     which = np.where(in_any_box)
     return in_frame, which
+
+
+def is_in_frame_text(true_sorted_boxes, text_box):
+    """ This is the exact same as is_in_frame() but differs in that this is used in the context of looping through
+    text_boxes which will be less than or equal to the length of all_boxes with frames, therefore the mechanism by
+    which we check if is in frame must differ since the length of the two differ. We want to exclude the reference
+    box (text) from the search since we expand the target boxes (frames), the reference box would always be found in
+    the target box"""
+    ith = true_sorted_boxes.index(text_box)
+    in_any_box = [all([text_box[0][0] > box[0][0] - 10, text_box[0][1] > box[0][1] - 10, text_box[1][0] <
+                       box[1][0] + 10, text_box[1][1] < box[1][1] + 10]) for i, box in enumerate(true_sorted_boxes) if
+                  i != ith]
+    which = np.where(in_any_box)
+    return which
 
 
 def has_any_text(all_boxes, i):
@@ -136,7 +151,14 @@ def write_images(image, all_boxes, output_path, img_num):
         has_text = has_any_text(all_boxes, i)
         print(i)
         print(all_boxes[i])
-        if not in_frame:
+        # if in frame and next frame is box, don't do
+        try:
+            next_box_is_frame = all_boxes[i - 1][2][1] == 255
+        except IndexError:
+            next_box = False
+        if all_boxes[i][2][1] == 0 and next_box_is_frame and in_frame:
+            slide_text.append([all_boxes[i][3]])
+        else:
             # true when first text was in frame and next is not
             if sub_slide_text != []:
                 slide_text.append(sub_slide_text)
@@ -150,38 +172,39 @@ def write_images(image, all_boxes, output_path, img_num):
 
             image = cv2.rectangle(image, all_boxes[i][0], all_boxes[i][1], all_boxes[i][2], -1)
             cv2.imwrite(output_path + str(img_num) + "." + str(i + 100) + '.jpg', image)  # add 100 so when we run
-            # video.createvideo the sorted() function doens't stick 1.10.jpg in front of 1.2.jpg >:[
-        # make sure it's not a stupid sliver that doesn't need to exist
-        elif all_boxes[i][2][1] == 0:
-            # DEBUGGING
-            # print(all_boxes[i][3])
-            # print(previous_which)
-            # print(which)
-            # print(sub_slide_text)
-            if previous_which == '':
-                sub_slide_text.append(all_boxes[i][3])
-                previous_which = which
-                # DEBUGGING
-                # print('yup')
-            elif which == previous_which:
-                sub_slide_text.append(all_boxes[i][3])
-                previous_which = which
-                # DEBUGGING
-                # print('p')
-            # true on the first text that is not part of the previous frame
-            else:
-                slide_text.append(sub_slide_text)
-                previous_which = ''
-                sub_slide_text = []
-                sub_slide_text.append(all_boxes[i][3])
-                # DEBUGGING
-                # print('ysdfsdp')
-                # print(sub_slide_text)
-    # i don't think you need to check both these conditions but it's easier than me trying to figure out if they
-    # would ever both be true. we have to append sub_slide_text for the final iteration because otherwise the loop doesn't
-    # catch it
-    if sub_slide_text != [] and sub_slide_text not in slide_text:
-        slide_text.append(sub_slide_text)
+
+        # video.createvideo the sorted() function doens't stick 1.10.jpg in front of 1.2.jpg >:[
+    #     # make sure it's not a stupid sliver that doesn't need to exist
+    #     elif all_boxes[i][2][1] == 0:
+    #         # DEBUGGING
+    #         # print(all_boxes[i][3])
+    #         # print(previous_which)
+    #         # print(which)
+    #         # print(sub_slide_text)
+    #         if previous_which == '':
+    #             sub_slide_text.append(all_boxes[i][3])
+    #             previous_which = which
+    #             # DEBUGGING
+    #             # print('yup')
+    #         elif which == previous_which:
+    #             sub_slide_text.append(all_boxes[i][3])
+    #             previous_which = which
+    #             # DEBUGGING
+    #             # print('p')
+    #         # true on the first text that is not part of the previous frame
+    #         else:
+    #             slide_text.append(sub_slide_text)
+    #             previous_which = ''
+    #             sub_slide_text = []
+    #             sub_slide_text.append(all_boxes[i][3])
+    #             # DEBUGGING
+    #             # print('ysdfsdp')
+    #             # print(sub_slide_text)
+    # # i don't think you need to check both these conditions but it's easier than me trying to figure out if they
+    # # would ever both be true. we have to append sub_slide_text for the final iteration because otherwise the loop doesn't
+    # # catch it
+    # if sub_slide_text != [] and sub_slide_text not in slide_text:
+    #     slide_text.append(sub_slide_text)
     slide_text.append([['first_frame']])
     return slide_text
 
@@ -243,7 +266,6 @@ def get_audio_text(box_text_type, raw_text):
     return audio_text
 
 
-
 def rerank(raw_text, true_sorted_boxes):
     """ The purpose of this function is to update the order of raw_text according to how the boxes have changed
     position, if at all. Remember that raw_text and text_boxes are generated at the same time and then raw_text is
@@ -268,7 +290,6 @@ def rerank(raw_text, true_sorted_boxes):
 
     reordered_raw_text = [split_out[i] for i in ranks]
 
-
     indexes = []
     for i in reordered_raw_text:
         if i[1] not in indexes:
@@ -277,5 +298,5 @@ def rerank(raw_text, true_sorted_boxes):
     joined_text = []
     for num in indexes:
         joined_text.append('\n'.join([i[0] for i in reordered_raw_text if i[1] == num]))
-    joined_text=[i+'\n' for i in joined_text]
+    joined_text = [i + '\n' for i in joined_text]
     return joined_text
