@@ -79,7 +79,7 @@ def create_blocks_from_annotations(annotation, image):
     [topleft, bottomright, (255, 255, 255)]"""
     boxes = []
     for payload in annotation.payload:
-        if payload.image_object_detection.score > .85:
+        if payload.image_object_detection.score > .65:
             verts = payload.image_object_detection.bounding_box.normalized_vertices
             topleft = (perc_to_pix(image, verts[0].x, 'x'),
                        perc_to_pix(image, verts[0].y, 'y'))

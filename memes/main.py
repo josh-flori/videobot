@@ -19,10 +19,9 @@ limit = 100
     all_annotations.append(annotation)"""
 # frames.undeploy(config.model_client, config.model_full_id)
 # frames.write_pickle(all_annotations)
-all_annotations=frames.read_pickle()
+all_annotations = frames.read_pickle()
 
-
-for i in range(1):
+for i in range(35,50):
     try:
         # PART 1: GET MEME DATA FROM APIs (VISION & AUTO_ML)
         image = cv2.imread(config.meme_path + str(i) + '.jpg')
@@ -50,9 +49,13 @@ for i in range(1):
 
         raw_text = text.create_paragraphs(text_boxes, raw_text, true_sorted_boxes, debug=False)
         raw_text = text.add_newline(raw_text)
+        raw_text = text.add_period_alt(raw_text,config.language_client)
+        raw_text = text.lower_text(raw_text)
 
         slide_text = processing.write_images(image, true_sorted_boxes, config.meme_output_path, i)
         slide_text = processing.clean_slide_text(slide_text)
+        slide_text = text.lower_text(slide_text)
+
         # print(all_boxes)
         # print(true_sorted_boxes)
         # PART 4: CREATE AUDIO CLIPS
@@ -65,7 +68,7 @@ for i in range(1):
         # PART 5: CREATE VIDEO
         slide_durations = video.compute_slide_durations(config.audio_output_path, audio_text, slide_text, i,
                                                         '/users/josh.flori/desktop/padding.mp3')
-        slide_durations=video.readjust_slide_durations(slide_durations)
+        slide_durations = video.readjust_slide_durations(slide_durations)
         video.combine_audio(config.audio_output_path, 'out.mp3', i)
         video.create_video(slide_durations, config.meme_output_path, config.audio_output_path, 'out.mp3', i)
     except:

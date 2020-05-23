@@ -2,6 +2,7 @@ import io, re
 import numpy as np
 from google.cloud import vision
 from memes import processing
+from google.cloud.language_v1 import enums
 
 """ The purpose of this module is to return meme text using google vision api, combine with some exclusion rules to 
 ignore irrelevant text and return bounding a list of bounding boxes around all relevant text boxes. Text boxes are 
@@ -79,7 +80,11 @@ def should_exclude(p_text):
                    re.search('[0-9]{1,2}, [0-9]{4} AT [0-9]{1,2}:[0-9]{1,2}', p_text) is not None,
                    p_text == "I'm Luis! ^_^\n",
                    p_text == "June 20, 2017 Science\n",
-                   p_text == "GAME THRONES\n"])
+                   p_text == "GAME THRONES\n",
+                   len(p_text) == 2 and p_text[0].isalpha() and p_text[1:] == '\n',
+                   p_text == 'MINEL\n',
+                   p_text.lower() == 'geely\n',
+                   re.search('[0-9]{1,2}.[0-9]{1,2}k', p_text.lower()) is not None])
     return exclude
 
 
@@ -303,3 +308,53 @@ def expand_to_edge_text(text_boxes, image):
             temp.append(text_boxes[i][1][1])
         text_boxes[i][1] = (temp[0], temp[1])
     return text_boxes
+
+
+def add_period_alt(raw_text, client):
+    """ The purpose of this function is to help insert pauses into the audio at appropriate places. For instance,
+    given this raw_text chunk: 'Me: tries to read Latin\nSatan:\n', you would want a pause after 'Latin' since it is
+    the end of the line. The rule here is, if <majority words start with upper case, then at uppercase and after \n,
+    insert period, so long as the final character before the next space is a colon ':'. """
+    out = []
+    # type_ = enums.Document.Type.PLAIN_TEXT
+    # encoding_type = enums.EncodingType.UTF8
+    # language = "en"
+
+    for chunk in raw_text:
+        is_upper = [x[0].isupper() for x in chunk.split(' ')]
+        mostly_not_upper = is_upper.count(False) / len(is_upper) > .4
+        if mostly_not_upper:
+            # document = {"content": chunk, "type": type_, "language": language}
+            # response = client.analyze_syntax(document, encoding_type=encoding_type)
+            # for i in response.tokens:
+            #     if i.part_of_speech.proper==1:
+            #         chunk=chunk.replace(i.text.content,i.text.content.lower())
+            temp = ''
+            for i in range(len(chunk)):
+                try:
+                    for n in chunk[i + 1:]:
+                        if n == ':':
+                            colon_before_space = True
+                            break
+                        elif n == ' ' or n=='\n':
+                            colon_before_space = False
+                            break
+                        else:
+                            colon_before_space = False
+                    if chunk[i] == '\n' and chunk[i + 1].isupper() and colon_before_space:
+                        temp += '.'
+                        temp += chunk[i]
+                    else:
+                        temp += chunk[i]
+                except IndexError:
+                    temp += chunk[i]
+            out.append(temp)
+        else:
+            out.append(chunk)
+    return out
+
+
+def lower_text(text_list):
+    """ The purpose of this is because if you sent something like 'US' to polly it will read it as 'YOU-ESS',
+    short for united states. """
+    return [i.lower() for i in text_list]
