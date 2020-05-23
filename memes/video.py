@@ -23,6 +23,7 @@ def compute_slide_durations(audio_output_path, audio_text, slide_text, img_num, 
     n = 0  # to be used to iterate through slide_text to match up against audio_text
     slide_durations = []
     padding_time = len(AudioSegment.from_mp3(padding_path)) / 1000
+    x = 0
     # loop through the text that created the audio files
     for i in range(len(audio_text)):
         audio_len = (len(AudioSegment.from_mp3(audio_output_path + str(img_num) + '.' + str(i) + '.mp3')) / 1000)
@@ -30,27 +31,28 @@ def compute_slide_durations(audio_output_path, audio_text, slide_text, img_num, 
         proceed = True
         for text in slide_text[n:]:
             if text == 'first_frame':
-                slide_durations.append(0)
+                slide_durations.append([0, x])
                 n += 1
+                x += 1
             elif text == 'empty':
-                print('ya')
-                slide_durations.append(padding_time)
+                slide_durations.append([padding_time, x])
                 n += 1
+                x += 1
                 break
             elif text in audio_text[i].replace('\n', ' '):
-                print(text)
-                # proportionalize the amount that text is of the entire text
-                slide_durations.append((len(text) / len(audio_text[i].replace('\n', ''))) * audio_len)
+                slide_durations.append([(len(text) / len(audio_text[i].replace('\n', ''))) * audio_len, x])
                 n += 1
                 proceed = False
-                if text == audio_text[i].replace('\n', ' ') or audio_text[i].replace('\n', ' ').endswith(text):
+                if text == audio_text[i].replace('\n', '') or audio_text[i].replace('\n', '').endswith(text):
                     proceed = True
+                    x += 1
             # print('Loop: ' + str(i) + 'n: ' + str(n) + '\nSlide_text: ' + text + '\nAudio_text[i]: ' + audio_text[i])
             # you want a way to break out of this loop because the problem is otherwise it will continue on through
             # the end which is bad because then it would increment n based on the presence of 'empty' which may exist
             # later in slide text than you want to go, thus skipping past where you need to be next iteration through
             # slide_text[n:]...
             if i < len(audio_text) - 1 and text != 'empty' and proceed:
+                print(text)
                 look_ahead = any(
                     [text in audio_text[ii].replace('\n', ' ') for ii in range(i + 1, len(audio_text))])
                 if look_ahead:
@@ -72,8 +74,30 @@ def compute_slide_durations(audio_output_path, audio_text, slide_text, img_num, 
                                 i += 1
                             else:
                                 break
-                            slide_durations.append((len(text) / len(temp_text)) * audio_len)
+                            slide_durations.append([(len(text) / len(temp_text)) * audio_len, x])
+                            x += 1
     return slide_durations
+
+
+def readjust_slide_durations(slide_durations):
+    """ The purpose of this function is to extend the end of each paragraph out a little bit. The last word of each
+    audio chunk will be disproportionately long but since compute_slide_durations() only considers character length,
+    it makes the last chunk a little too short. This fixes that. all_chunks corresponds any slide text which falls
+    within the same audio file"""
+    all_chunks = list(set([slide_durations[i][1] for i in range(len(slide_durations))]))
+    print(all_chunks)
+    out = []
+    extra_time=.3
+    for i in all_chunks:
+        filtered = [x for x in slide_durations if x[1] == i]
+        if len(filtered) == 1:
+            out.append(filtered[0])
+        else:
+            non_final=filtered[0:-1]
+            for x in non_final:
+                out.append([x[0]-(extra_time/len(non_final)),x[1]])
+            out.append([filtered[-1][0]+extra_time,filtered[-1][1]])
+    return out
 
 
 def create_video(slide_durations, meme_output_path, audio_output_path, output_audio_fname, i):
@@ -87,7 +111,7 @@ def create_video(slide_durations, meme_output_path, audio_output_path, output_au
     # DEBUGGING
     # print(len(image_paths))
     # print(len(slide_durations))
-    clips = [ImageClip(image_paths[i]).set_duration(slide_durations[i]) for i in range(len(image_paths))]
+    clips = [ImageClip(image_paths[i]).set_duration(slide_durations[i][0]) for i in range(len(image_paths))]
     concat_clip = concatenate_videoclips(clips, method='compose')
     concat_clip.write_videofile('/users/josh.flori/desktop/out' + str(i) + '.mp4',
                                 audio=audio_output_path + output_audio_fname, fps=5)

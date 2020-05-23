@@ -1,6 +1,8 @@
 import cv2
 import numpy as np
 from operator import itemgetter
+from memes import config
+import os
 
 """ This module exists between frames.py/text.py and creation of the audio and video files. See notes.txt for an 
 explanation on how all the text lists fit together. """
@@ -16,7 +18,8 @@ def align_tops(all_boxes):
         area_prev = (all_boxes[i - 1][1][0] - all_boxes[i - 1][0][0]) * (
                 all_boxes[i - 1][1][1] - all_boxes[i - 1][0][1])
         if all_boxes[i][2][1] == 255 and all_boxes[i - 1][2][1] == 255:
-            if abs((area_cur - area_prev) / area_cur) < .1 and abs(all_boxes[i][0][1] - all_boxes[i - 1][0][1]) < 50:
+            # abs((area_cur - area_prev) / area_cur) < .1 and
+            if abs(all_boxes[i][0][1] - all_boxes[i - 1][0][1]) < 50:
                 print('aligning..')
                 all_boxes[i][0] = (all_boxes[i][0][0], all_boxes[i - 1][0][1])
 
@@ -28,7 +31,8 @@ def is_in_frame(all_boxes, i):
     for any given box (should only apply to text boxes) which other box it resides in (should only apply to frames).
     Expand the edges of each target box just in case the text box extends beyond the frame a teeny little bit. """
     in_any_box = [all([all_boxes[i][0][0] > box[0][0] - 10, all_boxes[i][0][1] > box[0][1] - 10, all_boxes[i][1][0] <
-                       box[1][0] + 10, all_boxes[i][1][1] < box[1][1] + 10]) for box in all_boxes]
+                       box[1][0] + 10, all_boxes[i][1][1] < box[1][1] + 10]) for x, box in enumerate(all_boxes)
+                  if x != i]
     in_frame = any(in_any_box)
     which = np.where(in_any_box)
     return in_frame, which
@@ -109,6 +113,7 @@ def update_true_sort(true_sorted_boxes):
                 aside_frame = true_sorted_boxes[i][0][1] > last_frame[0][1] and true_sorted_boxes[i][1][1] < \
                               last_frame[1][1]
                 if aside_frame:
+                    print(true_sorted_boxes[i])
                     if insert_at == 0:
                         out.insert(last_frame_i, true_sorted_boxes[i])
                         insert_at = last_frame_i
@@ -122,7 +127,7 @@ def update_true_sort(true_sorted_boxes):
     return out
 
 
-def write_images(image, all_boxes, output_path, img_num):
+def write_images(image, true_sorted_boxes, output_path, img_num):
     """ Creates images in succession with each boxed element being unveiled slide after slide. Also returns
     slide_text which is the entire text string for that given unveiled video slide. This differs from and will be
     equal to or less than the text used to create the chunks of audio. For instance given a leading paragraph like:
@@ -142,22 +147,23 @@ def write_images(image, all_boxes, output_path, img_num):
     that means the current text in the loop exists in the same frame as text from the previous loop and BOTH of
     those, up until all text in that frame, are the text for that SLIDE and act as a single entity within slide_text. """
     # Create the final slide with no rectangles covering anything up.
-    cv2.imwrite(output_path + str(img_num) + "." + str(len(all_boxes) + 100) + '.jpg', image)
+    cv2.imwrite(output_path + str(img_num) + "." + str(len(true_sorted_boxes) + 100) + '.jpg', image)
     slide_text = []
     sub_slide_text = []
     previous_which = ''
-    for i in reversed(range(len(all_boxes))):
-        in_frame, which = is_in_frame(all_boxes, i)
-        has_text = has_any_text(all_boxes, i)
-        print(i)
-        print(all_boxes[i])
+    for i in reversed(range(len(true_sorted_boxes))):
+        in_frame, which = is_in_frame(true_sorted_boxes, i)
+        has_text = has_any_text(true_sorted_boxes, i)
         # if in frame and next frame is box, don't do
-        try:
-            next_box_is_frame = all_boxes[i - 1][2][1] == 255
-        except IndexError:
-            next_box = False
-        if all_boxes[i][2][1] == 0 and next_box_is_frame and in_frame:
-            slide_text.append([all_boxes[i][3]])
+        if i > 0:
+            next_box_is_frame = true_sorted_boxes[i - 1][2][1] == 255
+        else:
+            next_box_is_frame = False
+        if true_sorted_boxes[i][2][1] == 0 and next_box_is_frame and in_frame:
+            slide_text.append([true_sorted_boxes[i][3]])
+            print(true_sorted_boxes[i])
+            print(in_frame)
+            print(which)
         else:
             # true when first text was in frame and next is not
             if sub_slide_text != []:
@@ -165,12 +171,11 @@ def write_images(image, all_boxes, output_path, img_num):
                 sub_slide_text = []
                 previous_which = ''
             # true if box is text, box may not be text
-            if all_boxes[i][2][1] == 0:
-                slide_text.append([all_boxes[i][3]])
+            if true_sorted_boxes[i][2][1] == 0:
+                slide_text.append([true_sorted_boxes[i][3]])
             elif not has_text:
                 slide_text.append([['empty']])
-
-            image = cv2.rectangle(image, all_boxes[i][0], all_boxes[i][1], all_boxes[i][2], -1)
+            image = cv2.rectangle(image, true_sorted_boxes[i][0], true_sorted_boxes[i][1], true_sorted_boxes[i][2], -1)
             cv2.imwrite(output_path + str(img_num) + "." + str(i + 100) + '.jpg', image)  # add 100 so when we run
 
         # video.createvideo the sorted() function doens't stick 1.10.jpg in front of 1.2.jpg >:[
@@ -300,3 +305,22 @@ def rerank(raw_text, true_sorted_boxes):
         joined_text.append('\n'.join([i[0] for i in reordered_raw_text if i[1] == num]))
     joined_text = [i + '\n' for i in joined_text]
     return joined_text
+
+
+def set_amazon_envs():
+    os.environ['ACCESS_KEY'] = config.aws_ACCESS_KEY
+    os.environ['SECRET'] = config.aws_SECRET
+    os.environ['region'] = config.aws_region
+
+
+def clear_dirs(meme_output_path, audio_output_path, video_out_path):
+    for f in os.listdir(meme_output_path):
+        os.remove(meme_output_path + f)
+    for f in os.listdir(audio_output_path):
+        os.remove(audio_output_path + f)
+    for f in os.listdir(video_out_path):
+        if f[0:3] == 'out':
+            os.remove(video_out_path + f)
+
+
+

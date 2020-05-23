@@ -1,5 +1,5 @@
 from google.cloud import automl
-import numpy as np
+import pickle
 
 """ The purpose of this module is for google's auto_ml to return bounding boxes around all relevant frames in the 
 meme. Those bounding boxes are cleaned up and then combined with text boxes from text.py to create a total 
@@ -102,7 +102,7 @@ def trim_white_space(image, boxes):
 
             if [x[0] == 255 for x in image[i - 1]].count(True) / len(image[i - 1]) >= .99 and [x[0] == 255 for x in
                                                                                                image[i]].count(
-                    True) / len(image[i - 1]) < .9 and starts_with_white:
+                True) / len(image[i - 1]) < .9 and starts_with_white:
                 box[0] = (box[0][0], i)
                 break
 
@@ -123,3 +123,25 @@ def remove_unneeded_outer_frame(frame_boxes, image):
     for i in frame_boxes:
         if i[0][0] == 0 and i[0][1] == 0 and i[1][0] == image.shape[1] and i[1][1] == image.shape[0]:
             frame_boxes.remove(i)
+
+
+def deploy(model_client, model_full_id):
+    response = model_client.deploy_model(model_full_id)
+    print("Model deployment finished. {}".format(response.result()))
+
+
+def undeploy(model_client, model_full_id):
+    response = model_client.undeploy_model(model_full_id)
+    print("Model un-deployment finished. {}".format(response.result()))
+
+def write_pickle(all_annotations):
+    output = open('annotations.pkl', 'wb')
+    pickle.dump(all_annotations, output)
+    output.close()
+
+
+def read_pickle():
+    pkl_file = open('annotations.pkl', 'rb')
+    all_annotations = pickle.load(pkl_file)
+    pkl_file.close()
+    return all_annotations

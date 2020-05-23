@@ -110,17 +110,9 @@ def create_blocks_from_paragraph(raw_text_response):
                         # Split multi-line text into equal sized vertical sections to create greater visual appeal
                         subd = (verts[2].y - verts[0].y) / p_text.count('\n')
                         for i in range(p_text.count('\n')):
-                            if verts[0].x < 0:
-                                x0 = 1
-                            else:
-                                x0 = verts[0].x
-                            if verts[2].x < 0:
-                                x1 = 1
-                            else:
-                                x1 = verts[2].x
                             text_boxes.append(
-                                [(x0, int(verts[0].y + (subd * i))),
-                                 (x1, int(verts[0].y + (subd * (i + 1)))),
+                                [(verts[0].x, int(verts[0].y + (subd * i))),
+                                 (verts[2].x, int(verts[0].y + (subd * (i + 1)))),
                                  (255, 0, 0),
                                  [p_text.split('\n')[i]],
                                  rank])
@@ -282,3 +274,32 @@ def sort_text(raw_boxes):
                  (255, 0, 0),
                  [p_text.split('\n')[ii]]])
     return text_boxes, raw_text
+
+
+def expand_to_edge_text(text_boxes, image):
+    """ The purpose of this function is to fix bounding box prediction from google vision. The bounding boxes will
+    often be literally OUTSIDE the bounds of the image. In that case, this forces it back to the edge. """
+    # have to create temp because i made the stupid decision to use tuples which don't support assignment...
+    for i in range(len(text_boxes)):
+        temp = []
+        if text_boxes[i][0][0] < 0:
+            temp.append(1)
+        else:
+            temp.append(text_boxes[i][0][0])
+        if text_boxes[i][0][1] < 0:
+            temp.append(1)
+        else:
+            temp.append(text_boxes[i][0][1])
+        text_boxes[i][0] = (temp[0], temp[1])
+        temp = []
+
+        if text_boxes[i][1][0] > image.shape[1]:
+            temp.append(image.shape[1] - 1)
+        else:
+            temp.append(text_boxes[i][1][0])
+        if text_boxes[i][1][1] > image.shape[0]:
+            temp.append(image.shape[0] - 1)
+        else:
+            temp.append(text_boxes[i][1][1])
+        text_boxes[i][1] = (temp[0], temp[1])
+    return text_boxes
