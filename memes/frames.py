@@ -1,5 +1,5 @@
 from google.cloud import automl
-import pickle
+
 
 """ The purpose of this module is for google's auto_ml to return bounding boxes around all relevant frames in the 
 meme. Those bounding boxes are cleaned up and then combined with text boxes from text.py to create a total 
@@ -133,15 +133,3 @@ def deploy(model_client, model_full_id):
 def undeploy(model_client, model_full_id):
     response = model_client.undeploy_model(model_full_id)
     print("Model un-deployment finished. {}".format(response.result()))
-
-def write_pickle(all_annotations):
-    output = open('annotations.pkl', 'wb')
-    pickle.dump(all_annotations, output)
-    output.close()
-
-
-def read_pickle():
-    pkl_file = open('annotations.pkl', 'rb')
-    all_annotations = pickle.load(pkl_file)
-    pkl_file.close()
-    return all_annotations

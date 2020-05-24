@@ -70,3 +70,14 @@ def extend_short_audio(audio_output_path, audio_text, img_num):
             audio_file += AudioSegment.silent(duration=dif*1000)
             audio_file.export(audio_output_path + str(img_num) + '.' + str(i) + '.mp3')
 
+
+def extend_all_audio(audio_output_path, audio_text, img_num):
+    """ It happens that ALL audio segments tend to feel just a teeny bit too short. Thus, here, we will extend them (
+    excluding the padding clips) """
+    wait_time=700
+    for i in range(len(audio_text)):
+        if audio_text[i]!='empty':
+            audio_file = AudioSegment.from_mp3(audio_output_path + str(img_num) + '.' + str(i) + '.mp3')
+            audio_file += AudioSegment.silent(duration=wait_time)
+            audio_file.export(audio_output_path + str(img_num) + '.' + str(i) + '.mp3')
+    return wait_time/1000

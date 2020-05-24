@@ -43,3 +43,11 @@
 # RETURNED FROM: get_audio_text(box_text_type, raw_text)
 # USED BY: compute_slide_durations(...audio_text, slide_text...)
 # USED FOR: see explanation for slide_text
+
+
+
+# HANDBRAKE INFORMATION
+# By default, moviepy does not export the mp4s in a mac-editable format. We must use handbrake cli to transcode the
+videos. In terminal do:
+# brew install handbrake
+#

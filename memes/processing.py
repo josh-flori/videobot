@@ -2,7 +2,7 @@ import cv2
 import numpy as np
 from operator import itemgetter
 from memes import config
-import os
+import os, pickle
 
 """ This module exists between frames.py/text.py and creation of the audio and video files. See notes.txt for an 
 explanation on how all the text lists fit together. """
@@ -321,3 +321,16 @@ def clear_dirs(meme_output_path, audio_output_path, video_out_path):
     for f in os.listdir(video_out_path):
         if f[0:3] == 'out':
             os.remove(video_out_path + f)
+
+
+def write_pickle(all_annotations,fname):
+    output = open(fname, 'wb')
+    pickle.dump(all_annotations, output)
+    output.close()
+
+
+def read_pickle(fname):
+    pkl_file = open(fname, 'rb')
+    all_annotations = pickle.load(pkl_file)
+    pkl_file.close()
+    return all_annotations

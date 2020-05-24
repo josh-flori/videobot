@@ -1,31 +1,39 @@
 from memes import reddit, text, frames, processing, config, audio, video
-import cv2, tqdm
-
+import cv2, time, os, tqdm
 processing.set_amazon_envs()
 processing.clear_dirs(config.meme_output_path, config.audio_output_path, config.video_out_path)
 
-limit = 100
+limit = 200
 # TODO - you should add a rule where if not majority letters are cap and not majority every word cap, use cap to
 #  indicate end of line
 
 
-# reddit.get_images(config.meme_path, 'memes', 'day', limit)
+reddit.get_images(config.meme_path, 'memes', 'day', limit)
 
-"""all_annotations = []"""
+# all_annotations = []
 # frames.deploy(config.model_client, config.model_full_id)
-"""for i in tqdm.tqdm(range(limit)):
-    annotation = frames.get_frame_prediction_from_google(config.meme_path, i, config.custom_model_project_id,
-                                                         config.custom_model_model_id)
-    all_annotations.append(annotation)"""
+# for i in tqdm.tqdm(range(limit)):
+#     annotation = frames.get_frame_prediction_from_google(config.meme_path, i, config.custom_model_project_id,
+#                                                          config.custom_model_model_id)
+#     time.sleep(.3)
+#     all_annotations.append(annotation)
 # frames.undeploy(config.model_client, config.model_full_id)
-# frames.write_pickle(all_annotations)
-all_annotations = frames.read_pickle()
+# processing.write_pickle(all_annotations,'annotations.pkl')
+all_annotations = processing.read_pickle('annotations.pkl')
 
-for i in range(35,50):
+
+all_raw_text_responses = []
+for i in tqdm.tqdm(range(limit)):
+    image = cv2.imread(config.meme_path + str(i) + '.jpg')
+    raw_text_response = text.get_image_text_from_google(config.meme_path + str(i) + '.jpg')
+    all_raw_text_responses.append(raw_text_response)
+processing.write_pickle(all_raw_text_responses,'raw_text_responses.pkl')
+# all_raw_text_responses=processing.read_pickle('raw_text_responses.pkl')
+
+for i in range(100):
     try:
         # PART 1: GET MEME DATA FROM APIs (VISION & AUTO_ML)
-        image = cv2.imread(config.meme_path + str(i) + '.jpg')
-        raw_text_response = text.get_image_text_from_google(config.meme_path + str(i) + '.jpg')
+
         text_boxes, raw_text = text.create_blocks_from_paragraph(raw_text_response)
         text_boxes = text.expand_to_edge_text(text_boxes, image)
         # raw_text = text.sort_text(text_boxes,raw_boxes)
@@ -63,13 +71,18 @@ for i in range(35,50):
         reordered_raw_text = processing.rerank(raw_text, true_sorted_boxes)
         audio_text = processing.get_audio_text(box_text_type, reordered_raw_text)
         audio.create_mp3s(audio_text, i, config.audio_output_path, config.padding_dir)
-        audio.extend_short_audio(config.audio_output_path, audio_text, i)
+        # audio.extend_short_audio(config.audio_output_path, audio_text, i)
+        wait_time=audio.extend_all_audio(config.audio_output_path, audio_text, i)
 
         # PART 5: CREATE VIDEO
         slide_durations = video.compute_slide_durations(config.audio_output_path, audio_text, slide_text, i,
                                                         '/users/josh.flori/desktop/padding.mp3')
-        slide_durations = video.readjust_slide_durations(slide_durations)
+        slide_durations = video.readjust_slide_durations(slide_durations,wait_time)
         video.combine_audio(config.audio_output_path, 'out.mp3', i)
         video.create_video(slide_durations, config.meme_output_path, config.audio_output_path, 'out.mp3', i)
     except:
         pass
+
+
+
+# convert_videos(config.video_out_path)

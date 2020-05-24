@@ -79,7 +79,7 @@ def compute_slide_durations(audio_output_path, audio_text, slide_text, img_num, 
     return slide_durations
 
 
-def readjust_slide_durations(slide_durations):
+def readjust_slide_durations(slide_durations,wait_time):
     """ The purpose of this function is to extend the end of each paragraph out a little bit. The last word of each
     audio chunk will be disproportionately long but since compute_slide_durations() only considers character length,
     it makes the last chunk a little too short. This fixes that. all_chunks corresponds any slide text which falls
@@ -87,7 +87,7 @@ def readjust_slide_durations(slide_durations):
     all_chunks = list(set([slide_durations[i][1] for i in range(len(slide_durations))]))
     print(all_chunks)
     out = []
-    extra_time=.3
+    extra_time=.2+wait_time
     for i in all_chunks:
         filtered = [x for x in slide_durations if x[1] == i]
         if len(filtered) == 1:
@@ -115,3 +115,10 @@ def create_video(slide_durations, meme_output_path, audio_output_path, output_au
     concat_clip = concatenate_videoclips(clips, method='compose')
     concat_clip.write_videofile('/users/josh.flori/desktop/out' + str(i) + '.mp4',
                                 audio=audio_output_path + output_audio_fname, fps=5)
+
+
+def convert_videos(video_out_path):
+    """ The purpose of this function is to convert the final mp4s into a format mac can actually recognize"""
+    for f in os.listdir(video_out_path):
+        if 'out'in f and 'mp4' in f:
+            os.system('HandBrakeCLI --input '+video_out_path+f+' --output '+video_out_path+'x_'+f)
