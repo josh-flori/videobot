@@ -319,7 +319,7 @@ def clear_dirs(meme_output_path, audio_output_path, video_out_path):
     for f in os.listdir(audio_output_path):
         os.remove(audio_output_path + f)
     for f in os.listdir(video_out_path):
-        if f[0:3] == 'out':
+        if 'out_' in f:
             os.remove(video_out_path + f)
 
 

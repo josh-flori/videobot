@@ -8,7 +8,7 @@ limit = 200
 #  indicate end of line
 
 
-reddit.get_images(config.meme_path, 'memes', 'day', limit)
+# reddit.get_images(config.meme_path, 'memes', 'day', limit)
 
 # all_annotations = []
 # frames.deploy(config.model_client, config.model_full_id)
@@ -19,21 +19,22 @@ reddit.get_images(config.meme_path, 'memes', 'day', limit)
 #     all_annotations.append(annotation)
 # frames.undeploy(config.model_client, config.model_full_id)
 # processing.write_pickle(all_annotations,'annotations.pkl')
-all_annotations = processing.read_pickle('annotations.pkl')
+# all_annotations = processing.read_pickle('annotations.pkl')
 
 
-all_raw_text_responses = []
-for i in tqdm.tqdm(range(limit)):
-    image = cv2.imread(config.meme_path + str(i) + '.jpg')
-    raw_text_response = text.get_image_text_from_google(config.meme_path + str(i) + '.jpg')
-    all_raw_text_responses.append(raw_text_response)
-processing.write_pickle(all_raw_text_responses,'raw_text_responses.pkl')
+# all_raw_text_responses = []
+# for i in tqdm.tqdm(range(limit)):
+#     image = cv2.imread(config.meme_path + str(i) + '.jpg')
+#     raw_text_response = text.get_image_text_from_google(config.meme_path + str(i) + '.jpg')
+#     all_raw_text_responses.append(raw_text_response)
+# processing.write_pickle(all_raw_text_responses,'raw_text_responses.pkl')
 # all_raw_text_responses=processing.read_pickle('raw_text_responses.pkl')
 
-for i in range(100):
+for i in range(20,200):
     try:
+        image = cv2.imread(config.meme_path + str(i) + '.jpg')
         # PART 1: GET MEME DATA FROM APIs (VISION & AUTO_ML)
-
+        raw_text_response=all_raw_text_responses[i]
         text_boxes, raw_text = text.create_blocks_from_paragraph(raw_text_response)
         text_boxes = text.expand_to_edge_text(text_boxes, image)
         # raw_text = text.sort_text(text_boxes,raw_boxes)
@@ -85,4 +86,4 @@ for i in range(100):
 
 
 
-# convert_videos(config.video_out_path)
+video.convert_videos(config.video_out_path)
