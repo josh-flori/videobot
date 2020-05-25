@@ -284,7 +284,6 @@ def rerank(raw_text, true_sorted_boxes):
     correctly. """
     # Get updated rank
     ranks = [i[4] for i in true_sorted_boxes if i[2][1] == 0]
-
     # Split out raw_text on newline so it matches the number of ranked elements above, but keep information regarding
     # which paragraph it belonged to so they can be joined later.
     split_out = []
@@ -294,7 +293,6 @@ def rerank(raw_text, true_sorted_boxes):
                 split_out.append([ii, i])
 
     reordered_raw_text = [split_out[i] for i in ranks]
-
     indexes = []
     for i in reordered_raw_text:
         if i[1] not in indexes:
@@ -319,7 +317,7 @@ def clear_dirs(meme_output_path, audio_output_path, video_out_path):
     for f in os.listdir(audio_output_path):
         os.remove(audio_output_path + f)
     for f in os.listdir(video_out_path):
-        if 'out_' in f:
+        if 'out' in f and 'output' not in f:
             os.remove(video_out_path + f)
 
 

@@ -79,7 +79,7 @@ def compute_slide_durations(audio_output_path, audio_text, slide_text, img_num, 
     return slide_durations
 
 
-def readjust_slide_durations(slide_durations,wait_time):
+def readjust_slide_durations(slide_durations, wait_time):
     """ The purpose of this function is to extend the end of each paragraph out a little bit. The last word of each
     audio chunk will be disproportionately long but since compute_slide_durations() only considers character length,
     it makes the last chunk a little too short. This fixes that. all_chunks corresponds any slide text which falls
@@ -87,18 +87,28 @@ def readjust_slide_durations(slide_durations,wait_time):
     all_chunks = list(set([slide_durations[i][1] for i in range(len(slide_durations))]))
     print(all_chunks)
     out = []
-    extra_time=.2+wait_time
+    extra_time = .2 + wait_time
     for i in all_chunks:
         filtered = [x for x in slide_durations if x[1] == i]
         if len(filtered) == 1:
             out.append(filtered[0])
         else:
-            non_final=filtered[0:-1]
+            non_final = filtered[0:-1]
             for x in non_final:
-                out.append([x[0]-(extra_time/len(non_final)),x[1]])
-            out.append([filtered[-1][0]+extra_time,filtered[-1][1]])
+                out.append([x[0] - (extra_time / len(non_final)), x[1]])
+            out.append([filtered[-1][0] + extra_time, filtered[-1][1]])
     return out
 
+
+def extend_final_slide(slide_durations, img_num, audio_output_path):
+    """ The purpose of this function is to extend the dwell time on the final frame so people have time to soak in
+    the punchline. """
+    extend_time = .43
+    slide_durations[-1][0] = slide_durations[-1][0] + extend_time
+    final=sum([1 for f in os.listdir(audio_output_path) if f.startswith(str(img_num)+'.')])-1
+    audio_file = AudioSegment.from_mp3(audio_output_path + str(img_num) + '.' + str(final) + '.mp3')
+    audio_file += AudioSegment.silent(duration=extend_time*1000)
+    audio_file.export(audio_output_path + str(img_num) + '.' + str(final) + '.mp3')
 
 def create_video(slide_durations, meme_output_path, audio_output_path, output_audio_fname, i):
     image_paths = [meme_output_path + f for f in sorted(os.listdir(meme_output_path)) if
@@ -120,5 +130,5 @@ def create_video(slide_durations, meme_output_path, audio_output_path, output_au
 def convert_videos(video_out_path):
     """ The purpose of this function is to convert the final mp4s into a format mac can actually recognize"""
     for f in os.listdir(video_out_path):
-        if 'out'in f and 'mp4' in f:
-            os.system('HandBrakeCLI --input '+video_out_path+f+' --output '+video_out_path+'x_'+f)
+        if 'out' in f and 'mp4' in f:
+            os.system('HandBrakeCLI --input ' + video_out_path + f + ' --output ' + video_out_path + 'x_' + f)
