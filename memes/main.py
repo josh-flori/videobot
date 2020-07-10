@@ -1,36 +1,38 @@
 from memes import reddit, text, frames, processing, config, audio, video
 import cv2, time, os, tqdm
+
 processing.set_amazon_envs()
-processing.clear_dirs(config.meme_output_path, config.audio_output_path, config.video_out_path)
+processing.clear_dirs(config.meme_output_path, config.audio_output_path, config.video_out_path, config.meme_path)
 
 limit = 200
 # TODO - you should add a rule where if not majority letters are cap and not majority every word cap, use cap to
 #  indicate end of line
 
-# #
-# reddit.get_images(config.meme_path, 'memes', 'day', limit)
-#
-# all_annotations = []
-# frames.deploy(config.model_client, config.model_full_id)
-# for i in tqdm.tqdm(range(limit)):
-#     annotation = frames.get_frame_prediction_from_google(config.meme_path, i, config.custom_model_project_id,
-#                                                          config.custom_model_model_id)
-#     time.sleep(.4)
-#     all_annotations.append(annotation)
-# frames.undeploy(config.model_client, config.model_full_id)
-# processing.write_pickle(all_annotations,'annotations.pkl')
+
+reddit.get_images(config.meme_path, 'memes', 'day', limit)
+
+all_annotations = []
+frames.deploy(config.model_client, config.model_full_id)
+for i in tqdm.tqdm(range(limit)):
+    annotation = frames.get_frame_prediction_from_google(config.meme_path, i, config.custom_model_project_id,
+                                                         config.custom_model_model_id)
+    time.sleep(.5)
+    all_annotations.append(annotation)
+frames.undeploy(config.model_client, config.model_full_id)
+
+processing.write_pickle(all_annotations,'annotations.pkl')
 all_annotations = processing.read_pickle('annotations.pkl')
 
-#
-# all_raw_text_responses = []
-# for i in tqdm.tqdm(range(limit)):
-#     image = cv2.imread(config.meme_path + str(i) + '.jpg')
-#     raw_text_response = text.get_image_text_from_google(config.meme_path + str(i) + '.jpg')
-#     all_raw_text_responses.append(raw_text_response)
-# processing.write_pickle(all_raw_text_responses,'raw_text_responses.pkl')
+
+all_raw_text_responses = []
+for i in tqdm.tqdm(range(limit)):
+    image = cv2.imread(config.meme_path + str(i) + '.jpg')
+    raw_text_response = text.get_image_text_from_google(config.meme_path + str(i) + '.jpg')
+    all_raw_text_responses.append(raw_text_response)
+processing.write_pickle(all_raw_text_responses,'raw_text_responses.pkl')
 all_raw_text_responses=processing.read_pickle('raw_text_responses.pkl')
 
-for i in range(1):
+for i in range(limit):
     try:
         image = cv2.imread(config.meme_path + str(i) + '.jpg')
         # PART 1: GET MEME DATA FROM APIs (VISION & AUTO_ML)

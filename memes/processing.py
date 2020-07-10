@@ -311,9 +311,11 @@ def set_amazon_envs():
     os.environ['region'] = config.aws_region
 
 
-def clear_dirs(meme_output_path, audio_output_path, video_out_path):
+def clear_dirs(meme_output_path, audio_output_path, video_out_path, reddit_meme_path):
     for f in os.listdir(meme_output_path):
         os.remove(meme_output_path + f)
+    for f in os.listdir(reddit_meme_path):
+        os.remove(reddit_meme_path + f)
     for f in os.listdir(audio_output_path):
         os.remove(audio_output_path + f)
     for f in os.listdir(video_out_path):

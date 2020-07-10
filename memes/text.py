@@ -86,15 +86,18 @@ def should_exclude(p_text):
                    p_text.lower() == 'geely\n',
                    re.search('[0-9]{1,2}.[0-9]{1,2}k', p_text.lower()) is not None,
                    p_text == 'CT\n',
-                   p_text.lower() == 'shencomix.com\n'])
+                   p_text.lower() == 'shencomix.com\n',
+                   #re.search('[made with [a-z]]*', p_text.lower()) is not None,
+                   p_text.lower() == 'dissolve\n'])
     return exclude
 
 
 def spell_correct(p_text):
     """ The purpose of this function is to correct spelling mistakes. """
-    p_text = p_text.lower().replace('attacked.me?', 'attacked me!').replace('shit','shhh').replace('damn',
-                                                                                                   'darn').replace(
-        'oh my god','oh my gosh').replace('fucking','fing').replace('fuck','ef')
+    p_text = p_text.lower().replace('attacked.me?', 'attacked me!').replace('shit', 'shhh').replace('damn',
+                                                                                                    'darn').replace(
+        'oh my god', 'oh my gosh').replace('fucking', 'fing').replace('fuck', 'ef').replace('goddamn', 'darn').replace(
+        'son of a bitch', 'son of a gun').replace('bitch', 'girl')
     return p_text
 
 
@@ -119,7 +122,7 @@ def create_blocks_from_paragraph(raw_text_response):
                 # print(p_text)
                 # print(should_exclude(p_text))
                 if not should_exclude(p_text) and np.mean(conf) > .8:
-                    p_text=spell_correct(p_text)
+                    p_text = spell_correct(p_text)
                     raw_text.append(p_text)
                     # Break up multi-line paragraphs
                     if p_text.count('\n') > 0:

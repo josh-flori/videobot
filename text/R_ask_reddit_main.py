@@ -1,51 +1,27 @@
 # /users/josh.flori/desktop/test/bin/python3 /users/josh.flori/desktop/test/lib/python3.6/site-packages/videobot/R_ask_reddit_main.py
 
-from videobot import get_audio
-from videobot import get_comments_from_sheet
-from videobot import get_chunks_comments
-from videobot import create_frames
-from videobot import create_joined_audio
-from videobot import create_video
-from videobot import create_title_slide
-from videobot import get_chunks_title
-from videobot import initialize_folder
-from videobot import concat_videos
-from googleapiclient.discovery import build
-from oauth2client import file
-from httplib2 import Http
-from oauth2client.service_account import ServiceAccountCredentials
-import os
-from string import ascii_lowercase
+from text import get_audio
+from text import get_comments_from_sheet
+from text import get_chunks_comments
+from text import create_frames
+from text import create_joined_audio
+from text import create_video
+from text import create_title_slide
+from text import get_chunks_title
+from text import initialize_folder
+from text import concat_videos
 import os
 import shutil
 
         
         
-
-SCOPES = 'https://www.googleapis.com/auth/spreadsheets'
-store = file.Storage('credentials.json')
-scope = ['https://spreadsheets.google.com/feeds',
-         'https://www.googleapis.com/auth/drive']
-creds = ServiceAccountCredentials.from_json_keyfile_name(
-    '/users/josh.flori/drive_backup/drive_backup/python_scripts/client_secret.json', scope)
-service = build('sheets', 'v4', http=creds.authorize(Http()))                
-_id='1sIS1r-vtHNVRll_NR3vMr8Pbdt91B34vRrvAe20Ym9g'
-threads = service.spreadsheets().values().get(spreadsheetId=_id, range='AskReddit!A2:A').execute().get(
-    'values', [])
+directory='/users/josh.flori/desktop/demo'+str(i)
 
 
+total_list = get_comments_from_reddit.get_comments('https://www.reddit.com/r/AskReddit/comments/grst2b/police_officers_of_reddit_what_are_you_thinking/')
 
-        
-# loop through all threads
-col=1
-for i in range(len(threads)):
-    column=ascii_lowercase[col]
-    col+=1
-    
-    
-    directory='/users/josh.flori/desktop/demo'+str(column)
-    
-    initialize_folder.initialize_folder(directory,'first')
+
+initialize_folder.initialize_folder(directory,'first')
 
 
 
@@ -74,13 +50,13 @@ for i in range(len(threads)):
     #########################
 
     for i in range(len(users))[0:3]:
-    
+
         print(len(cleaned_comment_list[i]))
-    
+
         # get COMMENT audio
-        if not len(cleaned_comment_list[i]) >1500 and 'http' not in cleaned_comment_list[i]:    
-        
-        
+        if not len(cleaned_comment_list[i]) >1500 and 'http' not in cleaned_comment_list[i]:
+
+
             get_audio.get_audio(cleaned_comment_list[i],'/single_comment'+str(i)+'.mp3','/single_comment'+str(i)+'.wav',directory)
 
 

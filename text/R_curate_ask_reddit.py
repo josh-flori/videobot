@@ -1,7 +1,7 @@
 # /users/josh.flori/desktop/test/bin/python3 /users/josh.flori/desktop/test/lib/python3.6/site-packages/videobot/R_curate_ask_reddit.py
 
-from videobot import get_comments_from_reddit
-from videobot import write_to_sheets
+from text import get_comments_from_reddit
+from text import write_to_sheets
 from googleapiclient.discovery import build
 from oauth2client import file
 from httplib2 import Http
@@ -25,7 +25,7 @@ for thread in threads:
     column=ascii_lowercase[i]
     
     # get comment data
-    total_list = get_comments_from_reddit.get_comments(thread[0])
+    total_list = get_comments_from_reddit.get_comments('https://www.reddit.com/r/AskReddit/comments/grst2b/police_officers_of_reddit_what_are_you_thinking/')
 
     write_to_sheets.write_to_sheet(total_list,column,service,_id,'AskReddit',2)
     
